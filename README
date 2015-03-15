@@ -1,0 +1,9 @@
+akfceu
+15 March 2015
+Andy Sommerville: a k sommerville at g mail dot com
+
+I'm trying to rewrite FCEU from version 0.98.13 to something clean and portable.
+0.98.13 is the last version I'm aware of before the onerous ports to C++.
+I want to maintain clear separation between the core emulator, general services, and host services.
+Having ported this very code to Wii, Linux, and iOS (albeit sloppily), I know that the code itself is OK.
+OK, but very dirty.
