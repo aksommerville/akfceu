@@ -14,9 +14,12 @@ MIDDIR:=mid
 OUTDIR:=out
 
 # GCC toolchain.
-CC:=gcc -c -MMD -O2 -Isrc -I$(MIDDIR) -Werror -Wimplicit
+CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality
+CCINCLUDE:=-Isrc -I$(MIDDIR)
+CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1
+CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
 LD:=gcc
-LDPOST:=
+LDPOST:=-lz
 
 # Main and unit-test executables.
 EXE:=$(OUTDIR)/fceu
@@ -26,7 +29,7 @@ TEST:=$(OUTDIR)/test
 RUNCMD:=$(EXE)
 
 # Directories immediately under <src/opt> to include in the build.
-OPT:=
+OPT:=macos
 
 #------------------------------------------------------------------------------
 # Generated source files.

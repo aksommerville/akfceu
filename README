@@ -7,3 +7,77 @@ I'm trying to rewrite FCEU from version 0.98.13 to something clean and portable.
 I want to maintain clear separation between the core emulator, general services, and host services.
 Having ported this very code to Wii, Linux, and iOS (albeit sloppily), I know that the code itself is OK.
 OK, but very dirty.
+
+26 December 2018
+Picking it back up.
+Let's go for broke and build it...
+
+src/fceu/fds.c:627:20: error: comparison of unsigned expression >= 0 is always true [-Werror,-Wtautological-compare]
+src/fceu/fds.c:649:21: error: comparison of unsigned expression < 0 is always false [-Werror,-Wtautological-compare]
+src/fceu/fceu.c:190:4: error: implicit declaration of function 'FCEUD_NetworkClose' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+src/fceu/fir/toh.c:5:1: error: type specifier missing, defaults to 'int' [-Werror,-Wimplicit-int]
+
+src/fceu/netplay.c:53:2: error: implicit declaration of function 'FCEUD_NetworkClose' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+src/fceu/netplay.c:102:15: error: passing 'uint8 *' (aka 'unsigned char *') to parameter of type 'const char *' converts between pointers to integer types with different sign
+src/fceu/netplay.c:106:6: error: implicit declaration of function 'FCEUD_SendData' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+src/fceu/netplay.c:127:15: error: passing 'char *' to parameter of type 'uint8 *' (aka 'unsigned char *') converts between pointers to integer types with different sign
+src/fceu/netplay.c:128:12: error: passing 'char *' to parameter of type 'Bytef *' (aka 'unsigned char *') converts between pointers to integer types with different sign
+src/fceu/netplay.c:128:29: error: passing 'char *' to parameter of type 'const Bytef *' (aka 'const unsigned char *') converts between pointers to integer types with different sign [-Werror,-Wpointer-sign]
+src/fceu/netplay.c:173:38: error: implicit declaration of function 'FCEUD_RecvData' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+src/fceu/netplay.c:183:53: error: passing 'char *' to parameter of type 'uint8 *' (aka 'unsigned char *') converts between pointers to integer types with different sign
+src/fceu/netplay.c:194:45: error: passing 'char *' to parameter of type 'Bytef *' (aka 'unsigned char *') converts between pointers to integer types with different sign
+src/fceu/netplay.c:194:56: error: passing 'char *' to parameter of type 'const Bytef *' (aka 'const unsigned char *') converts between pointers to integer types with different sign [-Werror,-Wpointer-sign]
+
+src/fceu/drivers/pc/dos-sound.c:24:10: fatal error: 'sys/farptr.h' file not found
+Deleted from drivers: sexyal, pc, win
+
+src/fceu/unzip.c:1024:43: error: equality comparison with extraneous parentheses [-Werror,-Wparentheses-equality]
+
+src/fceu/state.c:234:9: error: '__builtin___memset_chk' will always overflow destination buffer [-Werror,-Wbuiltin-memcpy-chk-size]
+src/fceu/state.c:236:27: error: use of undeclared identifier 'FCEU_VERSION_NUMERIC'
+
+src/fceu/soundexp.c:3:10: fatal error: 'vorbis/vorbisfile.h' file not found
+Deleted soundexp.c (Sound Export), was not referenced anywhere.
+
+src/fceu/mbshare/maxicart.c:22:10: fatal error: 'mapsafe.h' file not found
+maxicart.c is apparently not used; commented it out
+
+**************************************************************************
+***** This one might be a real problem, and I'm not sure I fixed it. *****
+src/fceu/mappers/69.c:55:28: error: if statement has empty body [-Werror,-Wempty-body]
+
+src/fceu/file.c:157:20: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:157:20: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:157:20: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:157:20: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:532:10: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:532:10: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:532:10: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:532:10: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:552:12: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:552:12: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:552:12: error: member reference base type 'void' is not a structure or union
+src/fceu/file.c:552:12: error: member reference base type 'void' is not a structure or union
+...need cast to gzFile from zlib.h
+
+src/fceu/general.c:69:12: error: static declaration of 'asprintf' follows non-static declaration
+...define HAVE_ASPRINTF
+
+src/fceu/general.c:90:42: error: expected ')'
+[and many more]
+...define PSS_STYLE=1
+
+src/fceu/palettes/conv.c:63:1: error: type specifier missing, defaults to 'int' [-Werror,-Wimplicit-int]
+...disabled file (helper tool)
+
+Now we fail to link due to (presumably) things implemented under 'driver':
+  "_FCEUD_GetPalette", referenced from:
+  "_FCEUD_Message", referenced from:
+  "_FCEUD_NetworkClose", referenced from:
+  "_FCEUD_PrintError", referenced from:
+  "_FCEUD_SendData", referenced from:
+  "_FCEUD_SetPalette", referenced from:
+  "_FCEUD_UTF8fopen", referenced from:
+Implementing these in src/opt/macos/fceu_driver_macos.c
+
+OK it all builds and links and does nothing. We need main().
