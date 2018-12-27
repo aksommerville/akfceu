@@ -44,10 +44,29 @@ static char FileExt[2048];	/* Includes the . character, as in ".nes" */
 
 static char FileBaseDirectory[2048];
 
-void FCEUI_SetBaseDirectory(char *dir)
+static void mkdir_if_needed(const char *dir,const char *base) {
+  if (base) {
+    char sub[1024];
+    int subc=snprintf(sub,sizeof(sub),"%s"PSS"%s",dir,base);
+    if ((subc>0)&&(subc<sizeof(sub))) {
+      mkdir_if_needed(sub,0);
+    }
+  }
+  mkdir(dir,0775);
+}
+
+void FCEUI_SetBaseDirectory(const char *dir)
 {
  strncpy(BaseDirectory,dir,2047);
  BaseDirectory[2047]=0;
+
+  // aks: Create the directory structure, if it's not there already.
+  mkdir_if_needed(BaseDirectory,0);
+  mkdir_if_needed(BaseDirectory,"fcs");
+  mkdir_if_needed(BaseDirectory,"snaps");
+  mkdir_if_needed(BaseDirectory,"sav");
+  mkdir_if_needed(BaseDirectory,"cheats");
+  mkdir_if_needed(BaseDirectory,"gameinfo");
 }
 
 static char *odirs[FCEUIOD__COUNT]={0,0,0,0,0,0};     // odirs, odors. ^_^

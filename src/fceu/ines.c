@@ -228,7 +228,7 @@ struct BADINF {
 static struct BADINF BadROMImages[]=
 {
  #include "ines-bad.h"
-};
+{0}};
 
 void CheckBad(uint64 md5partial)
 {
@@ -403,7 +403,7 @@ static void CheckHInfo(void)
  /* Four-screen mirroring implicitly set. */
  if(MapperNo==99)
   Mirroring=2;   
-
+  
  if(tofix)
  {
   char gigastr[768];
@@ -535,6 +535,7 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 	FCEU_printf(" Mapper:  %d\n Mirroring: %s\n", MapperNo,Mirroring==2?"None(Four-screen)":Mirroring?"Vertical":"Horizontal");
         if(head.ROM_type&2) FCEU_printf(" Battery-backed.\n");
         if(head.ROM_type&4) FCEU_printf(" Trained.\n");
+
 
 	SetInput();
 	CheckHInfo();

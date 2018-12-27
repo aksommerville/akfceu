@@ -144,7 +144,7 @@ void FCEUI_SetRenderedLines(int ntscf, int ntscl, int palf, int pall);
 
 /* Sets the base directory(save states, snapshots, etc. are saved in directories
    below this directory. */
-void FCEUI_SetBaseDirectory(char *dir);
+void FCEUI_SetBaseDirectory(const char *dir);
 
 /* Tells FCE Ultra to copy the palette data pointed to by pal and use it.
    Data pointed to by pal needs to be 64*3 bytes in length.

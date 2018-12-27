@@ -45,6 +45,7 @@ maxicart.c is apparently not used; commented it out
 **************************************************************************
 ***** This one might be a real problem, and I'm not sure I fixed it. *****
 src/fceu/mappers/69.c:55:28: error: if statement has empty body [-Werror,-Wempty-body]
+Mapper 69 is "Sunsoft FME-7", used by: 	Batman: Return of the Joker, Hebereke [per fceultra.html]
 
 src/fceu/file.c:157:20: error: member reference base type 'void' is not a structure or union
 src/fceu/file.c:157:20: error: member reference base type 'void' is not a structure or union
@@ -81,3 +82,58 @@ Now we fail to link due to (presumably) things implemented under 'driver':
 Implementing these in src/opt/macos/fceu_driver_macos.c
 
 OK it all builds and links and does nothing. We need main().
+
+---------------
+27 December 2018
+Got my interface stuff running, copied from Minten.
+Setting up the FCEU driver, mostly by selective copying from drivers/pc/main.c.
+
+!!! Very real error !!!
+ines.c:230: Including "ines-bad.h", and we will iterate over this until (name) is false, but the sentinel entry is missing!
+Easily fixed, but are there other cases like this?
+Also, what the hell is up with looking for hashes of specific ROM files? We shouldn't have to do that.
+
+There is a call to FCEUI_Initialize() in main.c:CLImain. Do we need that?
+...yes
+
+Failing somewhere in FCEUI_Emulate...
+...add FCEUI_PowerNES() at load.
+...add FCEUI_Initialize() at init (before load).
+That's a bingo!
+
+[X] FCEUD_PrintError: WRAM file "/sav/zelda.9d1a36d1c5233d55499b8484262ac6ab.sav" cannot be written to.
+[X] Some sprites rendering incorrectly: Obvious in the Zelda "All of Treasures".
+    Is this a byte order thing?
+    Is it a faulty ROM file?
+    ...there is a macro LSB_FIRST which is read but apparently never defined.
+    ...That fixed it.
+
+Got it running, looks good, eating 12-15% CPU.
+
+[X] Audio
+    Naively writing and reading from a shared circular buffer works pretty good but they go out of sync periodically.
+    I think we need audio to drive the master timing... What does it take to disable video timing?
+    [context flushBuffer] in mn_macwm_window.m blocks for video refresh (unless window is fully occluded).
+    Can we disable that? [context setValues:&v forParameter:NSOpenGLCPSwapInterval]; Whoo! Benny Hill mode!
+    Timing seems good. Played a few minutes with neither kerfuffle nor tearing.
+[X] Horizontal squish? ...added aspect correction to video
+[X] Save and snap files.
+    FCEUI_SetBaseDirectory()
+[X] Joysticks.
+[ ] Aspect correction and cropping, make configurable.
+
+13:30: Looking good, fullscreen toggle, audio never skips, 2-player support.
+
+Consider mapper 69...
+Batman: Return of the Joker
+...dude, I'd forgotten this game. It fucking rules.
+Seems OK with the blind fix I made yesterday.
+Funny, I can't see any difference with that line enabled or disabled. Digging in with some logging...
+...seems that that line is never hit.
+~/proj/akfceu> grep -nr Mapper69_SWH src
+src/fceu/mappers/69.c:50:static DECLFW(Mapper69_SWH)
+src/fceu/mappers/69.c:234: SetWriteHandler(0xe000,0xffff,Mapper69_SWH);
+src/fceu/mappers/69.c:246: SetWriteHandler(0xe000,0xffff,Mapper69_SWH); <-- this does happen
+...Not seeing it. I'll leave the line disabled, with a log entry after, in case we ever find a ROM that invokes it.
+
+[ ] Is there anything we can do about the sprite flickering? I see it in most games.
