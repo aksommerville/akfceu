@@ -18,6 +18,11 @@ struct mn_ioc_delegate {
   /* Called routinely, about 60 times per second.
    */
   int (*update)();
+
+  /* Called when we receive a request from the OS to open a file.
+   * If we are launched that way, it is delivered to (init), not here.
+   */
+  int (*open_file)(const char *path);
 };
 
 int mn_macioc_main(int argc,char **argv,const struct mn_ioc_delegate *delegate);

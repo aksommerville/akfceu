@@ -258,6 +258,36 @@ void mn_macioc_call_quit() {
   */
 }
 
+/* Open with file.
+ * BEWARE: """
+ * If the user started up the application by double-clicking a file, 
+ * the delegate receives the application:openFile: message before receiving applicationDidFinishLaunching:. 
+ * """
+ */
+
+-(BOOL)application:(NSApplication*)application openFile:(NSString*)pathString {
+  const char *path=[pathString UTF8String];
+  if (!path||!path[0]) return 0;
+  printf("application:openFile:%s\n",path);
+
+  // If (delegate.init) is still set, it means we're not done starting up.
+  // Record this path so it will be opened at that time.
+  // This is a memory leak; I'm not worried about it.
+  if (mn_macioc.delegate.init) {
+    mn_macioc.rompath=strdup(path);
+    return 1;
+  }
+
+  if (mn_macioc.delegate.open_file) {
+    if (mn_macioc.delegate.open_file(path)<0) {
+      mn_macioc_abort("Failed to open file: %s",path);
+    }
+    return 1;
+  }
+  
+  return 0;
+}
+
 @end
 
 /* Get user language.

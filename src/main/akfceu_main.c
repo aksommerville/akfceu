@@ -490,6 +490,7 @@ int main(int argc,char **argv) {
     .init=init,
     .quit=quit,
     .update=update,
+    .open_file=load_rom_file,
   };
   return mn_macioc_main(argc,argv,&delegate);
 }

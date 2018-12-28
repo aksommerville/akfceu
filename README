@@ -137,3 +137,4 @@ src/fceu/mappers/69.c:246: SetWriteHandler(0xe000,0xffff,Mapper69_SWH); <-- this
 ...Not seeing it. I'll leave the line disabled, with a log entry after, in case we ever find a ROM that invokes it.
 
 [ ] Is there anything we can do about the sprite flickering? I see it in most games.
+[X] Finder: "akfceu can not open files of this type". Can we? Hell yeah we can.

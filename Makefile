@@ -95,7 +95,7 @@ $(TEST):$(COREOFILES) $(TESTOFILES) $(OPTOFILES);$(PRECMD) $(LD) -o $@ $(COREOFI
 
 #------------------------------------------------------------------------------
 
-run:$(EXE);$(RUNCMD) /Users/andy/rom/nes/b/batman_rtn_joker.nes
+run:$(EXE);$(RUNCMD) /Users/andy/rom/nes/c/chip_n_dale.nes
 test:$(TEST);$(TEST)
 
 clean:;rm -rf mid out
