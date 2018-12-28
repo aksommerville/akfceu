@@ -23,7 +23,7 @@
 
 #define FCEU_VERSION_NUMERIC 53
 
-static uint8 latche;
+static uint8_t latche;
 
 static DECLFW(Mapper2_write)
 {
@@ -234,7 +234,7 @@ void Mapper94_init(void)
    if I make emulation a little more accurate in the future.
 */
 
-static uint8 M96LA;
+static uint8_t M96LA;
 static DECLFW(Mapper96_write)
 {
  latche=V;
@@ -243,7 +243,7 @@ static DECLFW(Mapper96_write)
  setchr4r(0x10,0x1000,(latche&4)|3);
 }
 
-static void FP_FASTAPASS(1) M96Hook(uint32 A)
+static void FP_FASTAPASS(1) M96Hook(uint32_t A)
 {
  if ((A&0x3000)!=0x2000) return;
  //if((A&0x3ff)>=0x3c0) return;

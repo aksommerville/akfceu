@@ -1,1 +1,1 @@
-void FCEU_WriteWaveData(int32 *Buffer, int Count);
+void FCEU_WriteWaveData(int32_t *Buffer, int Count);

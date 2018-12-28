@@ -27,9 +27,9 @@ typedef struct {
         often) in lq mode than in high-quality mode.  Maybe that
         should be fixed. :)
      */
-     void (*NeoFill)(int32 *Wave, int Count);
+     void (*NeoFill)(int32_t *Wave, int Count);
      void (*HiFill)(void);
-     void (*HiSync)(int32 ts);
+     void (*HiSync)(int32_t ts);
 
      void (*RChange)(void);
      void (*Kill)(void);
@@ -37,18 +37,18 @@ typedef struct {
 
 extern EXPSOUND GameExpSound;
 
-extern int32 nesincsize;
+extern int32_t nesincsize;
 
 void SetSoundVariables(void);
 
-int GetSoundBuffer(int32 **W);
+int GetSoundBuffer(int32_t **W);
 int FlushEmulateSound(void);
-extern int32 Wave[2048+512];
-extern int32 WaveFinal[2048+512];
-extern int32 WaveHi[];
-extern uint32 soundtsinc;
+extern int32_t Wave[2048+512];
+extern int32_t WaveFinal[2048+512];
+extern int32_t WaveHi[];
+extern uint32_t soundtsinc;
 
-extern uint32 soundtsoffs;
+extern uint32_t soundtsoffs;
 #define SOUNDTS (timestamp + soundtsoffs)
 
 void SetNESSoundMap(void);

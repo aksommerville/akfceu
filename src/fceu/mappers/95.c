@@ -20,10 +20,10 @@
 
 #include "mapinc.h"
 
-static uint8 lastA;
-static uint8 DRegs[8];
-static uint8 cmd;
-static uint8 MirCache[8];
+static uint8_t lastA;
+static uint8_t DRegs[8];
+static uint8_t cmd;
+static uint8_t MirCache[8];
 
 static SFORMAT DB_StateRegs[]={
   {DRegs, 8, "DREG"},
@@ -32,10 +32,10 @@ static SFORMAT DB_StateRegs[]={
   {0}
 };
 
-static void FP_FASTAPASS(1) dragonbust_ppu(uint32 A)
+static void FP_FASTAPASS(1) dragonbust_ppu(uint32_t A)
 {
  static int last=-1;
- static uint8 z;
+ static uint8_t z;
 
  if (A>=0x2000) return;
 

@@ -36,7 +36,7 @@
 typedef struct
 {
         char *name;
-        uint64 md5partial;
+        uint64_t md5partial;
         int mapper;
         int mirroring;
         int ppu;
@@ -46,8 +46,8 @@ typedef struct
 
 VSUNIENTRY *curvs;
 
-static uint8 DIPS=0;
-uint8 vsdip=0;
+static uint8_t DIPS=0;
+uint8_t vsdip=0;
 
 void FCEUI_VSUniToggleDIPView(void)
 {
@@ -65,12 +65,12 @@ void FCEUI_VSUniSetDIP(int w, int state)
   FCEUI_VSUniToggleDIP(w);
 }
 
-uint8 FCEUI_VSUniGetDIPs(void)
+uint8_t FCEUI_VSUniGetDIPs(void)
 {
  return(vsdip);
 }
 
-static uint8 secdata[2][32]=
+static uint8_t secdata[2][32]=
 {
  {
   0xff, 0xbf, 0xb7, 0x97, 0x97, 0x17, 0x57, 0x4f,
@@ -86,9 +86,9 @@ static uint8 secdata[2][32]=
  }
 };
 
-static uint8 *secptr;
+static uint8_t *secptr;
 
-static uint8 VSindex;
+static uint8_t VSindex;
         
 static DECLFR(VSSecRead)
 {
@@ -99,7 +99,7 @@ static DECLFR(VSSecRead)
  }      
  return(0x00);
 }
-uint8 coinon=0;
+uint8_t coinon=0;
 
 void FCEU_VSUniCoin(void)
 {
@@ -107,7 +107,7 @@ void FCEU_VSUniCoin(void)
 }
 
 static int curppu;
-static int64 curmd5;
+static int64_t curmd5;
 
 #define RP2C04_001      1
 #define RP2C04_002      2
@@ -141,7 +141,7 @@ static DECLFW(B2000_2001_2C05)
 {
  OldWritePPU[(A&1)^1](A ^ 1, V);
 }
-static uint8 xevselect = 0;
+static uint8_t xevselect = 0;
 static DECLFR(XevRead)
 {
  //printf("%04x\n",A);
@@ -165,11 +165,11 @@ static DECLFR(XevRead)
  return(X.DB);
 }
 
-void FCEU_VSUniSwap(uint8 *j0, uint8 *j1)
+void FCEU_VSUniSwap(uint8_t *j0, uint8_t *j1)
 {
  if (curvs->ioption & IOPTION_SWAPDIRAB)
  {
-  uint16 t=*j0;
+  uint16_t t=*j0;
   *j0=(*j0&0xC)|(*j1&0xF3);
   *j1=(*j1&0xC)|(t&0xF3);
  }
@@ -324,7 +324,7 @@ VSUNIENTRY VSUniGames[]  =
  {0}
 };
 
-void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
+void FCEU_VSUniCheck(uint64_t md5partial, int *MapperNo, uint8_t *Mirroring)
 {
  VSUNIENTRY *vs = VSUniGames;
 
@@ -346,7 +346,7 @@ void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
    secptr = 0;
 
    {
-    static int64 tko=0x6e1ee06171d8ce3aULL, rbi=0x6a02d345812938afULL;
+    static int64_t tko=0x6e1ee06171d8ce3aULL, rbi=0x6a02d345812938afULL;
     if (md5partial == tko)
      secptr=secdata[0];
     if (md5partial == rbi)
@@ -374,21 +374,21 @@ void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
  }
 }
 
-void FCEU_VSUniDraw(uint8 *XBuf)
+void FCEU_VSUniDraw(uint8_t *XBuf)
 {
-  uint32 *dest;
+  uint32_t *dest;
   int y,x;
 
   if (!DIPS) return;
 
-  dest=(uint32 *)(XBuf+256*12+164);
+  dest=(uint32_t *)(XBuf+256*12+164);
   for (y=24;y;y--,dest+=(256-72)>>2)
   {
    for (x=72>>2;x;x--,dest++)
     *dest=0;
   }
   
-  dest=(uint32 *)(XBuf+256*(12+4)+164+6 );
+  dest=(uint32_t *)(XBuf+256*(12+4)+164+6 );
   for (y=16;y;y--,dest+=(256>>2)-16)
    for (x=8;x;x--)
    {
@@ -396,10 +396,10 @@ void FCEU_VSUniDraw(uint8 *XBuf)
     dest+=2;
    }
 
-  dest=(uint32 *)(XBuf+256*(12+4)+164+6 );
+  dest=(uint32_t *)(XBuf+256*(12+4)+164+6 );
   for (x=0;x<8;x++,dest+=2)
   {
-   uint32 *da=dest+(256>>2);
+   uint32_t *da=dest+(256>>2);
 
    if (!((vsdip>>x)&1))
     da+=(256>>2)*10;

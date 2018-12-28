@@ -14,8 +14,8 @@ void FCEU_printf(char *format, ...);
 #define FCEUI_printf FCEU_printf
 
 /* Video interface */
-void FCEUD_SetPalette(uint8 index, uint8 r, uint8 g, uint8 b);
-void FCEUD_GetPalette(uint8 i,uint8 *r, uint8 *g, uint8 *b);
+void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b);
+void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b);
 
 /* Displays an error.  Can block or not. */
 void FCEUD_PrintError(char *s);
@@ -35,14 +35,14 @@ void FCEUI_NetplayStop(void);
 */
 
 /* Return 0 on failure, 1 on success. */
-int FCEUD_SendData(void *data, uint32 len);
-int FCEUD_RecvData(void *data, uint32 len);
+int FCEUD_SendData(void *data, uint32_t len);
+int FCEUD_RecvData(void *data, uint32_t len);
 
 /* Display text received over the network. */
-void FCEUD_NetplayText(uint8 *text);
+void FCEUD_NetplayText(uint8_t *text);
 
 /* Encode and send text over the network. */
-void FCEUI_NetplayText(uint8 *text);
+void FCEUI_NetplayText(uint8_t *text);
 
 /* Called when a fatal error occurred and network play can't continue.  This function
    should call FCEUI_NetplayStop() after it has deinitialized the network on the driver
@@ -113,7 +113,7 @@ FCEUGI *FCEUI_LoadGame(const char *name);
 int FCEUI_Initialize(void);
 
 /* Emulates a frame. */
-void FCEUI_Emulate(uint8 **, int32 **, int32 *, int);
+void FCEUI_Emulate(uint8_t **, int32_t **, int32_t *, int);
 
 /* Closes currently loaded game */
 void FCEUI_CloseGame(void);
@@ -148,7 +148,7 @@ void FCEUI_SetBaseDirectory(const char *dir);
 /* Tells FCE Ultra to copy the palette data pointed to by pal and use it.
    Data pointed to by pal needs to be 64*3 bytes in length.
 */
-void FCEUI_SetPaletteArray(uint8 *pal);
+void FCEUI_SetPaletteArray(uint8_t *pal);
 
 /* Sets up sound code to render sound at the specified rate, in samples
    per second.  Only sample rates of 44100, 48000, and 96000 are currently
@@ -156,7 +156,7 @@ void FCEUI_SetPaletteArray(uint8 *pal);
    If "Rate" equals 0, sound is disabled.
 */
 void FCEUI_Sound(int Rate);
-void FCEUI_SetSoundVolume(uint32 volume);
+void FCEUI_SetSoundVolume(uint32_t volume);
 void FCEUI_SetSoundQuality(int quality);
 
 void FCEUI_SelectState(int);
@@ -169,26 +169,26 @@ void FCEUI_SelectMovie(int);
 void FCEUI_SaveMovie(char *fname);
 void FCEUI_LoadMovie(char *fname);
 
-int32 FCEUI_GetDesiredFPS(void);
+int32_t FCEUI_GetDesiredFPS(void);
 void FCEUI_SaveSnapshot(void);
 void FCEU_DispMessage(char *format, ...);
 #define FCEUI_DispMessage FCEU_DispMessage
 
-int FCEUI_DecodePAR(const char *code, uint16 *a, uint8 *v, int *c, int *type);
-int FCEUI_DecodeGG(const char *str, uint16 *a, uint8 *v, int *c);
-int FCEUI_AddCheat(const char *name, uint32 addr, uint8 val, int compare, int type);
-int FCEUI_DelCheat(uint32 which);
-int FCEUI_ToggleCheat(uint32 which);
+int FCEUI_DecodePAR(const char *code, uint16_t *a, uint8_t *v, int *c, int *type);
+int FCEUI_DecodeGG(const char *str, uint16_t *a, uint8_t *v, int *c);
+int FCEUI_AddCheat(const char *name, uint32_t addr, uint8_t val, int compare, int type);
+int FCEUI_DelCheat(uint32_t which);
+int FCEUI_ToggleCheat(uint32_t which);
 
-int32 FCEUI_CheatSearchGetCount(void);
-void FCEUI_CheatSearchGetRange(uint32 first, uint32 last, int (*callb)(uint32 a, uint8 last, uint8 current));
-void FCEUI_CheatSearchGet(int (*callb)(uint32 a, uint8 last, uint8 current, void *data), void *data);
+int32_t FCEUI_CheatSearchGetCount(void);
+void FCEUI_CheatSearchGetRange(uint32_t first, uint32_t last, int (*callb)(uint32_t a, uint8_t last, uint8_t current));
+void FCEUI_CheatSearchGet(int (*callb)(uint32_t a, uint8_t last, uint8_t current, void *data), void *data);
 void FCEUI_CheatSearchBegin(void);
-void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2);
-void FCEUI_ListCheats(int (*callb)(char *name, uint32 a, uint8 v, int compare, int s, int type, void *data), void *data);
+void FCEUI_CheatSearchEnd(int type, uint8_t v1, uint8_t v2);
+void FCEUI_ListCheats(int (*callb)(char *name, uint32_t a, uint8_t v, int compare, int s, int type, void *data), void *data);
 
-int FCEUI_GetCheat(uint32 which, char **name, uint32 *a, uint8 *v, int *compare, int *s, int *type);
-int FCEUI_SetCheat(uint32 which, const char *name, int32 a, int32 v, int compare,int s, int type);
+int FCEUI_GetCheat(uint32_t which, char **name, uint32_t *a, uint8_t *v, int *compare, int *s, int *type);
+int FCEUI_SetCheat(uint32_t which, const char *name, int32_t a, int32_t v, int compare,int s, int type);
 
 void FCEUI_CheatSearchShowExcluded(void);
 void FCEUI_CheatSearchSetCurrentAsOriginal(void);
@@ -204,26 +204,26 @@ void FCEUI_CheatSearchSetCurrentAsOriginal(void);
 
 void FCEUI_SetDirOverride(int which, char *n);
 
-void FCEUI_MemDump(uint16 a, int32 len, void (*callb)(uint16 a, uint8 v));
-uint8 FCEUI_MemSafePeek(uint16 A);
-void FCEUI_MemPoke(uint16 a, uint8 v, int hl);
+void FCEUI_MemDump(uint16_t a, int32_t len, void (*callb)(uint16_t a, uint8_t v));
+uint8_t FCEUI_MemSafePeek(uint16_t A);
+void FCEUI_MemPoke(uint16_t a, uint8_t v, int hl);
 void FCEUI_NMI(void);
 void FCEUI_IRQ(void);
-uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo);
-void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
+uint16_t FCEUI_Disassemble(void *XA, uint16_t a, char *stringo);
+void FCEUI_GetIVectors(uint16_t *reset, uint16_t *irq, uint16_t *nmi);
 
-uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
+uint32_t FCEUI_CRC32(uint32_t crc, uint8_t *buf, uint32_t len);
 
 void FCEUI_ToggleTileView(void);
 void FCEUI_SetLowPass(int q);
 
 void FCEUI_NSFSetVis(int mode);
 int FCEUI_NSFChange(int amount);
-int FCEUI_NSFGetInfo(uint8 *name, uint8 *artist, uint8 *copyright, int maxlen);
+int FCEUI_NSFGetInfo(uint8_t *name, uint8_t *artist, uint8_t *copyright, int maxlen);
 
 void FCEUI_VSUniToggleDIPView(void);
 void FCEUI_VSUniToggleDIP(int w);
-uint8 FCEUI_VSUniGetDIPs(void);
+uint8_t FCEUI_VSUniGetDIPs(void);
 void FCEUI_VSUniSetDIP(int w, int state);
 void FCEUI_VSUniCoin(void);
 
@@ -231,6 +231,6 @@ int FCEUI_FDSInsert(int oride);
 int FCEUI_FDSEject(void);
 void FCEUI_FDSSelect(void);
 
-int FCEUI_DatachSet(const uint8 *rcode);
+int FCEUI_DatachSet(const uint8_t *rcode);
 
 #endif

@@ -20,19 +20,19 @@
 
 #include "mapinc.h"
 
-static uint8 LastWr;
-static uint8 ExtMode;
-static uint8 cmd;
-static uint8 DRegs[8];
-static uint32 count=0;
-static uint32 last=0;
+static uint8_t LastWr;
+static uint8_t ExtMode;
+static uint8_t cmd;
+static uint8_t DRegs[8];
+static uint32_t count=0;
+static uint32_t last=0;
 static int safe=0;
-static uint8 poofish;
+static uint8_t poofish;
 
 static void Sync(void)  
 {
  int x;
- uint32 base=0;
+ uint32_t base=0;
 
  if (cmd&0x80) base=0x1000; 
  setchr2(0x0000^base,(0x100|DRegs[0])>>1);
@@ -139,7 +139,7 @@ static void sl(void)
  }
 }
 
-static void FP_FASTAPASS(1) foo(uint32 A)
+static void FP_FASTAPASS(1) foo(uint32_t A)
 {
  if ((A&0x2000) && !(last&0x2000))
  {

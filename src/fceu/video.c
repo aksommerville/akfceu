@@ -37,8 +37,8 @@
 #include "input.h"
 #include "vsuni.h"
 
-uint8 *XBuf=NULL;
-static uint8 *xbsave=NULL;
+uint8_t *XBuf=NULL;
+static uint8_t *xbsave=NULL;
 
 void FCEU_KillVirtualVideo(void)
 {
@@ -54,14 +54,14 @@ int FCEU_InitVirtualVideo(void)
  if (!XBuf)    /* Some driver code may allocate XBuf externally. */
       /* 256 bytes per scanline, * 240 scanline maximum, +8 for alignment,
       */
- if (!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
+ if (!(XBuf= (uint8_t*) (FCEU_malloc(256 * 256 + 8))))
   return 0;
  xbsave=XBuf;
 
- if (sizeof(uint8*)==4)
+ if (sizeof(uint8_t*)==4)
  {
-  uint32 m;
-  m=(uint32)XBuf;
+  uint32_t m;
+  m=(uint32_t)XBuf;
   m=(4-m)&3;
   XBuf+=m;
  }
@@ -159,11 +159,11 @@ void FCEU_ResetMessages(void)
 }
 
 
-static int WritePNGChunk(FILE *fp, uint32 size, char *type, uint8 *data)
+static int WritePNGChunk(FILE *fp, uint32_t size, char *type, uint8_t *data)
 {
- uint32 crc;
+ uint32_t crc;
 
- uint8 tempo[4];
+ uint8_t tempo[4];
 
  tempo[0]=size>>24;
  tempo[1]=size>>16;
@@ -179,7 +179,7 @@ static int WritePNGChunk(FILE *fp, uint32 size, char *type, uint8 *data)
   if (fwrite(data,1,size,fp)!=size)
    return 0;
 
- crc=CalcCRC32(0,(uint8 *)type,4);
+ crc=CalcCRC32(0,(uint8_t *)type,4);
  if (size)
   crc=CalcCRC32(crc,data,size);
 
@@ -201,10 +201,10 @@ int SaveSnapshot(void)
  int totallines=FSettings.LastSLine-FSettings.FirstSLine+1;
  int x,u,y;
  FILE *pp=NULL;
- uint8 *compmem=NULL;
+ uint8_t *compmem=NULL;
  uLongf compmemsize=totallines*263+12;
 
- if (!(compmem=(uint8 *)FCEU_malloc(compmemsize)))
+ if (!(compmem=(uint8_t *)FCEU_malloc(compmemsize)))
   return 0;
 
  for (u=lastu;u<99999;u++)
@@ -223,13 +223,13 @@ int SaveSnapshot(void)
  }
  free(fn);
  {
-  static uint8 header[8]={137,80,78,71,13,10,26,10};
+  static uint8_t header[8]={137,80,78,71,13,10,26,10};
   if (fwrite(header,8,1,pp)!=1)
    goto PNGerr;
  }
 
  {
-  uint8 chunko[13];
+  uint8_t chunko[13];
 
   chunko[0]=chunko[1]=chunko[3]=0;
   chunko[2]=0x1;      // Width of 256
@@ -248,7 +248,7 @@ int SaveSnapshot(void)
  }
 
  {
-  uint8 pdata[256*3];
+  uint8_t pdata[256*3];
   for (x=0;x<256;x++)
    FCEUD_GetPalette(x,pdata+x*3,pdata+x*3+1,pdata+x*3+2);
   if (!WritePNGChunk(pp,256*3,"PLTE",pdata))
@@ -256,10 +256,10 @@ int SaveSnapshot(void)
  }
 
  {
-  uint8 *tmp=XBuf+FSettings.FirstSLine*256;
-  uint8 *dest,*mal,*mork;
+  uint8_t *tmp=XBuf+FSettings.FirstSLine*256;
+  uint8_t *dest,*mal,*mork;
 
-  if (!(mal=mork=dest=(uint8 *)malloc((totallines<<8)+totallines)))
+  if (!(mal=mork=dest=(uint8_t *)malloc((totallines<<8)+totallines)))
    goto PNGerr;
  //   mork=dest=XBuf;
 
@@ -297,15 +297,15 @@ int SaveSnapshot(void)
  return(0);
 }
 #ifdef SHOWFPS
-uint64 FCEUD_GetTime(void);
-uint64 FCEUD_GetTimeFreq(void);
+uint64_t FCEUD_GetTime(void);
+uint64_t FCEUD_GetTimeFreq(void);
 
-static uint64 boop[60];
+static uint64_t boop[60];
 static int boopcount = 0;
 
 void ShowFPS(void)
 {
- uint64 da = FCEUD_GetTime() - boop[boopcount];
+ uint64_t da = FCEUD_GetTime() - boop[boopcount];
  char fpsmsg[16];
  int booplimit = PAL?50:60;
  boop[boopcount] = FCEUD_GetTime();

@@ -24,21 +24,21 @@
 
 #include "mapinc.h"
 
-static uint8 resetmode,MMC3_cmd,A000B,A001B;
-static uint8 DRegBuf[8];
+static uint8_t resetmode,MMC3_cmd,A000B,A001B;
+static uint8_t DRegBuf[8];
 
-static uint8 *WRAM;
-static uint8 *CHRRAM;
-static uint32 CHRRAMSize;
+static uint8_t *WRAM;
+static uint8_t *CHRRAM;
+static uint32_t CHRRAMSize;
 
-static uint8 PPUCHRBus;
-static uint8 TKSMIR[8];
-static uint8 EXPREGS[8];  /* For bootleg games, mostly. */
+static uint8_t PPUCHRBus;
+static uint8_t TKSMIR[8];
+static uint8_t EXPREGS[8];  /* For bootleg games, mostly. */
 #undef IRQCount
 #undef IRQLatch
 #undef IRQa
-static uint8 IRQCount,IRQLatch,IRQa;
-static uint8 IRQReload;
+static uint8_t IRQCount,IRQLatch,IRQa;
+static uint8_t IRQReload;
 
 static SFORMAT MMC3_StateRegs[]={
   {DRegBuf, 8, "REGS"},
@@ -54,9 +54,9 @@ static SFORMAT MMC3_StateRegs[]={
 };
 
 
-static void (*pwrap)(uint32 A, uint8 V);
-static void (*cwrap)(uint32 A, uint8 V);
-static void (*mwrap)(uint8 V);
+static void (*pwrap)(uint32_t A, uint8_t V);
+static void (*cwrap)(uint32_t A, uint8_t V);
+static void (*mwrap)(uint8_t V);
 
 static int mmc3opts=0;
 
@@ -227,8 +227,8 @@ static void ClockMMC6Counter(void)
 */
 
 /*
-static uint32 lasta;
-static void FP_FASTAPASS(1) MMC3_PPUIRQ(uint32 A)
+static uint32_t lasta;
+static void FP_FASTAPASS(1) MMC3_PPUIRQ(uint32_t A)
 {
  if (A&0x2000) return;
  if ((A&0x1000) && !(lasta&0x1000))
@@ -244,30 +244,30 @@ static void genmmc3restore(int version)
  FixMMC3CHR(MMC3_cmd);
 }
 
-static void GENCWRAP(uint32 A, uint8 V)
+static void GENCWRAP(uint32_t A, uint8_t V)
 {
  setchr1(A,V);
 }
 
-static void GENPWRAP(uint32 A, uint8 V)
+static void GENPWRAP(uint32_t A, uint8_t V)
 {
  setprg8(A,V&0x3F);
 }
 
-static void GENMWRAP(uint8 V)
+static void GENMWRAP(uint8_t V)
 {
  A000B=V;
  setmirror(V^1);
 }
 
-static void GENNOMWRAP(uint8 V)
+static void GENNOMWRAP(uint8_t V)
 {
  A000B=V;
 }
 
 
 
-static void M12CW(uint32 A, uint8 V)
+static void M12CW(uint32_t A, uint8_t V)
 {
  setchr1(A,(EXPREGS[(A&0x1000)>>12]<<8)+V);
 }
@@ -293,16 +293,16 @@ void Mapper12_Init(CartInfo *info)
  AddExState(EXPREGS, 2, 0, "EXPR");
 }
 
-static void M47PW(uint32 A, uint8 V)
+static void M47PW(uint32_t A, uint8_t V)
 {
  V&=0xF;
  V|=EXPREGS[0]<<4;
  setprg8(A,V);
 }
 
-static void M47CW(uint32 A, uint8 V)
+static void M47CW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  NV&=0x7F;
  NV|=EXPREGS[0]<<7;
  setchr1(A,NV);
@@ -332,18 +332,18 @@ void Mapper47_Init(CartInfo *info)
  AddExState(EXPREGS, 1, 0, "EXPR");
 }
 
-static void M44PW(uint32 A, uint8 V)
+static void M44PW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  if (EXPREGS[0]>=6) NV&=0x1F;
  else NV&=0x0F;
  NV|=EXPREGS[0]<<4;
  setprg8(A,NV);
 }
 
-static void M44CW(uint32 A, uint8 V)
+static void M44CW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  if (EXPREGS[0]<6) NV&=0x7F;
  NV|=EXPREGS[0]<<7;
  setchr1(A,NV);
@@ -377,17 +377,17 @@ void Mapper44_Init(CartInfo *info)
  AddExState(EXPREGS, 1, 0, "EXPR");
 }
 
-static void M52PW(uint32 A, uint8 V)
+static void M52PW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  NV&=0x1F^((EXPREGS[0]&8)<<1);
  NV|=((EXPREGS[0]&6)|((EXPREGS[0]>>3)&EXPREGS[0]&1))<<4;
  setprg8(A,NV);
 }
 
-static void M52CW(uint32 A, uint8 V)
+static void M52CW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  NV&=0xFF^((EXPREGS[0]&0x40)<<1);
  NV|=(((EXPREGS[0]>>3)&4)|((EXPREGS[0]>>1)&2)|((EXPREGS[0]>>6)&(EXPREGS[0]>>4)&1))<<7;
  setchr1(A,NV);
@@ -429,9 +429,9 @@ void Mapper52_Init(CartInfo *info)
  AddExState(EXPREGS, 2, 0, "EXPR");
 }
 
-static void M45CW(uint32 A, uint8 V)
+static void M45CW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  if (EXPREGS[2]&8)
   NV&=(1<<( (EXPREGS[2]&7)+1 ))-1;
  else
@@ -442,7 +442,7 @@ static void M45CW(uint32 A, uint8 V)
  setchr1(A,NV);
 }
 
-static void M45PW(uint32 A, uint8 V)
+static void M45PW(uint32_t A, uint8_t V)
 {
  //V=((V&(EXPREGS[3]^0xFF))&0x3f)|EXPREGS[1];
  V&=(EXPREGS[3]&0x3F)^0x3F;
@@ -491,7 +491,7 @@ void Mapper45_Init(CartInfo *info)
  AddExState(EXPREGS, 5, 0, "EXPR");
 }
 
-static void M49PW(uint32 A, uint8 V)
+static void M49PW(uint32_t A, uint8_t V)
 {
  if (EXPREGS[0]&1)
  {
@@ -503,9 +503,9 @@ static void M49PW(uint32 A, uint8 V)
   setprg32(0x8000,(EXPREGS[0]>>4)&3);
 }
 
-static void M49CW(uint32 A, uint8 V)
+static void M49CW(uint32_t A, uint8_t V)
 {
- uint32 NV=V;
+ uint32_t NV=V;
  NV&=0x7F;
  NV|=(EXPREGS[0]&0xC0)<<1;
  setchr1(A,NV);
@@ -547,7 +547,7 @@ void Mapper49_Init(CartInfo *info)
  AddExState(EXPREGS, 1, 0, "EXPR");
 }
 
-static void M115PW(uint32 A, uint8 V)
+static void M115PW(uint32_t A, uint8_t V)
 {
  setprg8(A,V);
  if (EXPREGS[0]&0x80)
@@ -556,9 +556,9 @@ static void M115PW(uint32 A, uint8 V)
  }
 }
 
-static void M115CW(uint32 A, uint8 V)
+static void M115CW(uint32_t A, uint8_t V)
 {
- setchr1(A,(uint32)V|((EXPREGS[1]&1)<<8));
+ setchr1(A,(uint32_t)V|((EXPREGS[1]&1)<<8));
 }
 
 static DECLFW(M115Write)
@@ -586,7 +586,7 @@ void Mapper115_Init(CartInfo *info)
  AddExState(EXPREGS, 2, 0, "EXPR");
 }
 
-static void M116PW(uint32 A, uint8 V)
+static void M116PW(uint32_t A, uint8_t V)
 {
  // setprg8(A,(V&0xF)|((EXPREGS[1]&0x2)<<3));
  // setprg8(A,(V&7)|(<<3));
@@ -597,7 +597,7 @@ static void M116PW(uint32 A, uint8 V)
  }
 }
 
-static void M116CW(uint32 A, uint8 V)
+static void M116CW(uint32_t A, uint8_t V)
 {
  //if(EXPREGS[1]&2)
   setchr1(A,V|((EXPREGS[0]&0x4)<<6));
@@ -645,7 +645,7 @@ void Mapper116_Init(CartInfo *info)
  AddExState(EXPREGS, 4, 0, "EXPR");
 }
 
-static void M165CW(uint32 A, uint8 V)
+static void M165CW(uint32_t A, uint8_t V)
 {
  //printf("%04x:%02x\n",A,V);
  if (V < 0x4)
@@ -658,7 +658,7 @@ void Mapper165_Init(CartInfo *info)
 {
  GenMMC3_Init(info, 512, 128, 8, info->battery);
  cwrap=M165CW;
- CHRRAM = (uint8*)FCEU_gmalloc(8192);
+ CHRRAM = (uint8_t*)FCEU_gmalloc(8192);
  CHRRAMSize = 8192;
  AddExState(CHRRAM, 8192, 0, "chrr");
  SetupCartCHRMapping(0x10, CHRRAM, 8192, 1);
@@ -687,7 +687,7 @@ void Mapper250_Init(CartInfo *info)
  info->Power=M250_Power;
 }
 
-static void M249PW(uint32 A, uint8 V)
+static void M249PW(uint32_t A, uint8_t V)
 {
  if (EXPREGS[0]&0x2)
  {
@@ -702,7 +702,7 @@ static void M249PW(uint32 A, uint8 V)
  setprg8(A,V);
 }
 
-static void M249CW(uint32 A, uint8 V)
+static void M249CW(uint32_t A, uint8_t V)
 {
  if (EXPREGS[0]&0x2)
   V=(V&3)|((V>>1)&4)|((V>>4)&8)|((V>>2)&0x10)|((V<<3)&0x20)|((V<<2)&0xC0);
@@ -732,7 +732,7 @@ void Mapper249_Init(CartInfo *info)
  AddExState(EXPREGS, 1, 0, "EXPR");
 }
 
-static void M245CW(uint32 A, uint8 V)
+static void M245CW(uint32_t A, uint8_t V)
 {
  //printf("$%04x:$%02x\n",A,V);
  //setchr1(A,V);
@@ -741,7 +741,7 @@ static void M245CW(uint32 A, uint8 V)
  FixMMC3PRG(MMC3_cmd);
 }
 
-static void M245PW(uint32 A, uint8 V)
+static void M245PW(uint32_t A, uint8_t V)
 {
  setprg8(A,(V&0x3F)|((EXPREGS[0]&2)<<5));
  //printf("%d\n",(V&0x3F)|((EXPREGS[0]&2)<<5));
@@ -762,12 +762,12 @@ void Mapper245_Init(CartInfo *info)
  AddExState(EXPREGS, 1, 0, "EXPR");
 }
 
-void m74p(uint32 a, uint8 v)
+void m74p(uint32_t a, uint8_t v)
 {
  setprg8(a,v&0x3f);
 }
 
-static void m74kie(uint32 a, uint8 v)
+static void m74kie(uint32_t a, uint8_t v)
 {
  if (v==((PRGsize[0]>>16)&0x08) || v==1+((PRGsize[0]>>16)&0x08))
   setchr1r(0x10,a,v);
@@ -780,13 +780,13 @@ void Mapper74_Init(CartInfo *info)
  GenMMC3_Init(info, 512, 256, 8, info->battery);
  cwrap=m74kie;
  pwrap=m74p;
- CHRRAM=(uint8*)FCEU_gmalloc(2048);
+ CHRRAM=(uint8_t*)FCEU_gmalloc(2048);
  CHRRAMSize=2048;
  SetupCartCHRMapping(0x10, CHRRAM, 2048, 1);
  AddExState(CHRRAM, 2048, 0, "CHRR");
 }
 
-static void m148kie(uint32 a, uint8 v)
+static void m148kie(uint32_t a, uint8_t v)
 {
  if (v==128 || v==129)
   setchr1r(0x10,a,v);
@@ -799,15 +799,15 @@ void Mapper148_Init(CartInfo *info)
  GenMMC3_Init(info, 512, 256, 8, info->battery);
  cwrap=m148kie;
  pwrap=m74p;
- CHRRAM=(uint8*)FCEU_gmalloc(2048);
+ CHRRAM=(uint8_t*)FCEU_gmalloc(2048);
  CHRRAMSize=2048;
  SetupCartCHRMapping(0x10, CHRRAM, 2048, 1);
  AddExState(CHRRAM, 2048, 0, "CHRR");
 }
 
-static void FP_FASTAPASS(1) TKSPPU(uint32 A)
+static void FP_FASTAPASS(1) TKSPPU(uint32_t A)
 {
- //static uint8 z;
+ //static uint8_t z;
  //if(A>=0x2000 || type<0) return;
  //if(type<0) return;
  A&=0x1FFF;
@@ -822,7 +822,7 @@ static void FP_FASTAPASS(1) TKSPPU(uint32 A)
  setmirror(MI_0+TKSMIR[A]);
 }
 
-static void TKSWRAP(uint32 A, uint8 V)
+static void TKSWRAP(uint32_t A, uint8_t V)
 {
  TKSMIR[A>>10]=V>>7;
  setchr1(A,V&0x7F);
@@ -831,7 +831,7 @@ static void TKSWRAP(uint32 A, uint8 V)
 }
 
 
-static void TQWRAP(uint32 A, uint8 V)
+static void TQWRAP(uint32_t A, uint8_t V)
 {
  setchr1r((V&0x40)>>2,A,V&0x3F);
 }
@@ -911,7 +911,7 @@ void GenMMC3_Init(CartInfo *info, int prg, int chr, int wram, int battery)
  if (wram)
  {
   mmc3opts|=1;
-  WRAM=(uint8*)FCEU_gmalloc(wram*1024);
+  WRAM=(uint8_t*)FCEU_gmalloc(wram*1024);
   AddExState(WRAM, wram*1024, 0, "WRAM");
  }
 
@@ -925,7 +925,7 @@ void GenMMC3_Init(CartInfo *info, int prg, int chr, int wram, int battery)
 
  if (!chr)
  {
-  CHRRAM=(uint8*)FCEU_gmalloc(8192);
+  CHRRAM=(uint8_t*)FCEU_gmalloc(8192);
   CHRRAMSize=8192;
   SetupCartCHRMapping(0, CHRRAM, 8192, 1);
   AddExState(CHRRAM, 8192, 0, "CHRR");
@@ -985,7 +985,7 @@ void Mapper119_Init(CartInfo *info)
 {
  GenMMC3_Init(info, 512, 64, 0, 0);
  cwrap=TQWRAP;
- CHRRAM=(uint8*)FCEU_gmalloc(8192);
+ CHRRAM=(uint8_t*)FCEU_gmalloc(8192);
  CHRRAMSize=8192;
  SetupCartCHRMapping(0x10, CHRRAM, 8192, 1);
 }
@@ -1042,7 +1042,7 @@ void TQROM_Init(CartInfo *info)
 {
  GenMMC3_Init(info, 512, 64, 0, 0);
  cwrap=TQWRAP;
- CHRRAM=(uint8*)FCEU_gmalloc(8192);
+ CHRRAM=(uint8_t*)FCEU_gmalloc(8192);
  CHRRAMSize=8192;
  SetupCartCHRMapping(0x10, CHRRAM, 8192, 1);
 }

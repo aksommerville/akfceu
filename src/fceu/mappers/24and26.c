@@ -125,15 +125,15 @@ static DECLFW(Mapper24_write)
   }
 }
 
-static int32 CVBC[3];
-static int32 vcount[3];
-static int32 dcount[2];
+static int32_t CVBC[3];
+static int32_t vcount[3];
+static int32_t dcount[2];
 
 static INLINE void DoSQV(int x)
 {
- int32 V;
- int32 amp=(((VPSG[x<<2]&15)<<8)*6/8)>>4;
- int32 start,end;
+ int32_t V;
+ int32_t amp=(((VPSG[x<<2]&15)<<8)*6/8)>>4;
+ int32_t start,end;
 
  start=CVBC[x];
  end=(SOUNDTS<<16)/soundtsinc;
@@ -149,8 +149,8 @@ static INLINE void DoSQV(int x)
   }
   else
   {
-   int32 thresh=(VPSG[x<<2]>>4)&7;
-   int32 freq=((VPSG[(x<<2)|0x1]|((VPSG[(x<<2)|0x2]&15)<<8))+1)<<17;
+   int32_t thresh=(VPSG[x<<2]>>4)&7;
+   int32_t freq=((VPSG[(x<<2)|0x1]|((VPSG[(x<<2)|0x2]&15)<<8))+1)<<17;
    for (V=start;V<end;V++)
    {
     if (dcount[x]>thresh)        /* Greater than, not >=.  Important. */
@@ -179,7 +179,7 @@ static void DoSQV2(void)
 static void DoSawV(void)
 {
     int V;
-    int32 start,end;
+    int32_t start,end;
 
     start=CVBC[2];
     end=(SOUNDTS<<16)/soundtsinc;  
@@ -188,11 +188,11 @@ static void DoSawV(void)
 
    if (VPSG2[2]&0x80)
    {
-    static int32 saw1phaseacc=0;
-    uint32 freq3;
-    static uint8 b3=0;
-    static int32 phaseacc=0;
-    static uint32 duff=0;
+    static int32_t saw1phaseacc=0;
+    uint32_t freq3;
+    static uint8_t b3=0;
+    static int32_t phaseacc=0;
+    static uint32_t duff=0;
 
     freq3=(VPSG2[1]+((VPSG2[2]&15)<<8)+1);
 
@@ -201,7 +201,7 @@ static void DoSawV(void)
      saw1phaseacc-=nesincsize;
      if (saw1phaseacc<=0)
      {
-      int32 t;
+      int32_t t;
       rea:
       t=freq3;
       t<<=18;
@@ -224,8 +224,8 @@ static void DoSawV(void)
 
 static INLINE void DoSQVHQ(int x)
 {
- int32 V;
- int32 amp=((VPSG[x<<2]&15)<<8)*6/8;
+ int32_t V;
+ int32_t amp=((VPSG[x<<2]&15)<<8)*6/8;
     
  if (VPSG[(x<<2)|0x2]&0x80) 
  {
@@ -236,7 +236,7 @@ static INLINE void DoSQVHQ(int x)
   }
   else  
   {
-   int32 thresh=(VPSG[x<<2]>>4)&7;
+   int32_t thresh=(VPSG[x<<2]>>4)&7;
    for (V=CVBC[x];V<SOUNDTS;V++)
    {
     if (dcount[x]>thresh)        /* Greater than, not >=.  Important. */
@@ -265,9 +265,9 @@ static void DoSQV2HQ(void)
   
 static void DoSawVHQ(void)
 {
- static uint8 b3=0;
- static int32 phaseacc=0;
- int32 V;
+ static uint8_t b3=0;
+ static int32_t phaseacc=0;
+ int32_t V;
 
  if (VPSG2[2]&0x80)
  {
@@ -311,7 +311,7 @@ void VRC6SoundHQ(void)
     DoSawVHQ();
 }
 
-void VRC6SyncHQ(int32 ts)
+void VRC6SyncHQ(int32_t ts)
 {
  int x;
  for (x=0;x<3;x++) CVBC[x]=ts;

@@ -24,8 +24,8 @@
 
 static DECLFW(Mapper92_write)
 {
- uint8 reg=(A&0xF0)>>4;
- uint8 bank=A&0xF;
+ uint8_t reg=(A&0xF0)>>4;
+ uint8_t bank=A&0xF;
 
  if (A>=0x9000)
  {

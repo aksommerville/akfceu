@@ -21,10 +21,10 @@
 #include <string.h>
 #include "share.h"
 
-static uint32 FTVal,FTValR;
+static uint32_t FTVal,FTValR;
 static char side;
 
-static uint8 FP_FASTAPASS(2) FT_Read(int w, uint8 ret)
+static uint8_t FP_FASTAPASS(2) FT_Read(int w, uint8_t ret)
 {
  if (w)
  {
@@ -33,7 +33,7 @@ static uint8 FP_FASTAPASS(2) FT_Read(int w, uint8 ret)
  return(ret);
 }
 
-static void FP_FASTAPASS(1) FT_Write(uint8 V)
+static void FP_FASTAPASS(1) FT_Write(uint8_t V)
 {
  FTValR=0;
 
@@ -53,7 +53,7 @@ static void FP_FASTAPASS(1) FT_Write(uint8 V)
 
 static void FP_FASTAPASS(2) FT_Update(void *data, int arg)
 {
- FTVal=*(uint32 *)data;
+ FTVal=*(uint32_t *)data;
 }
 
 static INPUTCFC FamilyTrainer={FT_Read,FT_Write,0,FT_Update,0,0};

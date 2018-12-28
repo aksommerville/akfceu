@@ -66,7 +66,7 @@ DECLFW(Mapper21_write)
    case 0x9004:
    case 0x9002:if((K4sel&2)!=(V&2))
                {
-                     uint8 swa;
+                     uint8_t swa;
                 swa=PRGBankList[0];
                  ROM_BANK8(0x8000,PRGBankList[2]);
                 ROM_BANK8(0xc000,swa);

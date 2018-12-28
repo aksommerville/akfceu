@@ -23,7 +23,7 @@
 #define rg mapbyte1
 static void DoPRG(void)
 {
-  int32 b=((rg[0]>>1)&0xF) | ((rg[0]>>3)&0x10) | ((rg[1]&1)<<5);
+  int32_t b=((rg[0]>>1)&0xF) | ((rg[0]>>3)&0x10) | ((rg[1]&1)<<5);
   if (rg[0]&0x20)        // 16 KB
   {
    ROM_BANK16(0x8000,(b<<1)|(rg[0]&1));

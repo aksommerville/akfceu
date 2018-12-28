@@ -1,5 +1,5 @@
 int InitNetplay(void);
-void NetplayUpdate(uint8 *joyp);
+void NetplayUpdate(uint8_t *joyp);
 extern int FCEUnetplay;
 
 #define FCEUNPCMD_RESET   0x01
@@ -18,5 +18,5 @@ extern int FCEUnetplay;
 #define FCEUNPCMD_LOADCHEATS  0x82
 #define FCEUNPCMD_TEXT    0x90
 
-int FCEUNET_SendCommand(uint8, uint32);
-int FCEUNET_SendFile(uint8 cmd, char *);
+int FCEUNET_SendCommand(uint8_t, uint32_t);
+int FCEUNET_SendFile(uint8_t cmd, char *);

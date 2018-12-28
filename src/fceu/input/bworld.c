@@ -22,10 +22,10 @@
 #include "share.h"
 
 static int seq,ptr,bit,cnt,have;
-static uint8 bdata[20];
+static uint8_t bdata[20];
 
 
-static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
+static uint8_t FP_FASTAPASS(2) Read(int w, uint8_t ret)
 {
  if (w && have)
  {
@@ -48,19 +48,19 @@ static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
  return(ret);
 }
 
-static void FP_FASTAPASS(1) Write(uint8 V)
+static void FP_FASTAPASS(1) Write(uint8_t V)
 {
  //printf("%02x\n",V);
 }
 
 static void FP_FASTAPASS(2) Update(void *data, int arg)
 {
- if (*(uint8 *)data)
+ if (*(uint8_t *)data)
  {
-  *(uint8 *)data=0;
+  *(uint8_t *)data=0;
   seq=ptr=0;
   have=1;
-  strcpy(bdata,(uint8 *)data+1);
+  strcpy(bdata,(uint8_t *)data+1);
   strcpy(&bdata[13],"SUNSOFT");
  }
 }

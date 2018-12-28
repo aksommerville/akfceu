@@ -40,7 +40,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-static uint8 SongReload;
+static uint8_t SongReload;
 static int CurrentSong;
 
 static DECLFW(NSF_write);
@@ -48,7 +48,7 @@ static DECLFR(NSF_read);
 
 static int vismode=1;
 
-static uint8 NSFROM[0x30+6]=
+static uint8_t NSFROM[0x30+6]=
 {
 /* 0x00 - NMI */
 0x8D,0xF4,0x3F,                         /* Stop play routine NMIs. */
@@ -81,19 +81,19 @@ static DECLFR(NSFROMRead)
 
 static int doreset=0;
 static int NSFNMIFlags;
-static uint8 *NSFDATA=0;
+static uint8_t *NSFDATA=0;
 static int NSFMaxBank;
 
 static int NSFSize;
-static uint8 BSon;
-static uint16 PlayAddr;
-static uint16 InitAddr;
-static uint16 LoadAddr;
+static uint8_t BSon;
+static uint16_t PlayAddr;
+static uint16_t InitAddr;
+static uint16_t LoadAddr;
 
 static NSF_HEADER NSFHeader;
 
 void NSFMMC5_Close(void);
-static uint8 *ExWRAM=0;
+static uint8_t *ExWRAM=0;
 
 void NSFGI(int h)
 {
@@ -123,7 +123,7 @@ void NSFGI(int h)
 
 // First 32KB is reserved for sound chip emulation in the iNES mapper code.
 
-static INLINE void BANKSET(uint32 A, uint32 bank)
+static INLINE void BANKSET(uint32_t A, uint32_t bank)
 {
  bank&=NSFMaxBank;
  if (NSFHeader.SoundChip&4)
@@ -161,7 +161,7 @@ int NSFLoad(FCEUFILE *fp)
   NSFMaxBank=((NSFSize+(LoadAddr&0xfff)+4095)/4096);
   NSFMaxBank=uppow2(NSFMaxBank);
 
-  if (!(NSFDATA=(uint8 *)FCEU_malloc(NSFMaxBank*4096)))
+  if (!(NSFDATA=(uint8_t *)FCEU_malloc(NSFMaxBank*4096)))
    return 0;
 
   FCEU_fseek(fp,0x80,SEEK_SET);
@@ -271,7 +271,7 @@ void NSF_init(void)
 
   if (BSon)
   {
-   int32 x;
+   int32_t x;
    for (x=0;x<8;x++)
    {
     if (NSFHeader.SoundChip&4 && x>=6)
@@ -281,7 +281,7 @@ void NSF_init(void)
   }
   else
   {
-   int32 x;
+   int32_t x;
    for (x=(LoadAddr&0xF000);x<0x10000;x+=0x1000)
     BANKSET(x,((x-(LoadAddr&0x7000))>>12));
   }
@@ -387,11 +387,11 @@ static DECLFR(NSF_read)
  return 0;
 }
 
-uint8 FCEU_GetJoyJoy(void);
+uint8_t FCEU_GetJoyJoy(void);
 
 static int special=0;
 
-void DrawNSF(uint8 *XBuf)
+void DrawNSF(uint8_t *XBuf)
 {
  char snbuf[16];
  int x;
@@ -402,8 +402,8 @@ void DrawNSF(uint8 *XBuf)
 
 
  {
-  int32 *Bufpl;
-  int32 mul=0;
+  int32_t *Bufpl;
+  int32_t mul=0;
 
   int l;
   l=GetSoundBuffer(&Bufpl);
@@ -414,7 +414,7 @@ void DrawNSF(uint8 *XBuf)
     mul=8192*240/(16384*FSettings.SoundVolume/50);
    for (x=0;x<256;x++)
    {
-    uint32 y;
+    uint32_t y;
     y=142+((Bufpl[(x*l)>>8]*mul)>>14);
     if (y<240)
      XBuf[x+y*256]=3;
@@ -427,7 +427,7 @@ void DrawNSF(uint8 *XBuf)
    for (x=0;x<256;x++)
    {
     double r;
-    uint32 xp,yp;
+    uint32_t xp,yp;
 
     r=(Bufpl[(x*l)>>8]*mul)>>14;
     xp=128+r*cos(x*M_PI*2/256);
@@ -446,7 +446,7 @@ void DrawNSF(uint8 *XBuf)
    {
     double xc,yc;
     double r,t;
-    uint32 m,n;
+    uint32_t m,n;
    
     xc=(double)128-x;
     yc=0-((double)( ((Bufpl[(x*l)>>8]) *mul)>>14));
@@ -465,7 +465,7 @@ void DrawNSF(uint8 *XBuf)
    {
     double xc,yc;
     double r,t;
-    uint32 m,n;
+    uint32_t m,n;
 
     xc=(double)x-128;
     yc=(double)((Bufpl[(x*l)>>8]*mul)>>14);
@@ -488,13 +488,13 @@ void DrawNSF(uint8 *XBuf)
  DrawTextTrans(XBuf+26*256+4+(((31-strlen((char*)NSFHeader.Artist))<<2)), 256,NSFHeader.Artist, 6);
  DrawTextTrans(XBuf+42*256+4+(((31-strlen((char*)NSFHeader.Copyright))<<2)), 256,NSFHeader.Copyright, 6);
 
- DrawTextTrans(XBuf+70*256+4+(((31-strlen("Song:"))<<2)), 256, (uint8*)"Song:", 6);
+ DrawTextTrans(XBuf+70*256+4+(((31-strlen("Song:"))<<2)), 256, (uint8_t*)"Song:", 6);
  sprintf(snbuf,"<%d/%d>",CurrentSong,NSFHeader.TotalSongs);
- DrawTextTrans(XBuf+82*256+4+(((31-strlen(snbuf))<<2)), 256, (uint8*)snbuf, 6);
+ DrawTextTrans(XBuf+82*256+4+(((31-strlen(snbuf))<<2)), 256, (uint8_t*)snbuf, 6);
 
  {
-  static uint8 last=0;
-  uint8 tmp;
+  static uint8_t last=0;
+  uint8_t tmp;
   tmp=FCEU_GetJoyJoy();
   if ((tmp&JOY_RIGHT) && !(last&JOY_RIGHT))
   {
@@ -556,7 +556,7 @@ int FCEUI_NSFChange(int amount)
 }
 
 /* Returns total songs */
-int FCEUI_NSFGetInfo(uint8 *name, uint8 *artist, uint8 *copyright, int maxlen)
+int FCEUI_NSFGetInfo(uint8_t *name, uint8_t *artist, uint8_t *copyright, int maxlen)
 {
  strncpy(name,NSFHeader.SongName,maxlen);
  strncpy(artist,NSFHeader.Artist,maxlen);

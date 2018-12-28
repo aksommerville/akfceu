@@ -83,13 +83,13 @@ SFORMAT SFCPUC[]={
 
 static int SubWrite(FILE *st, SFORMAT *sf)
 {
- uint32 acc=0;
+ uint32_t acc=0;
 
  while (sf->v)
  {
   if (sf->s==~0)    /* Link to another struct.  */
   {
-   uint32 tmp;
+   uint32_t tmp;
 
    if (!(tmp=SubWrite(st,(SFORMAT *)sf->v)))
     return(0);
@@ -111,7 +111,7 @@ static int SubWrite(FILE *st, SFORMAT *sf)
     FlipByteOrder(sf->v,sf->s&(~RLSB));
    #endif
 
-   fwrite((uint8 *)sf->v,1,sf->s&(~RLSB),st);
+   fwrite((uint8_t *)sf->v,1,sf->s&(~RLSB),st);
    /* Now restore the original byte order. */
    #ifndef LSB_FIRST
    if (sf->s&RLSB)  
@@ -137,7 +137,7 @@ static int WriteStateChunk(FILE *st, int type, SFORMAT *sf)
  return (bsize+5);
 }
 
-static SFORMAT *CheckS(SFORMAT *sf, uint32 tsize, char *desc)
+static SFORMAT *CheckS(SFORMAT *sf, uint32_t tsize, char *desc)
 {
  while (sf->v)
  {
@@ -168,7 +168,7 @@ static int ReadStateChunk(FILE *st, SFORMAT *sf, int size)
 
  while (ftell(st)<temp+size)
  {
-  uint32 tsize;
+  uint32_t tsize;
   char toa[4];
   if (fread(toa,1,4,st)<=0)
    return 0;
@@ -177,7 +177,7 @@ static int ReadStateChunk(FILE *st, SFORMAT *sf, int size)
 
   if ((tmp=CheckS(sf,tsize,toa)))
   {
-   fread((uint8 *)tmp->v,1,tmp->s&(~RLSB),st);
+   fread((uint8_t *)tmp->v,1,tmp->s&(~RLSB),st);
 
    #ifndef LSB_FIRST
    if (tmp->s&RLSB)
@@ -190,10 +190,10 @@ static int ReadStateChunk(FILE *st, SFORMAT *sf, int size)
  return 1;
 }
 
-static int ReadStateChunks(FILE *st, int32 totalsize)
+static int ReadStateChunks(FILE *st, int32_t totalsize)
 {
  int t;
- uint32 size;
+ uint32_t size;
  int ret=1;
 
  while (totalsize > 0)
@@ -230,8 +230,8 @@ extern int geniestage;
 
 int FCEUSS_SaveFP(FILE *st)
 {
-        static uint32 totalsize;
-        static uint8 header[16]="FCS";
+        static uint32_t totalsize;
+        static uint8_t header[16]="FCS";
        
         memset(header+4,0,12);
         header[3]=0xFF;
@@ -288,7 +288,7 @@ void FCEUSS_Save(char *fname)
 int FCEUSS_LoadFP(FILE *st)
 {
   int x;
-        uint8 header[16];
+        uint8_t header[16];
   int stateversion;
 
         fread(&header,1,16,st);
@@ -300,7 +300,7 @@ int FCEUSS_LoadFP(FILE *st)
         else
          stateversion=header[3] * 100;
 
-        x=ReadStateChunks(st,*(uint32*)(header+4));
+        x=ReadStateChunks(st,*(uint32_t*)(header+4));
         if (stateversion<9500) X.IRQlow=0;
          
         if (GameStateRestore) GameStateRestore(stateversion);
@@ -391,7 +391,7 @@ void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
  SFEXINDEX=0;
 }
 
-void AddExState(void *v, uint32 s, int type, char *desc)
+void AddExState(void *v, uint32_t s, int type, char *desc)
 {
  if (desc)
  {
@@ -455,7 +455,7 @@ void FCEUI_LoadState(char *fname)
 
 }
 
-void FCEU_DrawSaveStates(uint8 *XBuf)
+void FCEU_DrawSaveStates(uint8_t *XBuf)
 {
  if (!StateShow) return;
 

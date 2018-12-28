@@ -34,15 +34,15 @@
 #include "general.h"
 
 typedef struct {
-           uint8 *data;
-           uint32 size;
-           uint32 location;
+           uint8_t *data;
+           uint32_t size;
+           uint32_t location;
 } MEMWRAP;
 
 void ApplyIPS(FILE *ips, MEMWRAP *dest)
 {
- uint8 header[5];
- uint32 count=0;
+ uint8_t header[5];
+ uint32_t count=0;
 
  FCEU_printf(" Applying IPS...\n");
  if (fread(header,1,5,ips)!=5)
@@ -58,8 +58,8 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 
  while (fread(header,1,3,ips)==3)
  {
-  uint32 offset=(header[0]<<16)|(header[1]<<8)|header[2];
-  uint16 size;
+  uint32_t offset=(header[0]<<16)|(header[1]<<8)|header[2];
+  uint16_t size;
 
   if (!memcmp(header,"EOF",3))
   {
@@ -72,8 +72,8 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
   size|=fgetc(ips);
   if (!size)  /* RLE */
   {
-   uint8 *start;
-   uint8 b;
+   uint8_t *start;
+   uint8_t b;
    size=fgetc(ips)<<8;
    size|=fgetc(ips);
 
@@ -81,10 +81,10 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 
    if ((offset+size)>dest->size)
    {
-    uint8 *tmp;
+    uint8_t *tmp;
 
     // Probably a little slow.
-    tmp=(uint8 *)realloc(dest->data,offset+size);
+    tmp=(uint8_t *)realloc(dest->data,offset+size);
     if (!tmp)
     {
      FCEU_printf("  Oops.  IPS patch %d(type RLE) goes beyond end of file.  Could not allocate memory.\n",count);
@@ -108,10 +108,10 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
    //FCEU_printf("  Offset: %8d  Size: %5d\n",offset,size);
    if ((offset+size)>dest->size)
    {
-    uint8 *tmp;
+    uint8_t *tmp;
    
     // Probably a little slow.
-    tmp=(uint8 *)realloc(dest->data,offset+size);
+    tmp=(uint8_t *)realloc(dest->data,offset+size);
     if (!tmp)
     {
      FCEU_printf("  Oops.  IPS patch %d(type normal) goes beyond end of file.  Could not allocate memory.\n",count);
@@ -142,7 +142,7 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   fseek((FILE *)tz,0,SEEK_END);
   tmp->size=ftell((FILE *)tz);
   fseek((FILE *)tz,0,SEEK_SET);
-  if (!(tmp->data=(uint8*)FCEU_malloc(tmp->size)))
+  if (!(tmp->data=(uint8_t*)FCEU_malloc(tmp->size)))
   {
    free(tmp);
    tmp=0;
@@ -158,7 +158,7 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   #define tz gztz
   for (tmp->size=0; gzgetc(tz) != EOF; tmp->size++);
   gzseek(tz,0,SEEK_SET);
-  if (!(tmp->data=(uint8 *)FCEU_malloc(tmp->size)))
+  if (!(tmp->data=(uint8_t *)FCEU_malloc(tmp->size)))
   {
    free(tmp);
    tmp=0;
@@ -173,7 +173,7 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   unzGetCurrentFileInfo(tz,&ufo,0,0,0,0,0,0); 
 
   tmp->size=ufo.uncompressed_size;
-  if (!(tmp->data=(uint8 *)FCEU_malloc(ufo.uncompressed_size)))
+  if (!(tmp->data=(uint8_t *)FCEU_malloc(ufo.uncompressed_size)))
   {
    free(tmp);
    tmp=0;
@@ -278,7 +278,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
 
  if ((t=FCEUD_UTF8fopen(path,"rb")))
  {
-  uint32 magic;
+  uint32_t magic;
 
   magic=fgetc((FILE *)t);
   magic|=fgetc((FILE *)t)<<8;
@@ -362,7 +362,7 @@ int FCEU_fclose(FCEUFILE *fp)
  return 1;
 }
 
-uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
+uint64_t FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
  if (fp->type==1)
  {
@@ -371,7 +371,7 @@ uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
  else if (fp->type>=2)
  {
   MEMWRAP *wz;
-  uint32 total=size*nmemb;
+  uint32_t total=size*nmemb;
 
   wz=(MEMWRAP*)fp->fp;
   if (wz->location>=wz->size) return 0;
@@ -379,13 +379,13 @@ uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
   if ((wz->location+total)>wz->size)
   {
    int ak=wz->size-wz->location;
-   memcpy((uint8*)ptr,wz->data+wz->location,ak);
+   memcpy((uint8_t*)ptr,wz->data+wz->location,ak);
    wz->location=wz->size;
    return(ak/size);
   }
   else
   {
-   memcpy((uint8*)ptr,wz->data+wz->location,total);
+   memcpy((uint8_t*)ptr,wz->data+wz->location,total);
    wz->location+=total;
    return nmemb;
   }
@@ -396,7 +396,7 @@ uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
  }
 }
 
-uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
+uint64_t FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
  if (fp->type==1)
  {
@@ -437,7 +437,7 @@ int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
   return fseek((FILE *)fp->fp,offset,whence);
 }
 
-uint64 FCEU_ftell(FCEUFILE *fp)
+uint64_t FCEU_ftell(FCEUFILE *fp)
 {
  if (fp->type==1)
  {
@@ -466,9 +466,9 @@ void FCEU_rewind(FCEUFILE *fp)
   fseek(fp->fp,0,SEEK_SET);
 }
 
-int FCEU_read16le(uint16 *val, FCEUFILE *fp)
+int FCEU_read16le(uint16_t *val, FCEUFILE *fp)
 {
- uint8 t[2];
+ uint8_t t[2];
 
  if (fp->type>=1)
  {
@@ -478,7 +478,7 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
    wz=(MEMWRAP *)fp->fp;
    if (wz->location+2>wz->size)
     {return 0;}
-   *(uint32 *)t=*(uint32 *)(wz->data+wz->location);
+   *(uint32_t *)t=*(uint32_t *)(wz->data+wz->location);
    wz->location+=2;
   }
   else if (fp->type==1)
@@ -493,13 +493,13 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
  return(1);
 }
 
-int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
+int FCEU_read32le(uint32_t *Bufo, FCEUFILE *fp)
 {
  if (fp->type>=1)
  {
-  uint8 t[4];
+  uint8_t t[4];
   #ifndef LSB_FIRST
-  uint8 x[4];
+  uint8_t x[4];
   #endif
   if (fp->type>=2)
   {
@@ -507,7 +507,7 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
    wz=(MEMWRAP *)fp->fp;
    if (wz->location+4>wz->size)
     {return 0;}
-   *(uint32 *)t=*(uint32 *)(wz->data+wz->location);
+   *(uint32_t *)t=*(uint32_t *)(wz->data+wz->location);
    wz->location+=4;
   }
   else if (fp->type==1)
@@ -517,9 +517,9 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
   x[1]=t[2];
   x[2]=t[1];
   x[3]=t[0];
-  *(uint32*)Bufo=*(uint32*)x;
+  *(uint32_t*)Bufo=*(uint32_t*)x;
   #else
-  *(uint32*)Bufo=*(uint32*)t;
+  *(uint32_t*)Bufo=*(uint32_t*)t;
   #endif
   return 1;
  }
@@ -545,7 +545,7 @@ int FCEU_fgetc(FCEUFILE *fp)
   return fgetc((FILE *)fp->fp);
 }
 
-uint64 FCEU_fgetsize(FCEUFILE *fp)
+uint64_t FCEU_fgetsize(FCEUFILE *fp)
 {
  if (fp->type==1)
  {

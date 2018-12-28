@@ -26,14 +26,14 @@ static uint32_t input_state=0;
 /* FCEUD hooks.
  */
 
-void FCEUD_SetPalette(uint8 index, uint8 r, uint8 g, uint8 b) {
+void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
   int p=index*3;
   palette[p++]=r;
   palette[p++]=g;
   palette[p]=b;
 }
 
-void FCEUD_GetPalette(uint8 i,uint8 *r, uint8 *g, uint8 *b) {
+void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
   int p=i*3;
   *r=palette[p++];
   *g=palette[p++];
@@ -463,9 +463,9 @@ static int update() {
 
   uint8_t *real_framebuffer=framebuffer;
   if (vmrunning) {
-    uint8 *vmfb=0;
-    int32 *vmab=0;
-    int32 vmabc=0;
+    uint8_t *vmfb=0;
+    int32_t *vmab=0;
+    int32_t vmabc=0;
     FCEUI_Emulate(&vmfb,&vmab,&vmabc,0);
     if (vmfb) real_framebuffer=vmfb;
     if (vmabc) {

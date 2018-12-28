@@ -21,7 +21,7 @@
 #include "mapinc.h"
 
 #define vrctemp mapbyte1[0]
-static uint8 indox;
+static uint8_t indox;
 
 #include "emu2413.h"
 
@@ -32,7 +32,7 @@ static int dwave=0;
 
 void DoVRC7Sound(void)
 {
- int32 z,a;
+ int32_t z,a;
 
  if (FSettings.soundq>=1) return;
  z=((SOUNDTS<<16)/soundtsinc)>>4;
@@ -43,14 +43,14 @@ void DoVRC7Sound(void)
  dwave+=a;
 }
 
-void UpdateOPLNEO(int32 *Wave, int Count)
+void UpdateOPLNEO(int32_t *Wave, int Count)
 {
  moocow(VRC7Sound, Wave, Count, 4);
 } 
 
 void UpdateOPL(int Count) 
 {
- int32 z,a;
+ int32_t z,a;
 
   z=((SOUNDTS<<16)/soundtsinc)>>4;
  a=z-dwave;

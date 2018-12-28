@@ -22,10 +22,10 @@
 #ifdef INESPRIV
 
 void iNESStateRestore(int version);
-extern uint32 iNESGameCRC32;
+extern uint32_t iNESGameCRC32;
 
-extern uint32 VROM_size;
-extern uint32 ROM_size;
+extern uint32_t VROM_size;
+extern uint32_t ROM_size;
 
 extern void (*MapStateRestore)(int version);
 extern void (*MapClose)(void);
@@ -51,10 +51,10 @@ extern void (*MapperReset)(void);
 #define mapbyte2       (mapbyte1+8)
 #define mapbyte3       (mapbyte2+8)
 #define mapbyte4       (mapbyte3+8)
-extern uint16 iNESCHRBankList[8];
-extern int32 iNESIRQLatch,iNESIRQCount;
-extern uint8 iNESMirroring;
-extern uint8 iNESIRQa;
+extern uint16_t iNESCHRBankList[8];
+extern int32_t iNESIRQLatch,iNESIRQCount;
+extern uint8_t iNESMirroring;
+extern uint8_t iNESIRQa;
 
 #define IRQa iNESIRQa
 #define Mirroring iNESMirroring
@@ -66,35 +66,35 @@ extern uint8 iNESIRQa;
 
 typedef struct {
   char ID[4]; /*NES^Z*/
-  uint8 ROM_size;
-  uint8 VROM_size;
-  uint8 ROM_type;
-  uint8 ROM_type2;
-  uint8 reserve[8];
+  uint8_t ROM_size;
+  uint8_t VROM_size;
+  uint8_t ROM_type;
+  uint8_t ROM_type2;
+  uint8_t reserve[8];
 } iNES_HEADER;
 
-void FASTAPASS(2) VRAM_BANK1(uint32 A, uint8 V);
-void FASTAPASS(2) VRAM_BANK4(uint32 A,uint32 V);
+void FASTAPASS(2) VRAM_BANK1(uint32_t A, uint8_t V);
+void FASTAPASS(2) VRAM_BANK4(uint32_t A,uint32_t V);
 
-void FASTAPASS(2) VROM_BANK1(uint32 A,uint32 V);
-void FASTAPASS(2) VROM_BANK2(uint32 A,uint32 V);
-void FASTAPASS(2) VROM_BANK4(uint32 A, uint32 V);
-void FASTAPASS(1) VROM_BANK8(uint32 V);
-void FASTAPASS(2) ROM_BANK8(uint32 A, uint32 V);
-void FASTAPASS(2) ROM_BANK16(uint32 A, uint32 V);
-void FASTAPASS(1) ROM_BANK32(uint32 V);
+void FASTAPASS(2) VROM_BANK1(uint32_t A,uint32_t V);
+void FASTAPASS(2) VROM_BANK2(uint32_t A,uint32_t V);
+void FASTAPASS(2) VROM_BANK4(uint32_t A, uint32_t V);
+void FASTAPASS(1) VROM_BANK8(uint32_t V);
+void FASTAPASS(2) ROM_BANK8(uint32_t A, uint32_t V);
+void FASTAPASS(2) ROM_BANK16(uint32_t A, uint32_t V);
+void FASTAPASS(1) ROM_BANK32(uint32_t V);
 
-extern uint8 vmask;
-extern uint32 vmask1;
-extern uint32 vmask2;
-extern uint32 vmask4;
-extern uint32 pmask8;
-extern uint8 pmask16;
-extern uint8 pmask32;
+extern uint8_t vmask;
+extern uint32_t vmask1;
+extern uint32_t vmask2;
+extern uint32_t vmask4;
+extern uint32_t pmask8;
+extern uint8_t pmask16;
+extern uint8_t pmask32;
 
-void FASTAPASS(1) onemir(uint8 V);
-void FASTAPASS(1) MIRROR_SET2(uint8 V);
-void FASTAPASS(1) MIRROR_SET(uint8 V);
+void FASTAPASS(1) onemir(uint8_t V);
+void FASTAPASS(1) MIRROR_SET2(uint8_t V);
+void FASTAPASS(1) MIRROR_SET(uint8_t V);
 
 void Mapper0_init(void);
 void Mapper1_init(void);

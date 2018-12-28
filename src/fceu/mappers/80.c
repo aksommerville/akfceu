@@ -20,14 +20,14 @@
 
 #include "mapinc.h"
 
-static uint32 lastA;
+static uint32_t lastA;
 static int isfu;
-static uint8 CCache[8];
+static uint8_t CCache[8];
 
-static void FP_FASTAPASS(1) Fudou_PPU(uint32 A)
+static void FP_FASTAPASS(1) Fudou_PPU(uint32_t A)
 {
  static int last=-1;
- static uint8 z;
+ static uint8_t z;
  
  if (A>=0x2000) return;
 

@@ -22,7 +22,7 @@
 
 static DECLFW(Mapper235_write)
 {
-  uint32 m;
+  uint32_t m;
   int z;
 
   if (A&0x400)

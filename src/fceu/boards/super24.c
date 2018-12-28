@@ -20,23 +20,23 @@
 
 #include "mapinc.h"
 
-static int32 IRQCount,IRQLatch;
-static uint8 IRQa,resetmode,mbia;
-static uint8 sizer,bigbank,bigbank2;
+static int32_t IRQCount,IRQLatch;
+static uint8_t IRQa,resetmode,mbia;
+static uint8_t sizer,bigbank,bigbank2;
 
-static uint8 DRegBuf[8],MMC3_cmd;
+static uint8_t DRegBuf[8],MMC3_cmd;
 
 static int masko8[8]={63,31,15,1,3,0,0,0};
 //static int masko1[8]={511,255,127,7,7,0,0,0};
 
-static void swsetprg8(uint32 A, uint32 V)
+static void swsetprg8(uint32_t A, uint32_t V)
 {
  V&=masko8[sizer&7];
  V|=(bigbank*2);
  setprg8r((V/64)&15,A,V);
 }
 
-static void swsetchr1(uint32 A, uint32 V)
+static void swsetchr1(uint32_t A, uint32_t V)
 {
  if (sizer&0x20)
   setchr1r(0x10,A,V);
@@ -48,7 +48,7 @@ static void swsetchr1(uint32 A, uint32 V)
  }
 }
 
-static void swsetchr2(uint32 A, uint32 V)
+static void swsetchr2(uint32_t A, uint32_t V)
 {
  if (sizer&0x20)
   setchr2r(0x10,A,V);

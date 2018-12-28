@@ -58,7 +58,7 @@ static DECLFW(Mapper25_write)
                break;
    case 0x9001:if((K4sel&2)!=(V&2))
                {
-                     uint8 swa;
+                     uint8_t swa;
                 swa=PRGBankList[0];
                  ROM_BANK8(0x8000,PRGBankList[2]);
                 ROM_BANK8(0xc000,swa);

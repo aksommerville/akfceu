@@ -14,10 +14,10 @@ static long wsize;
    reader..err...I mean, the driver code, if it feels so inclined(I don't feel
    so).
 */
-void FCEU_WriteWaveData(int32 *Buffer, int Count)
+void FCEU_WriteWaveData(int32_t *Buffer, int Count)
 {
- int16 temp[Count];  /* Yay.  Is this the first use of this "feature" of C in FCE Ultra? */
- int16 *dest;
+ int16_t temp[Count];  /* Yay.  Is this the first use of this "feature" of C in FCE Ultra? */
+ int16_t *dest;
  int x;
 
  if (!soundlog) return;
@@ -27,14 +27,14 @@ void FCEU_WriteWaveData(int32 *Buffer, int Count)
 
  while (x--)
  {
-  int16 tmp=*Buffer;
+  int16_t tmp=*Buffer;
 
-  *(uint8 *)dest=(((uint16)tmp)&255);
-  *(((uint8 *)dest)+1)=(((uint16)tmp)>>8);
+  *(uint8_t *)dest=(((uint16_t)tmp)&255);
+  *(((uint8_t *)dest)+1)=(((uint16_t)tmp)>>8);
   dest++;
   Buffer++;
  }
- wsize+=fwrite(temp,1,Count*sizeof(int16),soundlog);
+ wsize+=fwrite(temp,1,Count*sizeof(int16_t),soundlog);
 }
 
 int FCEUI_EndWaveRecord(void)

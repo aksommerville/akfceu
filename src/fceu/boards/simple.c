@@ -21,7 +21,7 @@
 #include "mapinc.h"
 
 #define CHRRAM (GameMemBlock)
-static uint8 latche;
+static uint8_t latche;
 
 DECLFW(CPROMWrite)
 {

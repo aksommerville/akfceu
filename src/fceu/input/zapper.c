@@ -24,16 +24,16 @@
 #include        "share.h"
 
 typedef struct {
-        uint32 mzx,mzy,mzb;
+        uint32_t mzx,mzy,mzb;
         int zap_readbit;
         int bogo;
   int zappo;
-  uint64 zaphit;
+  uint64_t zaphit;
 } ZAPPER;
 
 static ZAPPER ZD[2];
 
-static void FP_FASTAPASS(3) ZapperFrapper(int w, uint8 *bg, uint8 *spr, uint32 linets, int final)
+static void FP_FASTAPASS(3) ZapperFrapper(int w, uint8_t *bg, uint8_t *spr, uint32_t linets, int final)
 {
  int xs,xe;
  int zx,zy;
@@ -55,8 +55,8 @@ static void FP_FASTAPASS(3) ZapperFrapper(int w, uint8 *bg, uint8 *spr, uint32 l
  {
   while (xs<xe)
   {
-    uint8 a1,a2;
-    uint32 sum;
+    uint8_t a1,a2;
+    uint32_t sum;
     if (xs<=(zx+4) && xs>=(zx-4))
     {
      a1=bg[xs];
@@ -73,7 +73,7 @@ static void FP_FASTAPASS(3) ZapperFrapper(int w, uint8 *bg, uint8 *spr, uint32 l
      sum=palo[a1].r+palo[a1].g+palo[a1].b;
      if (sum>=100*3)
      {
-      ZD[w].zaphit=((uint64)linets+(xs+16)*(PAL?15:16))/48+timestampbase;
+      ZD[w].zaphit=((uint64_t)linets+(xs+16)*(PAL?15:16))/48+timestampbase;
       goto endo;
      }
     }  
@@ -94,9 +94,9 @@ static INLINE int CheckColor(int w)
  return(1);
 }
 
-static uint8 FP_FASTAPASS(1) ReadZapperVS(int w)
+static uint8_t FP_FASTAPASS(1) ReadZapperVS(int w)
 {
-                uint8 ret=0;
+                uint8_t ret=0;
    
                 if (ZD[w].zap_readbit==4) ret=1;
 
@@ -120,9 +120,9 @@ static void FP_FASTAPASS(1) StrobeZapperVS(int w)
       ZD[w].zap_readbit=0;
 }
 
-static uint8 FP_FASTAPASS(1) ReadZapper(int w)
+static uint8_t FP_FASTAPASS(1) ReadZapper(int w)
 {
-                uint8 ret=0;
+                uint8_t ret=0;
                 if (ZD[w].bogo)
                  ret|=0x10;
                 if (CheckColor(w))
@@ -130,7 +130,7 @@ static uint8 FP_FASTAPASS(1) ReadZapper(int w)
                 return ret;
 }
 
-static void FASTAPASS(3) DrawZapper(int w, uint8 *buf, int arg)
+static void FASTAPASS(3) DrawZapper(int w, uint8_t *buf, int arg)
 {
  if (arg)
   FCEU_DrawGunSight(buf, ZD[w].mzx,ZD[w].mzy);
@@ -138,7 +138,7 @@ static void FASTAPASS(3) DrawZapper(int w, uint8 *buf, int arg)
 
 static void FP_FASTAPASS(3) UpdateZapper(int w, void *data, int arg)
 {
-  uint32 *ptr=(uint32 *)data;
+  uint32_t *ptr=(uint32_t *)data;
 
  //FCEU_DispMessage("%3d:%3d",ZD[w].mzx,ZD[w].mzy);
   if (ZD[w].bogo)

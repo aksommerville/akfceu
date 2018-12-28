@@ -25,7 +25,7 @@
 #include "memory.h"
 #include "general.h"
 
-void *FCEU_gmalloc(uint32 size)
+void *FCEU_gmalloc(uint32_t size)
 {
  void *ret;
  ret=malloc(size);
@@ -37,7 +37,7 @@ void *FCEU_gmalloc(uint32 size)
  return ret;
 }
 
-void *FCEU_malloc(uint32 size)
+void *FCEU_malloc(uint32_t size)
 {
  void *ret;
  ret=malloc(size);
@@ -59,9 +59,9 @@ void FCEU_gfree(void *ptr)
  free(ptr);
 }
 
-void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32 l)
+void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32_t l)
 {
- uint32 x;
+ uint32_t x;
  int t;
 
  /* Type really doesn't matter. */
@@ -71,7 +71,7 @@ void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32 l)
 
  if (t&3)          // Not 4-byte aligned and/or length is not a multiple of 4.
  {
-  uint8 *tmpd, *tmps; 
+  uint8_t *tmpd, *tmps; 
 
   tmpd = d;
   tmps = s;
@@ -85,7 +85,7 @@ void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32 l)
  }
  else
  {
-  uint32 *tmpd, *tmps;
+  uint32_t *tmpd, *tmps;
 
   tmpd = d;
   tmps = s;

@@ -15,14 +15,14 @@
 extern int fceuindbg;
 void ResetGameLoaded(void);
 
-#define DECLFR(x) uint8 FP_FASTAPASS(1) x (uint32 A)
-#define DECLFW(x) void FP_FASTAPASS(2) x (uint32 A, uint8 V)
+#define DECLFR(x) uint8_t FP_FASTAPASS(1) x (uint32_t A)
+#define DECLFW(x) void FP_FASTAPASS(2) x (uint32_t A, uint8_t V)
 
-void FCEU_MemoryRand(uint8 *ptr, uint32 size);
-void FASTAPASS(3) SetReadHandler(int32 start, int32 end, readfunc func);
-void FASTAPASS(3) SetWriteHandler(int32 start, int32 end, writefunc func);
-writefunc FASTAPASS(1) GetWriteHandler(int32 a);
-readfunc FASTAPASS(1) GetReadHandler(int32 a);
+void FCEU_MemoryRand(uint8_t *ptr, uint32_t size);
+void FASTAPASS(3) SetReadHandler(int32_t start, int32_t end, readfunc func);
+void FASTAPASS(3) SetWriteHandler(int32_t start, int32_t end, writefunc func);
+writefunc FASTAPASS(1) GetWriteHandler(int32_t a);
+readfunc FASTAPASS(1) GetReadHandler(int32_t a);
 
 int AllocGenieRW(void);
 void FlushGenieRW(void);
@@ -33,18 +33,18 @@ void ResetMapping(void);
 void ResetNES(void);
 void PowerNES(void);
 
-extern uint64 timestampbase;
-extern uint32 MMC5HackVROMMask;
-extern uint8 *MMC5HackExNTARAMPtr;
+extern uint64_t timestampbase;
+extern uint32_t MMC5HackVROMMask;
+extern uint8_t *MMC5HackExNTARAMPtr;
 extern int MMC5Hack;
-extern uint8 *MMC5HackVROMPTR;
-extern uint8 MMC5HackCHRMode;
-extern uint8 MMC5HackSPMode;
-extern uint8 MMC5HackSPScroll;
-extern uint8 MMC5HackSPPage;
+extern uint8_t *MMC5HackVROMPTR;
+extern uint8_t MMC5HackCHRMode;
+extern uint8_t MMC5HackSPMode;
+extern uint8_t MMC5HackSPScroll;
+extern uint8_t MMC5HackSPPage;
 
-extern uint8 RAM[0x800];
-extern uint8 GameMemBlock[131072];
+extern uint8_t RAM[0x800];
+extern uint8_t GameMemBlock[131072];
 
 extern readfunc ARead[0x10000];
 extern writefunc BWrite[0x10000];
@@ -59,7 +59,7 @@ extern void (*GameStateRestore)(int version);
 extern FCEUGI *FCEUGameInfo;
 extern int GameAttributes;
 
-extern uint8 PAL;
+extern uint8_t PAL;
 
 typedef struct {
   int PAL;
@@ -77,7 +77,7 @@ typedef struct {
   int UsrFirstSLine[2];
   int UsrLastSLine[2];
   int SnapName;
-  uint32 SndRate;
+  uint32_t SndRate;
   int soundq;
   int lowpass;
 } FCEUS;
@@ -88,16 +88,16 @@ void FCEU_PrintError(char *format, ...);
 void FCEU_printf(char *format, ...);
 void FCEU_DispMessage(char *format, ...);
 
-void SetNESDeemph(uint8 d, int force);
-void DrawTextTrans(uint8 *dest, uint32 width, uint8 *textmsg, uint8 fgcolor);
+void SetNESDeemph(uint8_t d, int force);
+void DrawTextTrans(uint8_t *dest, uint32_t width, uint8_t *textmsg, uint8_t fgcolor);
 void FCEU_PutImage(void);
 #ifdef FRAMESKIP
 void FCEU_PutImageDummy(void);
 #endif
 
-extern uint8 Exit;
-extern uint8 pale;
-extern uint8 vsdip;
+extern uint8_t Exit;
+extern uint8_t pale;
+extern uint8_t vsdip;
 
 #define _FCEUH
 #endif

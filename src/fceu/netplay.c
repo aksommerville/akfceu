@@ -36,12 +36,12 @@
 #include "endian.h"
 
 void FCEUD_NetworkClose();
-int FCEUD_SendData(void *data, uint32 len);
-int FCEUD_RecvData(void *data, uint32 len);
+int FCEUD_SendData(void *data, uint32_t len);
+int FCEUD_RecvData(void *data, uint32_t len);
 
 int FCEUnetplay=0;
 
-static uint8 netjoy[4]; /* Controller cache. */
+static uint8_t netjoy[4]; /* Controller cache. */
 static int numlocal;
 static int netdivisor;
 static int netdcount;
@@ -81,9 +81,9 @@ int FCEUI_NetplayStart(int nlocal, int divisor)
   return(1);
 }
 
-int FCEUNET_SendCommand(uint8 cmd, uint32 len)
+int FCEUNET_SendCommand(uint8_t cmd, uint32_t len)
 {
- uint8 buf[numlocal + 1 + 4];
+ uint8_t buf[numlocal + 1 + 4];
 
  buf[0] = 0xFF;
  FCEU_en32lsb(&buf[numlocal], len);
@@ -98,9 +98,9 @@ int FCEUNET_SendCommand(uint8 cmd, uint32 len)
  return(1);
 }
 
-void FCEUI_NetplayText(uint8 *text)
+void FCEUI_NetplayText(uint8_t *text)
 {
- uint32 len;
+ uint32_t len;
 
  len = strlen(text);
 
@@ -110,9 +110,9 @@ void FCEUI_NetplayText(uint8 *text)
   NetError();
 }
 
-int FCEUNET_SendFile(uint8 cmd, char *fn)
+int FCEUNET_SendFile(uint8_t cmd, char *fn)
 {
- uint32 len;
+ uint32_t len;
  uLongf clen;
  char *buf, *cbuf;
  FILE *fp;
@@ -153,9 +153,9 @@ int FCEUNET_SendFile(uint8 cmd, char *fn)
  return(1);
 }
 
-static FILE *FetchFile(uint32 remlen)
+static FILE *FetchFile(uint32_t remlen)
 {
-        uint32 clen = remlen;
+        uint32_t clen = remlen;
                                  char *cbuf;
                                 uLongf len;
                                 char *buf; 
@@ -207,10 +207,10 @@ static FILE *FetchFile(uint32 remlen)
         return(0);
 }
 
-void NetplayUpdate(uint8 *joyp)
+void NetplayUpdate(uint8_t *joyp)
 {
- static uint8 buf[5];  /* 4 play states, + command/extra byte */
- static uint8 joypb[4];
+ static uint8_t buf[5];  /* 4 play states, + command/extra byte */
+ static uint8_t joypb[4];
 
  memcpy(joypb,joyp,4);
 
@@ -239,8 +239,8 @@ void NetplayUpdate(uint8 *joyp)
    default: FCEU_DoSimpleCommand(buf[4]);break;
    case FCEUNPCMD_TEXT:
            {
-      uint8 *tbuf;
-      uint32 len = FCEU_de32lsb(buf);
+      uint8_t *tbuf;
+      uint32_t len = FCEU_de32lsb(buf);
 
       if (len > 100000)  // Insanity check!
       {
@@ -330,5 +330,5 @@ void NetplayUpdate(uint8 *joyp)
  netdcount=(netdcount+1)%netdivisor;
 
  memcpy(netjoy,buf,4);
- *(uint32 *)joyp=*(uint32 *)netjoy;
+ *(uint32_t *)joyp=*(uint32_t *)netjoy;
 }

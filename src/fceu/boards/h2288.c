@@ -22,8 +22,8 @@
 
 #include "mapinc.h"
 
-static uint8 cmd;
-static uint8 regs[8];
+static uint8_t cmd;
+static uint8_t regs[8];
 
 static void DoPRG(void)
 {
@@ -45,7 +45,7 @@ static void DoPRG(void)
 
 static void DoCHR(void)
 {
- uint32 base=(cmd&0x80)<<5;
+ uint32_t base=(cmd&0x80)<<5;
 
  setchr2(0x0000^base,regs[0]);
  setchr2(0x0800^base,regs[2]);

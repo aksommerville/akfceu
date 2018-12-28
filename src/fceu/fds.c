@@ -62,24 +62,24 @@ static void FP_FASTAPASS(1) FDSFix(int a);
 #define FDSRAM GameMemBlock
 #define CHRRAM (GameMemBlock+32768)
 
-static uint8 FDSRegs[6];
-static int32 IRQLatch,IRQCount;
-static uint8 IRQa;
+static uint8_t FDSRegs[6];
+static int32_t IRQLatch,IRQCount;
+static uint8_t IRQa;
 static void FDSClose(void);
 
-static uint8 FDSBIOS[8192];
+static uint8_t FDSBIOS[8192];
 
 /* Original disk data backup, to help in creating save states. */
-static uint8 *diskdatao[8]={0,0,0,0,0,0,0,0};
+static uint8_t *diskdatao[8]={0,0,0,0,0,0,0,0};
 
-static uint8 *diskdata[8]={0,0,0,0,0,0,0,0};
+static uint8_t *diskdata[8]={0,0,0,0,0,0,0,0};
 
 static unsigned int TotalSides;
-static uint8 DiskWritten=0;    /* Set to 1 if disk was written to. */
-static uint8 writeskip;
-static uint32 DiskPtr;
-static int32 DiskSeekIRQ;
-static uint8 SelectDisk,InDisk;
+static uint8_t DiskWritten=0;    /* Set to 1 if disk was written to. */
+static uint8_t writeskip;
+static uint32_t DiskPtr;
+static int32_t DiskSeekIRQ;
+static uint8_t SelectDisk,InDisk;
 
 #define DC_INC    1
 
@@ -202,7 +202,7 @@ static void FP_FASTAPASS(1) FDSFix(int a)
 
 static DECLFR(FDSRead4030)
 {
-  uint8 ret=0;
+  uint8_t ret=0;
 
   /* Cheap hack. */
   if (X.IRQlow&FCEU_IQEXT) ret|=1;
@@ -217,7 +217,7 @@ static DECLFR(FDSRead4030)
 }
 
 static DECLFR(FDSRead4031) {
-  static uint8 z=0;
+  static uint8_t z=0;
   if (InDisk!=255) {
     z=diskdata[InDisk][DiskPtr];
     if (!fceuindbg) {
@@ -230,7 +230,7 @@ static DECLFR(FDSRead4031) {
 }
 
 static DECLFR(FDSRead4032) {      
-  uint8 ret;
+  uint8_t ret;
 
   ret=X.DB&~7;
   if (InDisk==255) ret|=5;
@@ -260,22 +260,22 @@ static DECLFR(FDSRAMRead) {
 #define FDSClock (1789772.7272727272727272/2)
 
 typedef struct {
-  int64 cycles;           // Cycles per PCM sample
-  int64 count;    // Cycle counter
-  int64 envcount;    // Envelope cycle counter
-  uint32 b19shiftreg60;
-  uint32 b24adder66;
-  uint32 b24latch68;
-  uint32 b17latch76;
-  int32 clockcount;  // Counter to divide frequency by 8.
-  uint8 b8shiftreg88;  // Modulation register.
-  uint8 amplitude[2];  // Current amplitudes.
-  uint8 speedo[2];
-  uint8 mwcount;
-  uint8 mwstart;
-  uint8 mwave[0x20];      // Modulation waveform
-  uint8 cwave[0x40];      // Game-defined waveform(carrier)
-  uint8 SPSG[0xB];
+  int64_t cycles;           // Cycles per PCM sample
+  int64_t count;    // Cycle counter
+  int64_t envcount;    // Envelope cycle counter
+  uint32_t b19shiftreg60;
+  uint32_t b24adder66;
+  uint32_t b24latch68;
+  uint32_t b17latch76;
+  int32_t clockcount;  // Counter to divide frequency by 8.
+  uint8_t b8shiftreg88;  // Modulation register.
+  uint8_t amplitude[2];  // Current amplitudes.
+  uint8_t speedo[2];
+  uint8_t mwcount;
+  uint8_t mwstart;
+  uint8_t mwave[0x20];      // Modulation waveform
+  uint8_t cwave[0x40];      // Game-defined waveform(carrier)
+  uint8_t SPSG[0xB];
 } FDSSOUND;
 
 static FDSSOUND fdso;
@@ -455,13 +455,13 @@ static INLINE void ClockFall(void)
  clockcount=(clockcount+1)&7;
 }
 
-static INLINE int32 FDSDoSound(void)
+static INLINE int32_t FDSDoSound(void)
 {
  fdso.count+=fdso.cycles;
- if (fdso.count>=((int64)1<<40))
+ if (fdso.count>=((int64_t)1<<40))
  {
   dogk:
-  fdso.count-=(int64)1<<40;
+  fdso.count-=(int64_t)1<<40;
   ClockRise();
   ClockFall();
   fdso.envcount--;
@@ -481,12 +481,12 @@ static INLINE int32 FDSDoSound(void)
  }
 }
 
-static int32 FBC=0;
+static int32_t FBC=0;
 
 static void RenderSound(void)
 {
- int32 end, start;
- int32 x;
+ int32_t end, start;
+ int32_t x;
 
  start=FBC;
  end=(SOUNDTS<<16)/soundtsinc;
@@ -497,7 +497,7 @@ static void RenderSound(void)
  if (!(SPSG[0x9]&0x80))
   for (x=start;x<end;x++)
   {
-   uint32 t=FDSDoSound();
+   uint32_t t=FDSDoSound();
    t+=t>>1;
    t>>=4;
    Wave[x>>4]+=t; //(t>>2)-(t>>3); //>>3;
@@ -506,19 +506,19 @@ static void RenderSound(void)
 
 static void RenderSoundHQ(void)
 {
- int32 x;
+ int32_t x;
  
  if (!(SPSG[0x9]&0x80))
   for (x=FBC;x<SOUNDTS;x++)
   {
-   uint32 t=FDSDoSound();
+   uint32_t t=FDSDoSound();
    t+=t>>1;
    WaveHi[x]+=t; //(t<<2)-(t<<1);
   }
  FBC=SOUNDTS;
 }
 
-static void HQSync(int32 ts)
+static void HQSync(int32_t ts)
 {
  FBC=ts;
 }
@@ -553,15 +553,15 @@ static void FDS_ESI(void)
  {
   if (FSettings.soundq>=1)
   {
-   fdso.cycles=(int64)1<<39;
+   fdso.cycles=(int64_t)1<<39;
   }
   else
   {
-   fdso.cycles=((int64)1<<40)*FDSClock;
+   fdso.cycles=((int64_t)1<<40)*FDSClock;
    fdso.cycles/=FSettings.SndRate *16;
   }
  }
-//  fdso.cycles=(int64)32768*FDSClock/(FSettings.SndRate *16);
+//  fdso.cycles=(int64_t)32768*FDSClock/(FSettings.SndRate *16);
  SetReadHandler(0x4040,0x407f,FDSWaveRead);
  SetWriteHandler(0x4040,0x407f,FDSWaveWrite);
  SetWriteHandler(0x4080,0x408A,FDSSWrite);
@@ -657,7 +657,7 @@ static void FreeFDSMemory(void)
 static int SubLoad(FCEUFILE *fp)
 {
  struct md5_context md5;
- uint8 header[16];
+ uint8_t header[16];
  int x;
 
  FCEU_fread(header,16,1,fp);
@@ -686,7 +686,7 @@ static int SubLoad(FCEUFILE *fp)
 
  for (x=0;x<TotalSides;x++)
  {
-  diskdata[x]=(uint8 *)FCEU_malloc(65500);
+  diskdata[x]=(uint8_t *)FCEU_malloc(65500);
   if (!diskdata[x])
   {
    int zol;
@@ -771,7 +771,7 @@ int FDSLoad(const char *name, FCEUFILE *fp)
   int x;
   for (x=0;x<TotalSides;x++)
   {
-   diskdatao[x]=(uint8 *)FCEU_malloc(65500);
+   diskdatao[x]=(uint8_t *)FCEU_malloc(65500);
    memcpy(diskdatao[x],diskdata[x],65500);
   }
 

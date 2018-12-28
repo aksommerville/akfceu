@@ -42,7 +42,7 @@
 
 typedef struct {
            char ID[4];
-           uint32 info;
+           uint32_t info;
 } UNIF_HEADER;
 
 typedef struct {
@@ -60,20 +60,20 @@ static CartInfo UNIFCart;
 
 static int vramo;
 static int mirrortodo;
-static uint8 *boardname;
-static uint8 *sboardname;
-uint8 *UNIFchrrama=0;
+static uint8_t *boardname;
+static uint8_t *sboardname;
+uint8_t *UNIFchrrama=0;
 
 static UNIF_HEADER unhead;
 static UNIF_HEADER uchead;
 
 
-static uint8 *malloced[32];
-static uint32 mallocedsizes[32];
+static uint8_t *malloced[32];
+static uint32_t mallocedsizes[32];
 
-//static uint32 checksums[32];
+//static uint32_t checksums[32];
 
-static int FixRomSize(uint32 size, uint32 minimum)
+static int FixRomSize(uint32_t size, uint32_t minimum)
 {
   int x=1;
 
@@ -110,7 +110,7 @@ static void ResetUNIF(void)
  UNIFchrrama=0;
 }
 
-static uint8 exntar[2048];
+static uint8_t exntar[2048];
 
 static void MooMirroring(void)
 {
@@ -127,7 +127,7 @@ static void MooMirroring(void)
 
 static int DoMirroring(FCEUFILE *fp)
 {
- uint8 t;
+ uint8_t t;
  t=FCEU_fgetc(fp);
  mirrortodo=t;
 
@@ -165,8 +165,8 @@ static int NAME(FCEUFILE *fp)
 static int DINF(FCEUFILE *fp)
 {
  char name[100], method[100];
- uint8 d, m;
- uint16 y;
+ uint8_t d, m;
+ uint16_t y;
  int t;
 
  if (FCEU_fread(name,1,100,fp)!=100)
@@ -255,7 +255,7 @@ static int LoadPRG(FCEUFILE *fp)
  if (malloced[z])
   free(malloced[z]);
  t=FixRomSize(uchead.info,2048);
- if (!(malloced[z]=(uint8 *)FCEU_malloc(t)))
+ if (!(malloced[z]=(uint8_t *)FCEU_malloc(t)))
   return(0);
  mallocedsizes[z]=t;
  memset(malloced[z]+uchead.info,0xFF,t-uchead.info);
@@ -273,7 +273,7 @@ static int LoadPRG(FCEUFILE *fp)
 
 static int SetBoardName(FCEUFILE *fp)
 {
- if (!(boardname=(uint8 *)FCEU_malloc(uchead.info+1)))
+ if (!(boardname=(uint8_t *)FCEU_malloc(uchead.info+1)))
   return(0);
  FCEU_fread(boardname,1,uchead.info,fp);
  boardname[uchead.info]=0;
@@ -294,7 +294,7 @@ static int LoadCHR(FCEUFILE *fp)
  if (malloced[16+z])
   free(malloced[16+z]);
  t=FixRomSize(uchead.info,8192);
- if (!(malloced[16+z]=(uint8 *)FCEU_malloc(t)))
+ if (!(malloced[16+z]=(uint8_t *)FCEU_malloc(t)))
   return(0);
  mallocedsizes[16+z]=t;
  memset(malloced[16+z]+uchead.info,0xFF,t-uchead.info);
@@ -417,7 +417,7 @@ int LoadUNIFChunks(FCEUFILE *fp)
      return 0;
     t=0;
     x=0;
-  //printf("Funky: %s\n",((uint8 *)&uchead));
+  //printf("Funky: %s\n",((uint8_t *)&uchead));
     while (bfunc[x].name)
     {
      if (!memcmp(&uchead,bfunc[x].name,strlen(bfunc[x].name)))
@@ -447,7 +447,7 @@ static int InitializeBoard(void)
     {
      if (!malloced[16] && (bmap[x].flags&BMCFLAG_CHRROK))
      {
-      if ((UNIFchrrama=(uint8 *)FCEU_malloc(8192)))
+      if ((UNIFchrrama=(uint8_t *)FCEU_malloc(8192)))
       {
        SetupCartCHRMapping(0,UNIFchrrama,8192,1);
        AddExState(UNIFchrrama, 8192, 0,"CHRR");

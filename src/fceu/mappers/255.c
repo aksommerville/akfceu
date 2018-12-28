@@ -24,9 +24,9 @@
 
 static DECLFW(Mapper255_write)
 {
- uint32 pbank=(A>>7)&0x1F;
- uint32 cbank=A&0x3F;
- uint32 rbank=(A>>14)&1;
+ uint32_t pbank=(A>>7)&0x1F;
+ uint32_t cbank=A&0x3F;
+ uint32_t rbank=(A>>14)&1;
 
 // printf("$%04x:$%02x\n",A,V);
 // printf("%2x:%2x:%2x,%2x\n",pbank,cbank,rbank,(A&0x40)>>6);

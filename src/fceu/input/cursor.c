@@ -1,6 +1,6 @@
 #include "share.h"
 
-static uint8 GunSight[]={
+static uint8_t GunSight[]={
         0,0,0,0,0,0,1,0,0,0,0,0,0,
         0,0,0,0,0,0,2,0,0,0,0,0,0,
         0,0,0,0,0,0,1,0,0,0,0,0,0,
@@ -15,7 +15,7 @@ static uint8 GunSight[]={
         0,0,0,0,0,0,2,0,0,0,0,0,0,
         0,0,0,0,0,0,1,0,0,0,0,0,0,
 };
-static uint8 FCEUcursor[11*19]=
+static uint8_t FCEUcursor[11*19]=
 {
  1,0,0,0,0,0,0,0,0,0,0,
  1,1,0,0,0,0,0,0,0,0,0,
@@ -38,7 +38,7 @@ static uint8 FCEUcursor[11*19]=
  0,0,0,0,0,0,0,1,1,0,0,
 };
 
-void FCEU_DrawGunSight(uint8 *buf, int xc, int yc)
+void FCEU_DrawGunSight(uint8_t *buf, int xc, int yc)
 {
  int x,y;
  int c,d;
@@ -46,7 +46,7 @@ void FCEU_DrawGunSight(uint8 *buf, int xc, int yc)
   for (y=0;y<13;y++)
    for (x=0;x<13;x++)
    {
-    uint8 a;
+    uint8_t a;
     a=GunSight[y*13+x];
     if (a)
     {
@@ -64,7 +64,7 @@ void FCEU_DrawGunSight(uint8 *buf, int xc, int yc)
 }
 
 
-void FCEU_DrawCursor(uint8 *buf, int xc, int yc)
+void FCEU_DrawCursor(uint8_t *buf, int xc, int yc)
 {
  int x,y;
  int c,d;
@@ -73,7 +73,7 @@ void FCEU_DrawCursor(uint8 *buf, int xc, int yc)
   for (y=0;y<19;y++)
    for (x=0;x<11;x++)
    {
-    uint8 a;
+    uint8_t a;
     a=FCEUcursor[y*11+x];
     if (a)
     {

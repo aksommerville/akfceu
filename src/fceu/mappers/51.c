@@ -23,9 +23,9 @@
 #define mode mapbyte1[0]
 #define page mapbyte1[1]
 
-static uint32 Get8K(uint32 A)
+static uint32_t Get8K(uint32_t A)
 {
- uint32 bank;
+ uint32_t bank;
 
  bank=(page<<2)|((A>>13)&1);
 
@@ -38,7 +38,7 @@ static uint32 Get8K(uint32 A)
 
 static void Synco(void)
 {
- uint32 x;
+ uint32_t x;
  if (mapbyte1[0]<=2)
   MIRROR_SET2(1);
  else

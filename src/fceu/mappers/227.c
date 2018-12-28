@@ -22,9 +22,9 @@
 
 #define rg mapbyte1
 
-static void DoSync(uint32 A)
+static void DoSync(uint32_t A)
 {
- int32 p=((A>>3)&0xF) | ((A>>4)&0x10);
+ int32_t p=((A>>3)&0xF) | ((A>>4)&0x10);
 
  rg[0]=A;
  rg[1]=A>>8;

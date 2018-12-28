@@ -37,7 +37,7 @@ static void DoBS(void)
  }
 }
 
-static void R1Set(uint8 V)
+static void R1Set(uint8_t V)
 {
  if (r1) return;
  r1=V;
@@ -45,7 +45,7 @@ static void R1Set(uint8 V)
  DoBS();
 }
 
-static void R2Set(uint8 V)
+static void R2Set(uint8_t V)
 {
  r2=V;
  DoBS();
@@ -58,7 +58,7 @@ DECLFW(R1W)
 
 DECLFR(R1R)
 {
- uint8 r=CartBR(A);
+ uint8_t r=CartBR(A);
  R1Set(r);
  return r;
 }
@@ -70,7 +70,7 @@ DECLFW(R2W)
 
 DECLFR(R2R)
 {
- uint8 r=CartBR(A);
+ uint8_t r=CartBR(A);
  R2Set(r);
  return r;
 }

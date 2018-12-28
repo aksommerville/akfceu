@@ -42,19 +42,19 @@
 
 extern SFORMAT FCEUVSUNI_STATEINFO[];
 
-static uint8 *trainerpoo=0;
-static uint8 *ROM=NULL;
-static uint8 *VROM=NULL;
+static uint8_t *trainerpoo=0;
+static uint8_t *ROM=NULL;
+static uint8_t *VROM=NULL;
 
 static CartInfo iNESCart;
 
-uint8 iNESMirroring;
-uint16 iNESCHRBankList[8];
-int32 iNESIRQLatch,iNESIRQCount;
-uint8 iNESIRQa;
+uint8_t iNESMirroring;
+uint16_t iNESCHRBankList[8];
+int32_t iNESIRQLatch,iNESIRQCount;
+uint8_t iNESIRQa;
 
-uint32 ROM_size;
-uint32 VROM_size;
+uint32_t ROM_size;
+uint32_t VROM_size;
 
 static void iNESPower(void);
 static int NewiNES_Init(int num);
@@ -116,15 +116,15 @@ static void iNESGI(int h)
      }
 }
 
-uint32 iNESGameCRC32;
+uint32_t iNESGameCRC32;
 
 struct CRCMATCH  {
-  uint32 crc;
+  uint32_t crc;
   char *name;
 };
 
 struct INPSEL {
-  uint32 crc32;
+  uint32_t crc32;
   int input1;
   int input2;
   int inputfc;
@@ -219,9 +219,9 @@ static void SetInput(void)
 #define INESB_HACKED            4
 
 struct BADINF {
-  uint64 md5partial;
+  uint64_t md5partial;
   char *name;
-  uint32 type;
+  uint32_t type;
 };
 
 
@@ -230,7 +230,7 @@ static struct BADINF BadROMImages[]=
  #include "ines-bad.h"
 {0}};
 
-void CheckBad(uint64 md5partial)
+void CheckBad(uint64_t md5partial)
 {
  int x;
 
@@ -249,9 +249,9 @@ void CheckBad(uint64 md5partial)
 }
 
 struct CHINF {
-  uint32 crc32; 
-  int32 mapper;
-  int32 mirror;
+  uint32_t crc32; 
+  int32_t mapper;
+  int32_t mirror;
 };
 
 static void CheckHInfo(void)
@@ -263,7 +263,7 @@ static void CheckHInfo(void)
     Lower 64 bits of the MD5 hash.
  */
 
- static uint64 savie[]=
+ static uint64_t savie[]=
   {
    0x498c10dc463cfe95LL,  /* Battle Fleet */
    0x6917ffcaca2d8466LL,  /* Famista '90 */
@@ -320,11 +320,11 @@ static void CheckHInfo(void)
  };
  int tofix=0;
  int x;
- uint64 partialmd5=0;
+ uint64_t partialmd5=0;
 
  for (x=0;x<8;x++)
  {
-  partialmd5 |= (uint64)iNESCart.MD5[15-x] << (x*8);
+  partialmd5 |= (uint64_t)iNESCart.MD5[15-x] << (x*8);
   //printf("%16llx\n",partialmd5);
  }
  CheckBad(partialmd5);
@@ -477,11 +477,11 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 
   if (head.ROM_type&8) Mirroring=2;
 
-        if (!(ROM=(uint8 *)FCEU_malloc(ROM_size<<14)))
+        if (!(ROM=(uint8_t *)FCEU_malloc(ROM_size<<14)))
    return 0;
    
         if (VROM_size)
-         if (!(VROM=(uint8 *)FCEU_malloc(VROM_size<<13)))
+         if (!(VROM=(uint8_t *)FCEU_malloc(VROM_size<<13)))
    {
     free(ROM);
     return 0;
@@ -491,7 +491,7 @@ int iNESLoad(const char *name, FCEUFILE *fp)
         if (VROM_size) memset(VROM,0xFF,VROM_size<<13);
         if (head.ROM_type&4)   /* Trainer */
   {
-   trainerpoo=(uint8 *)FCEU_gmalloc(512);
+   trainerpoo=(uint8_t *)FCEU_gmalloc(512);
     FCEU_fread(trainerpoo,512,1,fp);
   }
 
@@ -540,11 +540,11 @@ int iNESLoad(const char *name, FCEUFILE *fp)
   CheckHInfo();
   {
    int x;
-   uint64 partialmd5=0;
+   uint64_t partialmd5=0;
 
    for (x=0;x<8;x++)
    {
-    partialmd5 |= (uint64)iNESCart.MD5[7-x] << (x*8);
+    partialmd5 |= (uint64_t)iNESCart.MD5[7-x] << (x*8);
    }
 
    FCEU_VSUniCheck(partialmd5, &MapperNo, &Mirroring);
@@ -592,7 +592,7 @@ int iNESLoad(const char *name, FCEUFILE *fp)
         return 1;
 }
 
-void FASTAPASS(2) VRAM_BANK1(uint32 A, uint8 V)
+void FASTAPASS(2) VRAM_BANK1(uint32_t A, uint8_t V)
 {
  V&=7;
  PPUCHRRAM|=(1<<(A>>10));
@@ -600,7 +600,7 @@ void FASTAPASS(2) VRAM_BANK1(uint32 A, uint8 V)
  VPage[(A)>>10]=&CHRRAM[V<<10]-(A);
 }
 
-void FASTAPASS(2) VRAM_BANK4(uint32 A, uint32 V)
+void FASTAPASS(2) VRAM_BANK4(uint32_t A, uint32_t V)
 {
  V&=1;
  PPUCHRRAM|=(0xF<<(A>>10));
@@ -610,20 +610,20 @@ void FASTAPASS(2) VRAM_BANK4(uint32 A, uint32 V)
  CHRBankList[((A)>>10)+3]=(V<<2)+3;
  VPage[(A)>>10]=&CHRRAM[V<<10]-(A);
 }
-void FASTAPASS(2) VROM_BANK1(uint32 A,uint32 V)
+void FASTAPASS(2) VROM_BANK1(uint32_t A,uint32_t V)
 {
  setchr1(A,V);
  CHRBankList[(A)>>10]=V;
 }
 
-void FASTAPASS(2) VROM_BANK2(uint32 A,uint32 V)
+void FASTAPASS(2) VROM_BANK2(uint32_t A,uint32_t V)
 {
  setchr2(A,V);
  CHRBankList[(A)>>10]=(V<<1);
  CHRBankList[((A)>>10)+1]=(V<<1)+1;
 }
 
-void FASTAPASS(2) VROM_BANK4(uint32 A, uint32 V)
+void FASTAPASS(2) VROM_BANK4(uint32_t A, uint32_t V)
 {
  setchr4(A,V);
  CHRBankList[(A)>>10]=(V<<2);
@@ -632,7 +632,7 @@ void FASTAPASS(2) VROM_BANK4(uint32 A, uint32 V)
  CHRBankList[((A)>>10)+3]=(V<<2)+3;
 }
 
-void FASTAPASS(1) VROM_BANK8(uint32 V)
+void FASTAPASS(1) VROM_BANK8(uint32_t V)
 {
  setchr8(V);
  CHRBankList[0]=(V<<3);
@@ -645,14 +645,14 @@ void FASTAPASS(1) VROM_BANK8(uint32 V)
  CHRBankList[7]=(V<<3)+7;
 }
 
-void FASTAPASS(2) ROM_BANK8(uint32 A, uint32 V)
+void FASTAPASS(2) ROM_BANK8(uint32_t A, uint32_t V)
 {
  setprg8(A,V);
  if (A>=0x8000)
   PRGBankList[((A-0x8000)>>13)]=V;
 }
 
-void FASTAPASS(2) ROM_BANK16(uint32 A, uint32 V)
+void FASTAPASS(2) ROM_BANK16(uint32_t A, uint32_t V)
 {
  setprg16(A,V);
  if (A>=0x8000)
@@ -662,7 +662,7 @@ void FASTAPASS(2) ROM_BANK16(uint32 A, uint32 V)
  }
 }
 
-void FASTAPASS(1) ROM_BANK32(uint32 V)
+void FASTAPASS(1) ROM_BANK32(uint32_t V)
 {
  setprg32(0x8000,V);
  PRGBankList[0]=V<<2;
@@ -671,7 +671,7 @@ void FASTAPASS(1) ROM_BANK32(uint32 V)
  PRGBankList[3]=(V<<2)+3;
 }
 
-void FASTAPASS(1) onemir(uint8 V)
+void FASTAPASS(1) onemir(uint8_t V)
 {
   if (Mirroring==2) return;
         if (V>1)
@@ -680,14 +680,14 @@ void FASTAPASS(1) onemir(uint8 V)
   setmirror(MI_0+V);
 }
 
-void FASTAPASS(1) MIRROR_SET2(uint8 V)
+void FASTAPASS(1) MIRROR_SET2(uint8_t V)
 {
   if (Mirroring==2) return;
   Mirroring=V;
   setmirror(V);
 }
 
-void FASTAPASS(1) MIRROR_SET(uint8 V)
+void FASTAPASS(1) MIRROR_SET(uint8_t V)
 {
   if (Mirroring==2) return;
   V^=1;
@@ -908,7 +908,7 @@ static int NewiNES_Init(int num)
   {
    if (!VROM_size)
    {
-    VROM=(uint8 *)malloc(8192);
+    VROM=(uint8_t *)malloc(8192);
     SetupCartCHRMapping(0x0,VROM,8192,1);
     AddExState(VROM, 8192, 0, "CHRR");
    }

@@ -27,7 +27,7 @@
 #include "fceu.h"
 #include "debug.h"
 
-void FCEUI_DumpMem(const char *fname, uint32 start, uint32 end)
+void FCEUI_DumpMem(const char *fname, uint32_t start, uint32_t end)
 {
  FILE *fp=FCEUD_UTF8fopen(fname,"wb");
  fceuindbg=1;
@@ -37,7 +37,7 @@ void FCEUI_DumpMem(const char *fname, uint32 start, uint32 end)
  fceuindbg=0;
 }
 
-void FCEUI_LoadMem(const char *fname, uint32 start, int hl)
+void FCEUI_LoadMem(const char *fname, uint32_t start, int hl)
 {
  int t;
 
@@ -47,7 +47,7 @@ void FCEUI_LoadMem(const char *fname, uint32 start, int hl)
   if (start>0xFFFF) break;
   if (hl)
   {
-   extern uint8 *Page[32];  
+   extern uint8_t *Page[32];  
    if (Page[start/2048])
     Page[start/2048][start]=t;
   }
@@ -93,7 +93,7 @@ static int flengths[12]={1,1,1,1,1,2,2,2,2,1,1,0};
 typedef struct {
   char *name;
         int type;       /* 1 for read, 2 for write, 3 for r then write. */
-  int32 modes[10];
+  int32_t modes[10];
 } OPS;
 #define NUMOPS 56
 static OPS optable[NUMOPS]=
@@ -164,12 +164,12 @@ static OPS optable[NUMOPS]=
  {"BVS",1,{REL(0x70),-1}},
 };
 
-uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
+uint16_t FCEUI_Disassemble(void *XA, uint16_t a, char *stringo)
 {
  X6502 *X=XA;
- uint8 buf;
+ uint8_t buf;
  unsigned int arg;
- int32 info;
+ int32_t info;
  int x;
  int y;
 
@@ -297,7 +297,7 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
  return(a);
 }
 
-void FCEUI_MemDump(uint16 a, int32 len, void (*callb)(uint16 a, uint8 v))
+void FCEUI_MemDump(uint16_t a, int32_t len, void (*callb)(uint16_t a, uint8_t v))
 {
  fceuindbg=1;
  while (len)
@@ -309,9 +309,9 @@ void FCEUI_MemDump(uint16 a, int32 len, void (*callb)(uint16 a, uint8 v))
  fceuindbg=0;
 }
 
-uint8 FCEUI_MemSafePeek(uint16 A)
+uint8_t FCEUI_MemSafePeek(uint16_t A)
 {
- uint8 ret;
+ uint8_t ret;
 
  fceuindbg=1;
  ret=ARead[A](A);
@@ -319,9 +319,9 @@ uint8 FCEUI_MemSafePeek(uint16 A)
  return(ret);
 }
 
-void FCEUI_MemPoke(uint16 a, uint8 v, int hl)
+void FCEUI_MemPoke(uint16_t a, uint8_t v, int hl)
 {
- extern uint8 *Page[32];
+ extern uint8_t *Page[32];
  if (hl)
  {
   if (Page[a/2048])
@@ -367,7 +367,7 @@ static int FindBPoint(X6502 *X, int who, unsigned int A)
  return(0);
 }
 
-static uint8 ReadHandler(X6502 *X, unsigned int A)
+static uint8_t ReadHandler(X6502 *X, unsigned int A)
 {
  extern X6502 XSave;
 
@@ -376,7 +376,7 @@ static uint8 ReadHandler(X6502 *X, unsigned int A)
  return(ARead[A](A));
 }
 
-static void WriteHandler(X6502 *X, unsigned int A, uint8 V)
+static void WriteHandler(X6502 *X, unsigned int A, uint8_t V)
 {
  extern X6502 XSave;
 
@@ -410,10 +410,10 @@ int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2,
  return(1);
 }
 
-int FCEUI_SetBreakPoint(uint32 w, int type, unsigned int A1, unsigned int A2,
+int FCEUI_SetBreakPoint(uint32_t w, int type, unsigned int A1, unsigned int A2,
                 void (*Handler)(X6502 *, int type, unsigned int A))
 {
- uint32 x=0;
+ uint32_t x=0;
  BPOINT *tmp;
 
  tmp=BreakPoints;
@@ -434,10 +434,10 @@ int FCEUI_SetBreakPoint(uint32 w, int type, unsigned int A1, unsigned int A2,
  return(0);
 }
 
-int FCEUI_GetBreakPoint(uint32 w, int *type, unsigned int *A1, unsigned int *A2,
+int FCEUI_GetBreakPoint(uint32_t w, int *type, unsigned int *A1, unsigned int *A2,
                 void (**Handler)(X6502 *, int type, unsigned int A))
 {
- uint32 x=0;
+ uint32_t x=0;
  BPOINT *tmp;
 
  tmp=BreakPoints;
@@ -471,10 +471,10 @@ int FCEUI_ListBreakPoints(int (*callb)(int type, unsigned int A1, unsigned int A
  return(1);
 }
 
-int FCEUI_DeleteBreakPoint(uint32 w)
+int FCEUI_DeleteBreakPoint(uint32_t w)
 {
  BPOINT *tmp,*prev=NULL;
- uint32 x=0;
+ uint32_t x=0;
 
  tmp=BreakPoints;
 

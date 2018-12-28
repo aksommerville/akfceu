@@ -22,23 +22,23 @@
 
 static int is209;
 
-static uint8 IRQMode;  // from $c001
-static uint8 IRQPre;  // from $c004
-static uint8 IRQPreSize; // from $c007
-static uint8 IRQCount;  // from $c005
-static uint8 IRQXOR;  // Loaded from $C006
-static uint8 IRQa;  // $c002, $c003, and $c000
+static uint8_t IRQMode;  // from $c001
+static uint8_t IRQPre;  // from $c004
+static uint8_t IRQPreSize; // from $c007
+static uint8_t IRQCount;  // from $c005
+static uint8_t IRQXOR;  // Loaded from $C006
+static uint8_t IRQa;  // $c002, $c003, and $c000
 
-static uint8 mul[2];
-static uint8 regie;
+static uint8_t mul[2];
+static uint8_t regie;
 
-static uint8 tkcom[4];
-static uint8 prgb[4];
-static uint8 chrlow[8];
-static uint8 chrhigh[8];
+static uint8_t tkcom[4];
+static uint8_t prgb[4];
+static uint8_t chrlow[8];
+static uint8_t chrhigh[8];
 
-static uint16 names[4];
-static uint8 tekker;
+static uint16_t names[4];
+static uint8_t tekker;
 
 static SFORMAT Tek_StateRegs[]={
   {&IRQCount, 1, "IRQC"},
@@ -246,7 +246,7 @@ static void CCL(void)
 
 static void ClockCounter(void)
 {
- uint8 premask;
+ uint8_t premask;
 
  if (IRQMode & 0x4) premask = 0x7;
  else premask = 0xFF;
@@ -273,8 +273,8 @@ static void SLWrap(void)
  for (x=0;x<8;x++) ClockCounter();  // 8 PPU A10 0->1 transitions per scanline(usually)
 }
 /*
-static uint32 lasta;
-static void FP_FASTAPASS(1) YARGH(uint32 A)
+static uint32_t lasta;
+static void FP_FASTAPASS(1) YARGH(uint32_t A)
 {
  if ((A&0x1000) && !(lasta & 0x1000))
   ClockCounter();

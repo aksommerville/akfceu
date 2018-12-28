@@ -23,8 +23,8 @@
 #include  "share.h"
 
 typedef struct {
-  uint32 mzx,mzb;
-  uint32 readbit;
+  uint32_t mzx,mzb;
+  uint32_t readbit;
 } ARK;
 
 static ARK NESArk[2];
@@ -36,7 +36,7 @@ static void StrobeARKFC(void)
 }
 
 
-static uint8 FP_FASTAPASS(2) ReadARKFC(int w,uint8 ret)
+static uint8_t FP_FASTAPASS(2) ReadARKFC(int w,uint8_t ret)
 {
  ret&=~2;
 
@@ -56,7 +56,7 @@ static uint8 FP_FASTAPASS(2) ReadARKFC(int w,uint8 ret)
  return(ret);
 }
 
-static uint32 FixX(uint32 x)
+static uint32_t FixX(uint32_t x)
 {
  x=98+x*144/240;
  if (x>242) x=242;
@@ -66,7 +66,7 @@ static uint32 FixX(uint32 x)
 
 static void FP_FASTAPASS(2) UpdateARKFC(void *data, int arg)
 {
- uint32 *ptr=(uint32 *)data;
+ uint32_t *ptr=(uint32_t *)data;
  FCArk.mzx=FixX(ptr[0]);
  FCArk.mzb=ptr[2]?1:0;
 }
@@ -80,9 +80,9 @@ INPUTCFC *FCEU_InitArkanoidFC(void)
  return(&ARKCFC);
 }
 
-static uint8 FP_FASTAPASS(1) ReadARK(int w)
+static uint8_t FP_FASTAPASS(1) ReadARK(int w)
 {
- uint8 ret=0;
+ uint8_t ret=0;
 
  if (NESArk[w].readbit>=8)
   ret|=1<<4;
@@ -104,7 +104,7 @@ static void FP_FASTAPASS(1) StrobeARK(int w)
 
 static void FP_FASTAPASS(3) UpdateARK(int w, void *data, int arg)
 {
- uint32 *ptr=(uint32*)data;
+ uint32_t *ptr=(uint32_t*)data;
  NESArk[w].mzx=FixX(ptr[0]);
  NESArk[w].mzb=ptr[2]?1:0;
 }

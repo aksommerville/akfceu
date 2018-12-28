@@ -22,7 +22,7 @@
 
 static DECLFW(Mapper228_write)
 {
- uint32 page,pagel,pageh;
+ uint32_t page,pagel,pageh;
 
  MIRROR_SET((A>>13)&1);
 

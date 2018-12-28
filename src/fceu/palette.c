@@ -46,7 +46,7 @@ pal paletten[64];       // Mathematically generated palette.
 static void CalculatePalette(void);
 static void ChoosePalette(void);
 static void WritePalette(void);
-uint8 pale=0;
+uint8_t pale=0;
 
 pal *palo;
 static pal *palpoint[8]={
@@ -57,7 +57,7 @@ static pal *palpoint[8]={
   rp2c05004,
 };
 
-void FCEUI_SetPaletteArray(uint8 *pal)
+void FCEUI_SetPaletteArray(uint8_t *pal)
 {   
  if (!pal)
   palpoint[0]=palette;
@@ -67,9 +67,9 @@ void FCEUI_SetPaletteArray(uint8 *pal)
   palpoint[0]=palettec;
   for (x=0;x<64;x++)
   {
-   palpoint[0][x].r=*((uint8 *)pal+x+x+x);
-   palpoint[0][x].g=*((uint8 *)pal+x+x+x+1);
-   palpoint[0][x].b=*((uint8 *)pal+x+x+x+2);
+   palpoint[0][x].r=*((uint8_t *)pal+x+x+x);
+   palpoint[0][x].g=*((uint8_t *)pal+x+x+x+1);
+   palpoint[0][x].b=*((uint8_t *)pal+x+x+x+2);
   }
  }
  FCEU_ResetPalette();
@@ -84,13 +84,13 @@ void FCEUI_SetNTSCTH(int n, int tint, int hue)
  FCEU_ResetPalette();
 }
 
-static uint8 lastd=0;
-void SetNESDeemph(uint8 d, int force)
+static uint8_t lastd=0;
+void SetNESDeemph(uint8_t d, int force)
 {
- static uint16 rtmul[7]={32768*1.239,32768*.794,32768*1.019,32768*.905,32768*1.023,32768*.741,32768*.75};
- static uint16 gtmul[7]={32768*.915,32768*1.086,32768*.98,32768*1.026,32768*.908,32768*.987,32768*.75};
- static uint16 btmul[7]={32768*.743,32768*.882,32768*.653,32768*1.277,32768*.979,32768*.101,32768*.75};
- uint32 r,g,b;
+ static uint16_t rtmul[7]={32768*1.239,32768*.794,32768*1.019,32768*.905,32768*1.023,32768*.741,32768*.75};
+ static uint16_t gtmul[7]={32768*.915,32768*1.086,32768*.98,32768*1.026,32768*.908,32768*.987,32768*.75};
+ static uint16_t btmul[7]={32768*.743,32768*.882,32768*.653,32768*1.277,32768*.979,32768*.101,32768*.75};
+ uint32_t r,g,b;
  int x;
 
  /* If it's not forced(only forced when the palette changes),
@@ -109,7 +109,7 @@ void SetNESDeemph(uint8 d, int force)
 
   for (x=0;x<0x40;x++)
   {
-   uint32 m,n,o;
+   uint32_t m,n,o;
    m=palo[x].r;
    n=palo[x].g;
    o=palo[x].b;
@@ -130,7 +130,7 @@ void SetNESDeemph(uint8 d, int force)
 
  for (x=0;x<0x40;x++)
  {
-  uint32 m,n,o;
+  uint32_t m,n,o;
  
   m=palo[x].r;
   n=palo[x].g;
@@ -154,8 +154,8 @@ static void CalculatePalette(void)
  int x,z;
  int r,g,b;
  double s,luma,theta;
- static uint8 cols[16]={0,24,21,18,15,12,9,6,3,0,33,30,27,0,0,0};
- static uint8 br1[4]={6,9,12,12};
+ static uint8_t cols[16]={0,24,21,18,15,12,9,6,3,0,33,30,27,0,0,0};
+ static uint8_t br1[4]={6,9,12,12};
  static double br2[4]={.29,.45,.73,.9};
  static double br3[4]={0,.24,.47,.77};
 
@@ -197,7 +197,7 @@ static int ipalette=0;
          
 void FCEU_LoadGamePalette(void)
 {
-  uint8 ptmp[192];
+  uint8_t ptmp[192];
   FILE *fp;
   char *fn;
 
@@ -328,9 +328,9 @@ void FCEUI_NTSCSELTINT(void)
  if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL && FCEUGameInfo->type!=GIT_NSF){controlselect=2;controllength=360;}
 }
 
-void FCEU_DrawNTSCControlBars(uint8 *XBuf)
+void FCEU_DrawNTSCControlBars(uint8_t *XBuf)
 {
- uint8 *XBaf;
+ uint8_t *XBaf;
  int which=0;
  int x,x2;
 
@@ -340,12 +340,12 @@ void FCEU_DrawNTSCControlBars(uint8 *XBuf)
 
  if (controlselect==1)
  {
-  DrawTextTrans(XBuf+128-12+180*256, 256, (uint8 *)"Hue", 0x85);
+  DrawTextTrans(XBuf+128-12+180*256, 256, (uint8_t *)"Hue", 0x85);
   which=ntschue<<1;
  }
  else if (controlselect==2)
  {
-  DrawTextTrans(XBuf+128-16+180*256, 256, (uint8 *)"Tint", 0x85);
+  DrawTextTrans(XBuf+128-16+180*256, 256, (uint8_t *)"Tint", 0x85);
   which=ntsctint<<1;
  }
 

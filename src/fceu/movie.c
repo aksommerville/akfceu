@@ -12,11 +12,11 @@
 
 static int current = 0;    // > 0 for recording, < 0 for playback
 static FILE *slots[10]={0};
-static uint8 joop[4];
-static uint32 framets;
+static uint8_t joop[4];
+static uint32_t framets;
 
 /* Cache variables used for playback. */
-static uint32 nextts;
+static uint32_t nextts;
 static int nextd;
 
 
@@ -126,7 +126,7 @@ void FCEUI_LoadMovie(char *fname)
 
 static void DoEncode(int joy, int button, int dummy)
 {
- uint8 d;
+ uint8_t d;
 
  d = 0;
 
@@ -152,7 +152,7 @@ static void DoEncode(int joy, int button, int dummy)
  }
 }
 
-void FCEUMOV_AddJoy(uint8 *js)
+void FCEUMOV_AddJoy(uint8_t *js)
 {
  int x,y;
 
@@ -163,7 +163,7 @@ void FCEUMOV_AddJoy(uint8 *js)
   while (nextts == framets)
   {
    int tmp,ti;
-   uint8 d;
+   uint8_t d;
 
    if (nextd != -1)
    {
@@ -270,7 +270,7 @@ void FCEUI_SelectMovie(int w)
   FCEU_DispMessage("-select movie-");
 }
 
-void FCEU_DrawMovies(uint8 *XBuf)
+void FCEU_DrawMovies(uint8_t *XBuf)
 {
  if (!MovieShow) return;
 

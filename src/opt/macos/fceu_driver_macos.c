@@ -15,17 +15,17 @@ void FCEUD_Message(char *s) {
   fprintf(stderr,"%s",s);
 }
 
-int FCEUD_SendData(void *data, uint32 len) {
+int FCEUD_SendData(void *data, uint32_t len) {
   fprintf(stderr,"FCEUD_SendData(%d)\n",len);
   return len;
 }
 
-int FCEUD_RecvData(void *data, uint32 len) {
+int FCEUD_RecvData(void *data, uint32_t len) {
   fprintf(stderr,"FCEUD_Recvdata(%d)\n",len);
   return 0;
 }
 
-void FCEUD_NetplayText(uint8 *text) {
+void FCEUD_NetplayText(uint8_t *text) {
   fprintf(stderr,"FCEUD_NetplayText: %s\n",text);
 }
 

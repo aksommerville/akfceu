@@ -20,8 +20,8 @@
 
 #include "mapinc.h"
 
-static uint8 cmd;
-static uint8 DRegs[8];
+static uint8_t cmd;
+static uint8_t DRegs[8];
 
 static SFORMAT StateRegs[]=
 {
@@ -50,7 +50,7 @@ static DECLFW(Write)
  // printf("$%04x:$%02x\n",A,V);
 }
 
-static uint8 WRAM[8192];
+static uint8_t WRAM[8192];
 static DECLFR(AWRAM)
 {
  return(WRAM[A-0x6000]);

@@ -20,12 +20,12 @@
 
 #include "mapinc.h"
 
-static uint8 cmdin;
-static uint8 cmd;
-static uint8 regs[8];
-static uint8 master,chrm;
+static uint8_t cmdin;
+static uint8_t cmd;
+static uint8_t regs[8];
+static uint8_t master,chrm;
 
-static int32 IRQCount,IRQa;
+static int32_t IRQCount,IRQa;
 
 static void DoPRG(void)
 {
@@ -60,7 +60,7 @@ static void DoPRG(void)
 
 static void DoCHR(void)
 {
- uint32 base=(cmd&0x80)<<5;
+ uint32_t base=(cmd&0x80)<<5;
  int orie=(chrm&0x4)<<6;
 
  setchr2(0x0000^base,(orie|regs[0])>>1); //K

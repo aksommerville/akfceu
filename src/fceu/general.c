@@ -205,7 +205,7 @@ void GetFileBase(const char *f)
      }
 }
 
-uint32 uppow2(uint32 n)
+uint32_t uppow2(uint32_t n)
 {
  int x;
 

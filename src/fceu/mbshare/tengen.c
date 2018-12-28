@@ -20,9 +20,9 @@
 
 #include "mapinc.h"
 
-static uint8 cmd,mir,rmode,IRQmode;
-static uint8 DRegs[11];
-static uint8 IRQCount,IRQa,IRQLatch;
+static uint8_t cmd,mir,rmode,IRQmode;
+static uint8_t DRegs[11];
+static uint8_t IRQCount,IRQa,IRQLatch;
 
 static SFORMAT Rambo_StateRegs[]={
   {&cmd, 1, "CMD"},
@@ -195,7 +195,7 @@ static void FP_FASTAPASS(2) MirWrap(unsigned int A, unsigned int V)
  setchr1(A,V);
 }
 
-static void FP_FASTAPASS(1) MirrorFear(uint32 A)
+static void FP_FASTAPASS(1) MirrorFear(uint32_t A)
 {
  A&=0x1FFF;
  A>>=10;

@@ -75,7 +75,7 @@ static DECLFW(Mapper16_write)
 
 static void PRGO(void)
 {
- uint32 base=(mapbyte1[0]&1)<<4;
+ uint32_t base=(mapbyte1[0]&1)<<4;
  ROM_BANK16(0x8000,(mapbyte2[0]&0xF)|base);
  ROM_BANK16(0xC000,base|0xF);
 }
@@ -129,12 +129,12 @@ void Mapper153_init(void)
 }
 
 
-static uint8 BarcodeData[256];
+static uint8_t BarcodeData[256];
 static int BarcodeReadPos;
 static int BarcodeCycleCount;
-static uint32 BarcodeOut;
+static uint32_t BarcodeOut;
 
-int FCEUI_DatachSet(const uint8 *rcode)
+int FCEUI_DatachSet(const uint8_t *rcode)
 {
         int    prefix_parity_type[10][6] = {
                 {0,0,0,0,0,0}, {0,0,1,0,1,1}, {0,0,1,1,0,1}, {0,0,1,1,1,0},
@@ -156,8 +156,8 @@ int FCEUI_DatachSet(const uint8 *rcode)
                 {1,0,1,1,1,0,0}, {1,0,0,1,1,1,0}, {1,0,1,0,0,0,0}, {1,0,0,0,1,0,0},
                 {1,0,0,1,0,0,0}, {1,1,1,0,1,0,0}
         };
-  uint8 code[13+1];
-  uint32 tmp_p=0;
+  uint8_t code[13+1];
+  uint32_t tmp_p=0;
   int i, j;
   int len;
 
@@ -183,7 +183,7 @@ int FCEUI_DatachSet(const uint8 *rcode)
 
   if (len==13 || len==12)
   {
-   uint32 csum;
+   uint32_t csum;
 
     for (i=0;i<6;i++)
     if (prefix_parity_type[code[0]][i])
@@ -219,7 +219,7 @@ int FCEUI_DatachSet(const uint8 *rcode)
   }
   else if (len==8 || len==7)
   {
-   uint32 csum=0;
+   uint32_t csum=0;
  
    for (i=0;i<7;i++) csum+=(i&1)?code[i]:(code[i]*3);
 
@@ -285,7 +285,7 @@ static void FP_FASTAPASS(1) BarcodeIRQHook(int a)
 
 static DECLFR(Mapper157_read)
 {
- uint8 ret;
+ uint8_t ret;
 
  ret=BarcodeOut;
  return(ret);

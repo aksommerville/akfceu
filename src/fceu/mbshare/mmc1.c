@@ -24,16 +24,16 @@
 static void GenMMC1Power(void);
 static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery);
 
-static uint8 DRegs[4];
-static uint8 Buffer,BufferShift;
+static uint8_t DRegs[4];
+static uint8_t Buffer,BufferShift;
 
 static int mmc1opts;
 
-static void (*MMC1CHRHook4)(uint32 A, uint8 V);
-static void (*MMC1PRGHook16)(uint32 A, uint8 V);
+static void (*MMC1CHRHook4)(uint32_t A, uint8_t V);
+static void (*MMC1PRGHook16)(uint32_t A, uint8_t V);
 
-static uint8 *WRAM=NULL;
-static uint8 *CHRRAM=NULL;
+static uint8_t *WRAM=NULL;
+static uint8_t *CHRRAM=NULL;
 static int is155;
 
 static DECLFW(MBWRAM)
@@ -86,7 +86,7 @@ static void MMC1CHR(void)
 
 static void MMC1PRG(void)
 {
-        uint8 offs;
+        uint8_t offs;
 
         offs=DRegs[1]&0x10;
   if (MMC1PRGHook16)
@@ -134,7 +134,7 @@ static void MMC1MIRROR(void)
                 }
 }
 
-static uint64 lreset;
+static uint64_t lreset;
 static DECLFW(MMC1_write)
 {
         int n=(A>>13)-4;
@@ -211,7 +211,7 @@ static void MMC1CMReset(void)
         MMC1PRG();
 }
 
-static int DetectMMC1WRAMSize(uint32 crc32)
+static int DetectMMC1WRAMSize(uint32_t crc32)
 {
         switch (crc32)
         {
@@ -226,8 +226,8 @@ static int DetectMMC1WRAMSize(uint32 crc32)
         }
 }
 
-static uint32 NWCIRQCount;
-static uint8 NWCRec;
+static uint32_t NWCIRQCount;
+static uint8_t NWCRec;
 #define NWCDIP 0xE
 
 static void FP_FASTAPASS(1) NWCIRQHook(int a)
@@ -243,7 +243,7 @@ static void FP_FASTAPASS(1) NWCIRQHook(int a)
         }
 }
 
-static void NWCCHRHook(uint32 A, uint8 V)
+static void NWCCHRHook(uint32_t A, uint8_t V)
 {
  if ((V&0x10)) // && !(NWCRec&0x10))
  {
@@ -258,7 +258,7 @@ static void NWCCHRHook(uint32 A, uint8 V)
   setprg32(0x8000,(V>>1)&3);
 }
 
-static void NWCPRGHook(uint32 A, uint8 V)
+static void NWCPRGHook(uint32_t A, uint8_t V)
 {
  if (NWCRec&0x8)
   setprg16(A,8|(V&0x7));
@@ -327,7 +327,7 @@ static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
 
  if (wram)
  {
-  WRAM=(uint8*)FCEU_gmalloc(wram*1024);
+  WRAM=(uint8_t*)FCEU_gmalloc(wram*1024);
   mmc1opts|=1;
   if (wram>8) mmc1opts|=4;
   SetupCartPRGMapping(0x10,WRAM,wram*1024,1);
@@ -343,7 +343,7 @@ static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
  }
  if (!chr)
  {
-  CHRRAM=(uint8*)FCEU_gmalloc(8192);
+  CHRRAM=(uint8_t*)FCEU_gmalloc(8192);
   SetupCartCHRMapping(0, CHRRAM, 8192, 1);
   AddExState(CHRRAM, 8192, 0, "CHRR");
  }

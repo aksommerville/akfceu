@@ -22,60 +22,30 @@
 #ifndef __FCEU_TYPES
 #define __FCEU_TYPES
 
-//TODO aks: Get all of FCEU using <stdint.h>; private integer types are so 90's.
-#include <inttypes.h>
-typedef int8_t int8;
-typedef int16_t int16;
-typedef int32_t int32;
-
-typedef uint8_t uint8; 
-typedef uint16_t uint16;
-typedef uint32_t uint32;
-
-//typedef unsigned char uint8;
-//typedef unsigned short uint16;  
-//typedef unsigned long  uint32;
-
+#include <stdint.h>
 
 #ifdef __GNUC__
- typedef unsigned long long uint64;
- typedef long long int64;
- #define INLINE inline
- #define GINLINE inline
+  #define INLINE inline
+  #define GINLINE inline
 #elif MSVC
- typedef __int64 int64;
- typedef unsigned __int64 uint64;
- #define INLINE __inline
- #define GINLINE      /* Can't declare a function INLINE
-             and global in MSVC.  Bummer.
-          */
- #define PSS_STYLE 2      /* Does MSVC compile for anything
-             other than Windows/DOS targets?
-          */
+  #define INLINE __inline
+  #define GINLINE /* Can't declare a function INLINE and global in MSVC.  Bummer. */
+  #define PSS_STYLE 2 /* Does MSVC compile for anything other than Windows/DOS targets? */
 #endif
 
 #if PSS_STYLE==2
-
-#define PSS "\\"
-#define PS '\\'
-
+  #define PSS "\\"
+  #define PS '\\'
 #elif PSS_STYLE==1
-
-#define PSS "/"
-#define PS '/'
-
+  #define PSS "/"
+  #define PS '/'
 #elif PSS_STYLE==3
-
-#define PSS "\\"
-#define PS '\\'
-
+  #define PSS "\\"
+  #define PS '\\'
 #elif PSS_STYLE==4
-
-#define PSS ":"
-#define PS ':'
-
+  #define PSS ":"
+  #define PS ':'
 #endif
-
 
 #ifdef __GNUC__
  #ifdef C80x86
@@ -93,6 +63,7 @@ typedef uint32_t uint32;
  #define FASTAPASS(x)
 #endif
 
-typedef void (FP_FASTAPASS(2) *writefunc)(uint32 A, uint8 V);
-typedef uint8 (FP_FASTAPASS(1) *readfunc)(uint32 A);
+typedef void (FP_FASTAPASS(2) *writefunc)(uint32_t A, uint8_t V);
+typedef uint8_t (FP_FASTAPASS(1) *readfunc)(uint32_t A);
+
 #endif

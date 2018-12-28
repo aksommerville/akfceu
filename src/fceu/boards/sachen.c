@@ -20,8 +20,8 @@
 
 #include "mapinc.h"
 
-static uint8 cmd;
-static uint8 latch[8];
+static uint8_t cmd;
+static uint8_t latch[8];
 #define CHRRAM (GameMemBlock)
 
 static void S74LS374NSynco(void)

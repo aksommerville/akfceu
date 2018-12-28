@@ -22,10 +22,10 @@
     (at least that's the idea)
 */
 
-#define FCEU_dwmemset(d,c,n) {int _x; for (_x=n-4;_x>=0;_x-=4) *(uint32 *)&(d)[_x]=c;}
+#define FCEU_dwmemset(d,c,n) {int _x; for (_x=n-4;_x>=0;_x-=4) *(uint32_t *)&(d)[_x]=c;}
 
-void *FCEU_malloc(uint32 size);
-void *FCEU_gmalloc(uint32 size);
+void *FCEU_malloc(uint32_t size);
+void *FCEU_gmalloc(uint32_t size);
 void FCEU_gfree(void *ptr);
 void FCEU_free(void *ptr);
-void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32 l);
+void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32_t l);

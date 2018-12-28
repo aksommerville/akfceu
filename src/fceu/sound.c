@@ -32,33 +32,33 @@
 #include "state.h"
 #include "wave.h"
 
-static uint32 wlookup1[32];
-static uint32 wlookup2[203];
+static uint32_t wlookup1[32];
+static uint32_t wlookup2[203];
 
-int32 Wave[2048+512];
-int32 WaveHi[40000];
-int32 WaveFinal[2048+512];
+int32_t Wave[2048+512];
+int32_t WaveHi[40000];
+int32_t WaveFinal[2048+512];
 
 EXPSOUND GameExpSound={0,0,0};
 
-static uint8 TriCount;
-static uint8 TriMode;
+static uint8_t TriCount;
+static uint8_t TriMode;
 
-static int32 tristep;
+static int32_t tristep;
 
-static int32 wlcount[4];  /* Wave length counters.  */
+static int32_t wlcount[4];  /* Wave length counters.  */
 
-static uint8 IRQFrameMode;  /* $4017 / xx000000 */
-static uint8 PSG[0x10];
-static uint8 RawDALatch;  /* $4011 0xxxxxxx */
+static uint8_t IRQFrameMode;  /* $4017 / xx000000 */
+static uint8_t PSG[0x10];
+static uint8_t RawDALatch;  /* $4011 0xxxxxxx */
 
-uint8 EnabledChannels;    /* Byte written to $4015 */
+uint8_t EnabledChannels;    /* Byte written to $4015 */
 
 typedef struct {
-  uint8 Speed;
-  uint8 Mode;  /* Fixed volume(1), and loop(2) */
-  uint8 DecCountTo1;
-  uint8 decvolume;
+  uint8_t Speed;
+  uint8_t Mode;  /* Fixed volume(1), and loop(2) */
+  uint8_t DecCountTo1;
+  uint8_t decvolume;
   int reloaddec;
 } ENVUNIT;
 
@@ -66,45 +66,45 @@ static ENVUNIT EnvUnits[3];
 
 static const int RectDuties[4]={1,2,4,6};
 
-static int32 RectDutyCount[2];
-static uint8 sweepon[2];
-static int32 curfreq[2];
-static uint8 SweepCount[2];
+static int32_t RectDutyCount[2];
+static uint8_t sweepon[2];
+static int32_t curfreq[2];
+static uint8_t SweepCount[2];
 
-static uint16 nreg; 
+static uint16_t nreg; 
 
-static uint8 fcnt;
-static int32 fhcnt;
-static int32 fhinc;
+static uint8_t fcnt;
+static int32_t fhcnt;
+static int32_t fhinc;
 
-uint32 soundtsoffs;
+uint32_t soundtsoffs;
 
 /* Variables exclusively for low-quality sound. */
-int32 nesincsize;
-uint32 soundtsinc;
-uint32 soundtsi;
-static int32 sqacc[2];
+int32_t nesincsize;
+uint32_t soundtsinc;
+uint32_t soundtsi;
+static int32_t sqacc[2];
 /* LQ variables segment ends. */
 
-static int32 lengthcount[4];
-static const uint8 lengthtable[0x20]=
+static int32_t lengthcount[4];
+static const uint8_t lengthtable[0x20]=
 {
  0x5*2,0x7f*2,0xA*2,0x1*2,0x14*2,0x2*2,0x28*2,0x3*2,0x50*2,0x4*2,0x1E*2,0x5*2,0x7*2,0x6*2,0x0E*2,0x7*2,
  0x6*2,0x08*2,0xC*2,0x9*2,0x18*2,0xa*2,0x30*2,0xb*2,0x60*2,0xc*2,0x24*2,0xd*2,0x8*2,0xe*2,0x10*2,0xf*2
 };
 
-static const uint32 NoiseFreqTable[0x10]=
+static const uint32_t NoiseFreqTable[0x10]=
 {
  2,4,8,0x10,0x20,0x30,0x40,0x50,0x65,0x7f,0xbe,0xfe,0x17d,0x1fc,0x3f9,0x7f2
 };
 
-static const uint32 NTSCDMCTable[0x10]=
+static const uint32_t NTSCDMCTable[0x10]=
 {
  428,380,340,320,286,254,226,214,
  190,160,142,128,106, 84 ,72,54
 };
 
-static const uint32 PALDMCTable[0x10]=
+static const uint32_t PALDMCTable[0x10]=
 {
  397, 353, 315, 297, 265, 235, 209, 198,
  176, 148, 131, 118, 98, 78, 66, 50,
@@ -115,20 +115,20 @@ static const uint32 PALDMCTable[0x10]=
 // $4012        -        Address register: $c000 + V*64
 // $4013        -        Size register:  Size in bytes = (V+1)*64
 
-static int32 DMCacc=1;
-static int32 DMCPeriod;
-static uint8 DMCBitCount=0;
+static int32_t DMCacc=1;
+static int32_t DMCPeriod;
+static uint8_t DMCBitCount=0;
 
-static uint8 DMCAddressLatch,DMCSizeLatch; /* writes to 4012 and 4013 */
-static uint8 DMCFormat;  /* Write to $4010 */
+static uint8_t DMCAddressLatch,DMCSizeLatch; /* writes to 4012 and 4013 */
+static uint8_t DMCFormat;  /* Write to $4010 */
 
-static uint32 DMCAddress=0;
-static int32 DMCSize=0;
-static uint8 DMCShift=0;
-static uint8 SIRQStat=0;
+static uint32_t DMCAddress=0;
+static int32_t DMCSize=0;
+static uint8_t DMCShift=0;
+static uint8_t SIRQStat=0;
 
 static char DMCHaveDMA=0;
-static uint8 DMCDMABuf=0; 
+static uint8_t DMCDMABuf=0; 
 static char DMCHaveSample=0;
 
 static void Dummyfunc(void) {};
@@ -138,9 +138,9 @@ static void (*DoPCM)(void)=Dummyfunc;
 static void (*DoSQ1)(void)=Dummyfunc;
 static void (*DoSQ2)(void)=Dummyfunc;
 
-static uint32 ChannelBC[5];
+static uint32_t ChannelBC[5];
 
-static void LoadDMCPeriod(uint8 V)
+static void LoadDMCPeriod(uint8_t V)
 {
  if (PAL)
   DMCPeriod=PALDMCTable[V];
@@ -156,9 +156,9 @@ static void PrepDPCM()
 
 /* Instantaneous?  Maybe the new freq value is being calculated all of the time... */
 
-static int FASTAPASS(2) CheckFreq(uint32 cf, uint8 sr)
+static int FASTAPASS(2) CheckFreq(uint32_t cf, uint8_t sr)
 {
- uint32 mod;
+ uint32_t mod;
  if (!(sr&0x8))
  {
   mod=cf>>(sr&7);
@@ -168,7 +168,7 @@ static int FASTAPASS(2) CheckFreq(uint32 cf, uint8 sr)
  return(1);
 }
 
-static void SQReload(int x, uint8 V)
+static void SQReload(int x, uint8_t V)
 {
            if (EnabledChannels&(1<<x))
            {          
@@ -319,7 +319,7 @@ static DECLFW(StatusWrite)
 static DECLFR(StatusRead)
 {
    int x;
-   uint8 ret;
+   uint8_t ret;
 
    ret=SIRQStat;
 
@@ -366,7 +366,7 @@ static void FASTAPASS(1) FrameSoundStuff(int V)
    /* xxxx = hz.  120/(x+1)*/
    if (sweepon[P])
    {
-    int32 mod=0;
+    int32_t mod=0;
 
     if (SweepCount[P]>0) SweepCount[P]--;
     if (SweepCount[P]<=0)
@@ -516,7 +516,7 @@ void FASTAPASS(1) FCEU_SoundCPUHook(int cycles)
  {
   if (DMCHaveSample)
   {
-   uint8 bah=RawDALatch;
+   uint8_t bah=RawDALatch;
    int t=((DMCShift&1)<<2)-2;
 
    /* Unbelievably ugly hack */
@@ -540,7 +540,7 @@ void FASTAPASS(1) FCEU_SoundCPUHook(int cycles)
 
 void RDoPCM(void)
 {
- int32 V;
+ int32_t V;
 
  for (V=ChannelBC[4];V<SOUNDTS;V++)
   WaveHi[V]+=RawDALatch<<16;
@@ -551,13 +551,13 @@ void RDoPCM(void)
 /* This has the correct phase.  Don't mess with it. */
 static INLINE void RDoSQ(int x)
 {
-   int32 V;
-   int32 amp;
-   int32 rthresh;
-   int32 *D;
-   int32 currdc;
-   int32 cf;
-   int32 rc;
+   int32_t V;
+   int32_t amp;
+   int32_t rthresh;
+   int32_t *D;
+   int32_t currdc;
+   int32_t cf;
+   int32_t rc;
 
    if (curfreq[x]<8 || curfreq[x]>0x7ff)
     goto endit;
@@ -615,16 +615,16 @@ static void RDoSQ2(void)
 
 static void RDoSQLQ(void)
 {
-   int32 start,end;   
-   int32 V;
-   int32 amp[2];
-   int32 rthresh[2];
-   int32 freq[2];
+   int32_t start,end;   
+   int32_t V;
+   int32_t amp[2];
+   int32_t rthresh[2];
+   int32_t freq[2];
    int x;
-   int32 inie[2];
+   int32_t inie[2];
 
-   int32 ttable[2][8];
-   int32 totalout;
+   int32_t ttable[2][8];
+   int32_t totalout;
 
    start=ChannelBC[0];
    end=(SOUNDTS<<16)/soundtsinc;
@@ -708,8 +708,8 @@ static void RDoSQLQ(void)
 
 static void RDoTriangle(void)
 {
- int32 V;
- int32 tcout;
+ int32_t V;
+ int32_t tcout;
 
  tcout=(tristep&0xF);
  if (!(tristep&0x10)) tcout^=0xF;
@@ -717,8 +717,8 @@ static void RDoTriangle(void)
 
  if (!lengthcount[2] || !TriCount)
  {           /* Counter is halted, but we still need to output. */
-  int32 *start = &WaveHi[ChannelBC[2]];
-  int32 count = SOUNDTS - ChannelBC[2];
+  int32_t *start = &WaveHi[ChannelBC[2]];
+  int32_t count = SOUNDTS - ChannelBC[2];
   while (count--)
   {
    *start += tcout;
@@ -747,19 +747,19 @@ static void RDoTriangle(void)
 
 static void RDoTriangleNoisePCMLQ(void)
 {
-   static uint32 tcout=0;
-   static int32 triacc=0;
-   static int32 noiseacc=0;
+   static uint32_t tcout=0;
+   static int32_t triacc=0;
+   static int32_t noiseacc=0;
 
-   int32 V;
-   int32 start,end;
-   int32 freq[2];
-   int32 inie[2];
-   uint32 amptab[2];
-   uint32 noiseout;
+   int32_t V;
+   int32_t start,end;
+   int32_t freq[2];
+   int32_t inie[2];
+   uint32_t amptab[2];
+   uint32_t noiseout;
    int nshift;
 
-   int32 totalout;
+   int32_t totalout;
 
    start=ChannelBC[2];
    end=(SOUNDTS<<16)/soundtsinc;
@@ -876,9 +876,9 @@ static void RDoTriangleNoisePCMLQ(void)
 
 static void RDoNoise(void)
 {
- int32 V;
- int32 outo;
- uint32 amptab[2];
+ int32_t V;
+ int32_t outo;
+ uint32_t amptab[2];
 
  if (EnvUnits[2].Mode&0x1)
   amptab[0]=EnvUnits[2].Speed;
@@ -904,7 +904,7 @@ static void RDoNoise(void)
    wlcount[3]--;
    if (!wlcount[3])
    {
-    uint8 feedback;
+    uint8_t feedback;
     wlcount[3]=NoiseFreqTable[PSG[0xE]&0xF]<<1;
     feedback=((nreg>>8)&1)^((nreg>>14)&1);
     nreg=(nreg<<1)+feedback;
@@ -919,7 +919,7 @@ static void RDoNoise(void)
    wlcount[3]--;
    if (!wlcount[3])
    {
-    uint8 feedback;
+    uint8_t feedback;
     wlcount[3]=NoiseFreqTable[PSG[0xE]&0xF]<<1;
     feedback=((nreg>>13)&1)^((nreg>>14)&1);
     nreg=(nreg<<1)+feedback;
@@ -953,11 +953,11 @@ void SetNESSoundMap(void)
   SetReadHandler(0x4015,0x4015,StatusRead);
 }
 
-static int32 inbuf=0;
+static int32_t inbuf=0;
 int FlushEmulateSound(void)
 {
   int x;
-  int32 end,left;
+  int32_t end,left;
 
   if (!timestamp) return(0);
 
@@ -976,20 +976,20 @@ int FlushEmulateSound(void)
 
   if (FSettings.soundq>=1)
   {
-   int32 *tmpo=&WaveHi[soundtsoffs];
+   int32_t *tmpo=&WaveHi[soundtsoffs];
 
    if (GameExpSound.HiFill) GameExpSound.HiFill();
 
    for (x=timestamp;x;x--)
    {
-    uint32 b=*tmpo;   
+    uint32_t b=*tmpo;   
     *tmpo=(b&65535)+wlookup2[(b>>16)&255]+wlookup1[b>>24];
     tmpo++;
    }
    end=NeoFilterSound(WaveHi,WaveFinal,SOUNDTS,&left);
 
-   memmove(WaveHi,WaveHi+SOUNDTS-left,left*sizeof(uint32));
-   memset(WaveHi+left,0,sizeof(WaveHi)-left*sizeof(uint32));
+   memmove(WaveHi,WaveHi+SOUNDTS-left,left*sizeof(uint32_t));
+   memset(WaveHi+left,0,sizeof(WaveHi)-left*sizeof(uint32_t));
 
    if (GameExpSound.HiSync) GameExpSound.HiSync(left);
    for (x=0;x<5;x++)
@@ -1029,7 +1029,7 @@ int FlushEmulateSound(void)
   return(end);
 }
 
-int GetSoundBuffer(int32 **W)
+int GetSoundBuffer(int32_t **W)
 {
  *W=WaveFinal;
  return(inbuf);
@@ -1052,7 +1052,7 @@ void FCEUSND_Reset(void)
   {
          wlcount[x]=2048;
    if (nesincsize) // lq mode
-    sqacc[x]=((uint32)2048<<17)/nesincsize;
+    sqacc[x]=((uint32_t)2048<<17)/nesincsize;
    else
     sqacc[x]=1;
    sweepon[x]=0;
@@ -1148,13 +1148,13 @@ void SetSoundVariables(void)
   if (GameExpSound.RChange)
    GameExpSound.RChange();
 
-  nesincsize=(int64)(((int64)1<<17)*(double)(PAL?PAL_CPU:NTSC_CPU)/(FSettings.SndRate * 16));
+  nesincsize=(int64_t)(((int64_t)1<<17)*(double)(PAL?PAL_CPU:NTSC_CPU)/(FSettings.SndRate * 16));
   memset(sqacc,0,sizeof(sqacc));
   memset(ChannelBC,0,sizeof(ChannelBC));
 
   LoadDMCPeriod(DMCFormat&0xF);  // For changing from PAL to NTSC
 
-  soundtsinc=(uint32)((uint64)(PAL?(long double)PAL_CPU*65536:(long double)NTSC_CPU*65536)/(FSettings.SndRate * 16));
+  soundtsinc=(uint32_t)((uint64_t)(PAL?(long double)PAL_CPU*65536:(long double)NTSC_CPU*65536)/(FSettings.SndRate * 16));
 }
 
 void FCEUI_Sound(int Rate)
@@ -1174,7 +1174,7 @@ void FCEUI_SetSoundQuality(int quality)
  SetSoundVariables();
 }
 
-void FCEUI_SetSoundVolume(uint32 volume)
+void FCEUI_SetSoundVolume(uint32_t volume)
 {
  FSettings.SoundVolume=volume;
 }

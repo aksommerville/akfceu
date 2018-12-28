@@ -49,7 +49,7 @@
 
 void FCEUD_NetworkClose();
 
-uint64 timestampbase;
+uint64_t timestampbase;
 
 FCEUGI *FCEUGameInfo = NULL;
 void (*GameInterface)(int h);
@@ -81,7 +81,7 @@ int AllocGenieRW(void) {
 }
 
 void FlushGenieRW(void) {
-  int32 x;
+  int32_t x;
 
   if (RWWrap) {
     for (x=0;x<0x8000;x++) {
@@ -96,7 +96,7 @@ void FlushGenieRW(void) {
   }
 }
 
-readfunc FASTAPASS(1) GetReadHandler(int32 a) {
+readfunc FASTAPASS(1) GetReadHandler(int32_t a) {
   if (a>=0x8000 && RWWrap) {
     return AReadG[a-0x8000];
   } else {
@@ -104,8 +104,8 @@ readfunc FASTAPASS(1) GetReadHandler(int32 a) {
   }
 }
 
-void FASTAPASS(3) SetReadHandler(int32 start, int32 end, readfunc func) {
-  int32 x;
+void FASTAPASS(3) SetReadHandler(int32_t start, int32_t end, readfunc func) {
+  int32_t x;
 
   if (!func) func=ANull;
 
@@ -124,7 +124,7 @@ void FASTAPASS(3) SetReadHandler(int32 start, int32 end, readfunc func) {
   }
 }
 
-writefunc FASTAPASS(1) GetWriteHandler(int32 a) {
+writefunc FASTAPASS(1) GetWriteHandler(int32_t a) {
   if (RWWrap && a>=0x8000) {
     return BWriteG[a-0x8000];
   } else {
@@ -132,8 +132,8 @@ writefunc FASTAPASS(1) GetWriteHandler(int32 a) {
   }
 }
 
-void FASTAPASS(3) SetWriteHandler(int32 start, int32 end, writefunc func) {
-  int32 x;
+void FASTAPASS(3) SetWriteHandler(int32_t start, int32_t end, writefunc func) {
+  int32_t x;
 
   if (!func) func=BNull;
 
@@ -152,9 +152,9 @@ void FASTAPASS(3) SetWriteHandler(int32 start, int32 end, writefunc func) {
   }
 }
 
-uint8 GameMemBlock[131072];
-uint8 RAM[0x800];
-uint8 PAL=0;
+uint8_t GameMemBlock[131072];
+uint8_t RAM[0x800];
+uint8_t PAL=0;
 
 static DECLFW(BRAML) {
   RAM[A]=V;
@@ -292,7 +292,7 @@ void FCEUI_Kill(void) {
   FCEU_KillGenie();
 }
 
-void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize, int skip) {
+void FCEUI_Emulate(uint8_t **pXBuf, int32_t **SoundBuf, int32_t *SoundBufSize, int skip) {
   int r,ssize;
 
   FCEU_UpdateInput();
@@ -323,7 +323,7 @@ void ResetNES(void) {
   X6502_Reset();
 }
 
-void FCEU_MemoryRand(uint8 *ptr, uint32 size) {
+void FCEU_MemoryRand(uint8_t *ptr, uint32_t size) {
   int x=0;
   while (size) {
     *ptr=(x&4)?0xFF:0x00;
@@ -448,7 +448,7 @@ void FCEUI_SetSnapName(int a) {
   FSettings.SnapName=a;
 }
 
-int32 FCEUI_GetDesiredFPS(void) {
+int32_t FCEUI_GetDesiredFPS(void) {
   if (PAL) {
     return(838977920); // ~50.007
   } else {

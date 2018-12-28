@@ -49,19 +49,19 @@ extern INPUTCFC *FCEU_InitOekaKids(void);
 extern INPUTCFC *FCEU_InitTopRider(void);
 extern INPUTCFC *FCEU_InitBarcodeWorld(void);
 
-static uint8 joy_readbit[2];
-static uint8 joy[4]={0,0,0,0};
-static uint8 LastStrobe;
+static uint8_t joy_readbit[2];
+static uint8_t joy[4]={0,0,0,0};
+static uint8_t LastStrobe;
 
 /* This function is a quick hack to get the NSF player to use emulated gamepad
    input.
 */
-uint8 FCEU_GetJoyJoy(void)
+uint8_t FCEU_GetJoyJoy(void)
 {
  return(joy[0]|joy[1]|joy[2]|joy[3]);
 }
 
-extern uint8 coinon;
+extern uint8_t coinon;
 
 static int FSDisable=0;  /* Set to 1 if NES-style four-player adapter is disabled. */
 static int JPAttrib[2]={0,0};
@@ -72,14 +72,14 @@ static int JPAttribFC=0;
 static int JPTypeFC=0;
 static void *InputDataPtrFC;
 
-void (*InputScanlineHook)(uint8 *bg, uint8 *spr, uint32 linets, int final);
+void (*InputScanlineHook)(uint8_t *bg, uint8_t *spr, uint32_t linets, int final);
 
 static INPUTC DummyJPort={0,0,0,0,0};
 static INPUTC *JPorts[2]={&DummyJPort,&DummyJPort};
 static INPUTCFC *FCExp=0;
 
-static uint8 FP_FASTAPASS(1) ReadGPVS(int w) {
-  uint8 ret=0;
+static uint8_t FP_FASTAPASS(1) ReadGPVS(int w) {
+  uint8_t ret=0;
   if (joy_readbit[w]>=8) {
     ret=1;
   } else {
@@ -89,8 +89,8 @@ static uint8 FP_FASTAPASS(1) ReadGPVS(int w) {
   return ret;
 }
 
-static uint8 FP_FASTAPASS(1) ReadGP(int w) {
-  uint8 ret;
+static uint8_t FP_FASTAPASS(1) ReadGP(int w) {
+  uint8_t ret;
 
   if (joy_readbit[w]>=8) {
     ret = ((joy[2+w]>>(joy_readbit[w]&7))&1);
@@ -109,7 +109,7 @@ static uint8 FP_FASTAPASS(1) ReadGP(int w) {
 
 static DECLFR(JPRead)
 {
-  uint8 ret=0;
+  uint8_t ret=0;
 
   if (JPorts[A&1]->Read)
    ret|=JPorts[A&1]->Read(A&1);
@@ -156,7 +156,7 @@ static void FP_FASTAPASS(1) StrobeGP(int w) {
 static INPUTC GPC={ReadGP,0,StrobeGP,0,0,0};
 static INPUTC GPCVS={ReadGPVS,0,StrobeGP,0,0,0};
 
-void FCEU_DrawInput(uint8 *buf) {
+void FCEU_DrawInput(uint8_t *buf) {
   int x;
   for (x=0;x<2;x++) {
     if (JPorts[x]->Draw) {
@@ -177,11 +177,11 @@ void FCEU_UpdateInput(void) {
     switch (JPType[x]) {
       case SI_GAMEPAD: {
           if (!x) {
-            joy[0]=*(uint32 *)InputDataPtr[0];
-            joy[2]=*(uint32 *)InputDataPtr[0] >> 16;
+            joy[0]=*(uint32_t *)InputDataPtr[0];
+            joy[2]=*(uint32_t *)InputDataPtr[0] >> 16;
           } else {
-            joy[1]=*(uint32 *)InputDataPtr[1] >>8;
-            joy[3]=*(uint32 *)InputDataPtr[1] >>24;
+            joy[1]=*(uint32_t *)InputDataPtr[1] >>8;
+            joy[3]=*(uint32_t *)InputDataPtr[1] >>24;
           }
         } break;
       default: {
@@ -210,7 +210,7 @@ void FCEU_UpdateInput(void) {
 }
 
 static DECLFR(VSUNIRead0) {
-  uint8 ret=0;
+  uint8_t ret=0;
  
   if (JPorts[0]->Read) ret|=(JPorts[0]->Read(0))&1;
 
@@ -220,14 +220,14 @@ static DECLFR(VSUNIRead0) {
 }
 
 static DECLFR(VSUNIRead1) {
-  uint8 ret=0;
+  uint8_t ret=0;
 
   if (JPorts[1]->Read) ret|=(JPorts[1]->Read(1))&1;
   ret|=vsdip&0xFC;  
   return ret;
 }
 
-static void SLHLHook(uint8 *bg, uint8 *spr, uint32 linets, int final)
+static void SLHLHook(uint8_t *bg, uint8_t *spr, uint32_t linets, int final)
 {
  int x;
 
@@ -268,13 +268,13 @@ static void FASTAPASS(1) SetInputStuff(int x) {
   CheckSLHook();
 }
 
-static uint8 F4ReadBit[2];
+static uint8_t F4ReadBit[2];
 
 static void StrobeFami4(void) {
   F4ReadBit[0]=F4ReadBit[1]=0;
 }
 
-static uint8 FP_FASTAPASS(2) ReadFami4(int w, uint8 ret) {
+static uint8_t FP_FASTAPASS(2) ReadFami4(int w, uint8_t ret) {
   ret&=1;
 
   ret |= ((joy[2+w]>>(F4ReadBit[w]))&1)<<1;

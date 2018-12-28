@@ -27,7 +27,7 @@ static void DoAYSQHQ(int x);
 
 #define sunselect mapbyte1[0]
 #define sungah    mapbyte1[1]
-static uint8 sunindex;
+static uint8_t sunindex;
 
 static DECLFW(SUN5BWRAM)
 {
@@ -115,15 +115,15 @@ static DECLFW(Mapper69_write)
  }
 }
 
-static int32 vcount[3];
-static int32 dcount[3];
+static int32_t vcount[3];
+static int32_t dcount[3];
 static int CAYBC[3];
 
 static void DoAYSQ(int x)
 {
-    int32 freq=((MapperExRAM[x<<1]|((MapperExRAM[(x<<1)+1]&15)<<8))+1)<<(4+17);
-    int32 amp=(MapperExRAM[0x8+x]&15)<<2;
-    int32 start,end;
+    int32_t freq=((MapperExRAM[x<<1]|((MapperExRAM[(x<<1)+1]&15)<<8))+1)<<(4+17);
+    int32_t amp=(MapperExRAM[0x8+x]&15)<<2;
+    int32_t start,end;
     int V;
 
     amp+=amp>>1;
@@ -149,9 +149,9 @@ static void DoAYSQ(int x)
 
 static void DoAYSQHQ(int x)
 {
- int32 V;
- int32 freq=((MapperExRAM[x<<1]|((MapperExRAM[(x<<1)+1]&15)<<8))+1)<<4;
- int32 amp=(MapperExRAM[0x8+x]&15)<<6;
+ int32_t V;
+ int32_t freq=((MapperExRAM[x<<1]|((MapperExRAM[(x<<1)+1]&15)<<8))+1)<<4;
+ int32_t amp=(MapperExRAM[0x8+x]&15)<<6;
 
  amp+=amp>>1;
 
@@ -189,7 +189,7 @@ static void AYSoundHQ(void)
     DoAYSQHQ(2);
 }
 
-static void AYHiSync(int32 ts)
+static void AYHiSync(int32_t ts)
 {
  int x;
 
