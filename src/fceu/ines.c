@@ -135,7 +135,7 @@ static void SetInput(void)
 {
  static struct INPSEL moo[]=
   {
-         {0x3a1694f9,SI_GAMEPAD,SI_GAMEPAD,SIFC_4PLAYER},       /* Nekketsu Kakutou Densetsu */
+   {0x3a1694f9,SI_GAMEPAD,SI_GAMEPAD,SIFC_4PLAYER},       /* Nekketsu Kakutou Densetsu */
 
    {0xc3c0811d,SI_GAMEPAD,SI_GAMEPAD,SIFC_OEKAKIDS},  /* The two "Oeka Kids" games */
    {0x9d048ea4,SI_GAMEPAD,SI_GAMEPAD,SIFC_OEKAKIDS},  /*           */
@@ -160,7 +160,7 @@ static void SetInput(void)
    // Bad dump? {0x69ffb014,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Fuun Takeshi Jou 2 */
    {0x6cca1c1f,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB}, /* Dai Undoukai */
    {0x29de87af,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB},  /* Aerobics Studio */
-         {0xbba58be5,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB},  /* Family Trainer: Manhattan Police */
+   {0xbba58be5,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB},  /* Family Trainer: Manhattan Police */
    {0xea90f3e2,SI_GAMEPAD,SI_GAMEPAD,SIFC_FTRAINERB},  /* Family Trainer:  Running Stadium */
 
    {0xd9f45be9,SI_GAMEPAD,SI_GAMEPAD,SIFC_QUIZKING},  /* Gimme a Break ... */
@@ -248,7 +248,6 @@ void CheckBad(uint64 md5partial)
 
 }
 
-
 struct CHINF {
   uint32 crc32; 
   int32 mapper;
@@ -269,10 +268,10 @@ static void CheckHInfo(void)
    0x498c10dc463cfe95LL,  /* Battle Fleet */
    0x6917ffcaca2d8466LL,  /* Famista '90 */
         
-         0xd63dcc68c2b20adcLL,    /* Final Fantasy J */
-         0x012df596e2b31174LL,    /* Final Fantasy 1+2 */
-         0xf6b359a720549ecdLL,    /* Final Fantasy 2 */
-         0x5a30da1d9b4af35dLL,    /* Final Fantasy 3 */
+   0xd63dcc68c2b20adcLL,    /* Final Fantasy J */
+   0x012df596e2b31174LL,    /* Final Fantasy 1+2 */
+   0xf6b359a720549ecdLL,    /* Final Fantasy 2 */
+   0x5a30da1d9b4af35dLL,    /* Final Fantasy 3 */
 
    0x2ee3417ba8b69706LL,  /* Hydlide 3*/
 
@@ -281,7 +280,7 @@ static void CheckHInfo(void)
    0x6a858da551ba239eLL,  /* Kaijuu Monogatari */
    0xa40666740b7d22feLL,  /* Mindseeker */
 
-         0x77b811b2760104b9LL,    /* Mouryou Senki Madara */
+   0x77b811b2760104b9LL,    /* Mouryou Senki Madara */
 
    0x11b69122efe86e8cLL,  /* RPG Jinsei Game */
 
@@ -292,7 +291,7 @@ static void CheckHInfo(void)
    0xb72ee2337ced5792LL,  /* AD&D Hillsfar */
    0x2b7103b7a27bd72fLL,  /* AD&D Pool of Radiance */
 
-    0x854d7947a3177f57LL,    /* Crystalis */
+   0x854d7947a3177f57LL,    /* Crystalis */
 
    0xb0bcc02c843c1b79LL,  /* DW */
    0x4a1f5336b86851b6LL,  /* DW */
@@ -304,13 +303,13 @@ static void CheckHInfo(void)
    0x91a6846d3202e3d6LL,  /* Final Fantasy */
    0xedba17a2c4608d20LL,  /* ""    */
 
-         0x94b9484862a26cbaLL,    /* Legend of Zelda */
-         0x04a31647de80fdabLL,    /*      ""      */
+   0x94b9484862a26cbaLL,    /* Legend of Zelda */
+   0x04a31647de80fdabLL,    /*      ""      */
         
-         0x9aa1dc16c05e7de5LL,    /* Startropics */
-         0x1b084107d0878bd0LL,    /* Startropics 2*/
+   0x9aa1dc16c05e7de5LL,    /* Startropics */
+   0x1b084107d0878bd0LL,    /* Startropics 2*/
 
-         0x836c0ff4f3e06e45LL,    /* Zelda 2 */
+   0x836c0ff4f3e06e45LL,    /* Zelda 2 */
 
    0      /* Abandon all hope if the game has 0 in the lower 64-bits of its MD5 hash */
   };
@@ -867,33 +866,32 @@ static BMAPPING bmap[] = {
   {5, Mapper5_Init},
   {12, Mapper12_Init},
   {19, Mapper19_Init},
-        {44, Mapper44_Init},
-        {45, Mapper45_Init},
-        {47, Mapper47_Init},
-        {49, Mapper49_Init},
-        {52, Mapper52_Init},
-        {74, Mapper74_Init},
+  {44, Mapper44_Init},
+  {45, Mapper45_Init},
+  {47, Mapper47_Init},
+  {49, Mapper49_Init},
+  {52, Mapper52_Init},
+  {74, Mapper74_Init},
   {90, Mapper90_Init},
   {160, Mapper90_Init},
   {165, Mapper165_Init},
   {209, Mapper209_Init},
-
   {95, Mapper95_Init},
   {105, Mapper105_Init},
-        {115, Mapper115_Init},
-        {116, Mapper116_Init},
+  {115, Mapper115_Init},
+  {116, Mapper116_Init},
   {118, Mapper118_Init},
   {119, Mapper119_Init},  /* Has CHR ROM and CHR RAM by default.  Hmm. */
   {155, Mapper155_Init},
   {164, Mapper164_Init},
-        {187, Mapper187_Init},
+  {187, Mapper187_Init},
   {188, Mapper188_Init},
   {206, Mapper206_Init},
-        {208, Mapper208_Init},
+  {208, Mapper208_Init},
   {210, Mapper210_Init},
-        {245, Mapper245_Init},
-        {249, Mapper249_Init},
-        {250, Mapper250_Init},
+  {245, Mapper245_Init},
+  {249, Mapper249_Init},
+  {250, Mapper250_Init},
   {0,0}
 };
 

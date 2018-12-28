@@ -49,14 +49,13 @@ static void WritePalette(void);
 uint8 pale=0;
 
 pal *palo;
-static pal *palpoint[8]=
-     {
-     palette,
-     rp2c04001,
-     rp2c04002,
-     rp2c04003,
-     rp2c05004,
-     };
+static pal *palpoint[8]={
+  palette,
+  rp2c04001,
+  rp2c04002,
+  rp2c04003,
+  rp2c05004,
+};
 
 void FCEUI_SetPaletteArray(uint8 *pal)
 {   

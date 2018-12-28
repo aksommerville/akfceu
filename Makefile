@@ -95,7 +95,7 @@ $(TEST):$(COREOFILES) $(TESTOFILES) $(OPTOFILES);$(PRECMD) $(LD) -o $@ $(COREOFI
 
 #------------------------------------------------------------------------------
 
-run:$(EXE);$(RUNCMD) /Users/andy/rom/nes/c/chip_n_dale.nes
+run:$(EXE);$(RUNCMD)
 test:$(TEST);$(TEST)
 
 clean:;rm -rf mid out

@@ -245,6 +245,7 @@ static void draw_test_pattern() {
       }
     }
   }
+
   // See script etc/readpixels.py:
   framebuffer[29263]=0xff;
   framebuffer[29269]=0xff;

@@ -22,20 +22,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include "types.h"
 #include "fceu.h"
-
 #include "general.h"
 #include "state.h"
 #include "movie.h"
-
 #include "driver.h"
-
 #include "md5.h"
 
 static char BaseDirectory[2048];
@@ -83,21 +79,6 @@ void FCEUI_SetDirOverride(int which, char *n)
    FCEUMOV_CheckMovies();
  }
 }
-
-#ifndef HAVE_ASPRINTF
-static int asprintf(char **strp, const char *fmt, ...)
-{
- va_list ap;
- int ret;
-
- va_start(ap,fmt);
- if (!(*strp=malloc(2048)))
-  return(0);
- ret=vsnprintf(*strp,2048,fmt,ap);
- va_end(ap);
- return(ret);
-}
-#endif
 
 char *FCEU_MakeFName(int type, int id1, char *cd1)
 {

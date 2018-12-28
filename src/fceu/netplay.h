@@ -2,7 +2,6 @@ int InitNetplay(void);
 void NetplayUpdate(uint8 *joyp);
 extern int FCEUnetplay;
 
-
 #define FCEUNPCMD_RESET   0x01
 #define FCEUNPCMD_POWER   0x02
 

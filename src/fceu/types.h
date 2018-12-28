@@ -22,6 +22,7 @@
 #ifndef __FCEU_TYPES
 #define __FCEU_TYPES
 
+//TODO aks: Get all of FCEU using <stdint.h>; private integer types are so 90's.
 #include <inttypes.h>
 typedef int8_t int8;
 typedef int16_t int16;

@@ -19,25 +19,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include        <string.h>
-#include        <stdio.h>
-#include        <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include        "types.h"
-#include        "x6502.h"
-#include        "fceu.h"
-#include  "ppu.h"
-#include  "nsf.h"
-#include        "sound.h"
-#include        "general.h"
-#include        "endian.h"
-#include        "memory.h"
-
-#include        "cart.h"
-#include        "palette.h"
-#include        "state.h"
-#include        "video.h" 
-#include        "input.h" 
+#include "types.h"
+#include "x6502.h"
+#include "fceu.h"
+#include "ppu.h"
+#include "nsf.h"
+#include "sound.h"
+#include "general.h"
+#include "endian.h"
+#include "memory.h"
+#include "cart.h"
+#include "palette.h"
+#include "state.h"
+#include "video.h" 
+#include "input.h" 
 
 #define VBlankON        (PPU[0]&0x80)   /* Generate VBlank NMI */
 #define Sprite16        (PPU[0]&0x20)   /* Sprites 8x16/8x8        */
@@ -148,27 +147,27 @@ uint8 NTARAM[0x800],PALRAM[0x20],SPRAM[0x100],SPRBUF[0x100];
 
 static DECLFR(A2002)
 {
-                        uint8 ret;
+      uint8 ret;
        
       FCEUPPU_LineUpdate();
-                        ret = PPU_status;
-                        ret|=PPUGenLatch&0x1F;
+      ret = PPU_status;
+      ret|=PPUGenLatch&0x1F;
 
       #ifdef FCEUDEF_DEBUGGER
-                        if (!fceuindbg)
+      if (!fceuindbg)
       #endif
-                        {
-                         vtoggle=0;
-                         PPU_status&=0x7F;
-       PPUGenLatch=ret;
-                        }
-                        return ret;
+      {
+        vtoggle=0;
+        PPU_status&=0x7F;
+        PPUGenLatch=ret;
+      }
+      return ret;
 }
 
 static DECLFR(A200x)  /* Not correct for $2004 reads. */
 {
       FCEUPPU_LineUpdate();
-                        return PPUGenLatch;
+      return PPUGenLatch;
 }
 
 /*
@@ -198,76 +197,69 @@ static DECLFR(A2004)
 */
 static DECLFR(A2007)
 {
-                        uint8 ret;
-                        uint32 tmp=RefreshAddr&0x3FFF;
+      uint8 ret;
+      uint32 tmp=RefreshAddr&0x3FFF;
 
       FCEUPPU_LineUpdate();
                        
-                        ret=VRAMBuffer;
+      ret=VRAMBuffer;
 
       #ifdef FCEUDEF_DEBUGGER
       if (!fceuindbg)
       #endif
       {
-                         if (PPU_hook) PPU_hook(tmp);
-       PPUGenLatch=VRAMBuffer;
-                         if (tmp<0x2000)
-                         {
-                          VRAMBuffer=VPage[tmp>>10][tmp];
-                         }
-                         else
-                         {  
-                          VRAMBuffer=vnapage[(tmp>>10)&0x3][tmp&0x3FF];
-                         }
-                        }
+        if (PPU_hook) PPU_hook(tmp);
+        PPUGenLatch=VRAMBuffer;
+        if (tmp<0x2000) {
+          VRAMBuffer=VPage[tmp>>10][tmp];
+        } else {  
+          VRAMBuffer=vnapage[(tmp>>10)&0x3][tmp&0x3FF];
+        }
+      }
       #ifdef FCEUDEF_DEBUGGER
-                        if (!fceuindbg)
+      if (!fceuindbg)
       #endif
-                        {
-                         if (INC32) RefreshAddr+=32;
-                         else RefreshAddr++;
-                         if (PPU_hook) PPU_hook(RefreshAddr&0x3fff);
-                        }
-                        return ret;
+      {
+        if (INC32) RefreshAddr+=32;
+        else RefreshAddr++;
+        if (PPU_hook) PPU_hook(RefreshAddr&0x3fff);
+      }
+      return ret;
 }
 
 static DECLFW(B2000)
 {
-                //printf("%04x:$%02x, %d\n",A,V&0x38,scanline);
+    //printf("%04x:$%02x, %d\n",A,V&0x38,scanline);
 
     FCEUPPU_LineUpdate();
-                PPUGenLatch=V;
-                if (!(PPU[0]&0x80) && (V&0x80) && (PPU_status&0x80))
-                {
-                 //printf("Trigger NMI, %d, %d\n",timestamp,ppudead);
-                 TriggerNMI2();
-                }
-                PPU[0]=V;
-                TempAddr&=0xF3FF;
-                TempAddr|=(V&3)<<10;
+    PPUGenLatch=V;
+    if (!(PPU[0]&0x80) && (V&0x80) && (PPU_status&0x80)) {
+      //printf("Trigger NMI, %d, %d\n",timestamp,ppudead);
+      TriggerNMI2();
+    }
+    PPU[0]=V;
+    TempAddr&=0xF3FF;
+    TempAddr|=(V&3)<<10;
 }
 
 static DECLFW(B2001)
 {
     //printf("%04x:$%02x, %d\n",A,V,scanline);
     FCEUPPU_LineUpdate();
-                PPUGenLatch=V;
+    PPUGenLatch=V;
     PPU[1]=V;
-                if (V&0xE0)
-                 deemp=V>>5;
+    if (V&0xE0) deemp=V>>5;
 }
 
-static DECLFW(B2002)
-{
-                PPUGenLatch=V;
+static DECLFW(B2002) {
+  PPUGenLatch=V;
 }
 
-static DECLFW(B2003)
-{
-                //printf("$%04x:$%02x, %d, %d\n",A,V,timestamp,scanline);
-                PPUGenLatch=V;
-                PPU[3]=V;
-                PPUSPL=V&0x7;
+static DECLFW(B2003) {
+  //printf("$%04x:$%02x, %d, %d\n",A,V,timestamp,scanline);
+  PPUGenLatch=V;
+  PPU[3]=V;
+  PPUSPL=V&0x7;
 }
 
 static DECLFW(B2004)
@@ -292,23 +284,20 @@ static DECLFW(B2004)
 
 static DECLFW(B2005)
 {
-                uint32 tmp=TempAddr;
+    uint32 tmp=TempAddr;
     FCEUPPU_LineUpdate();
-                PPUGenLatch=V;
-                if (!vtoggle)
-                {
-                 tmp&=0xFFE0;
-                 tmp|=V>>3; 
-                 XOffset=V&7;
-                }
-                else
-                {  
-                 tmp&=0x8C1F;
-                 tmp|=((V&~0x7)<<2);
-                 tmp|=(V&7)<<12;
-                }
-                TempAddr=tmp;
-                vtoggle^=1; 
+    PPUGenLatch=V;
+    if (!vtoggle) {
+      tmp&=0xFFE0;
+      tmp|=V>>3; 
+      XOffset=V&7;
+    } else {  
+      tmp&=0x8C1F;
+      tmp|=((V&~0x7)<<2);
+      tmp|=(V&7)<<12;
+    }
+    TempAddr=tmp;
+    vtoggle^=1; 
 }
 
 
@@ -316,23 +305,18 @@ static DECLFW(B2006)
 {
     FCEUPPU_LineUpdate();
 
-                PPUGenLatch=V;
-                if (!vtoggle) 
-                {
-                 TempAddr&=0x00FF;
-                 TempAddr|=(V&0x3f)<<8;
-                }
-                else
-                {  
-                 TempAddr&=0xFF00;
-                 TempAddr|=V;
-
-                 RefreshAddr=TempAddr;
-                 if (PPU_hook)
-                  PPU_hook(RefreshAddr);
-     //printf("%d, %04x\n",scanline,RefreshAddr);
-                }
-                vtoggle^=1;
+    PPUGenLatch=V;
+    if (!vtoggle) {
+      TempAddr&=0x00FF;
+      TempAddr|=(V&0x3f)<<8;
+    } else {  
+      TempAddr&=0xFF00;
+      TempAddr|=V;
+      RefreshAddr=TempAddr;
+      if (PPU_hook) PPU_hook(RefreshAddr);
+      //printf("%d, %04x\n",scanline,RefreshAddr);
+    }
+    vtoggle^=1;
 }
 
 static DECLFW(B2007)

@@ -60,7 +60,7 @@ static void FDSInit(void);
 static void FP_FASTAPASS(1) FDSFix(int a);
 
 #define FDSRAM GameMemBlock
-#define CHRRAM   (GameMemBlock+32768)
+#define CHRRAM (GameMemBlock+32768)
 
 static uint8 FDSRegs[6];
 static int32 IRQLatch,IRQCount;
@@ -144,34 +144,27 @@ static void FDSInit(void)
  SelectDisk=0;
 }
 
-void FCEU_FDSInsert(int oride)
-{
-  if (InDisk==255)
-        {
-         FCEU_DispMessage("Disk %d Side %s Inserted",SelectDisk>>1,(SelectDisk&1)?"B":"A"); 
-         InDisk=SelectDisk;
-        }
-        else  
-        {
-         FCEU_DispMessage("Disk %d Side %s Ejected",SelectDisk>>1,(SelectDisk&1)?"B":"A");
-         InDisk=255;
-        }
+void FCEU_FDSInsert(int oride) {
+  if (InDisk==255) {
+    FCEU_DispMessage("Disk %d Side %s Inserted",SelectDisk>>1,(SelectDisk&1)?"B":"A"); 
+    InDisk=SelectDisk;
+  } else {
+    FCEU_DispMessage("Disk %d Side %s Ejected",SelectDisk>>1,(SelectDisk&1)?"B":"A");
+    InDisk=255;
+  }
 }
 
-void FCEU_FDSEject(void)
-{
-         InDisk=255;
+void FCEU_FDSEject(void) {
+  InDisk=255;
 }
 
-void FCEU_FDSSelect(void)
-{
-  if (InDisk!=255)
-        {
-         FCEU_DispMessage("Eject disk before selecting.");
-   return;
-        }
-        SelectDisk=((SelectDisk+1)%TotalSides)&3;
-        FCEU_DispMessage("Disk %d Side %s Selected",SelectDisk>>1,(SelectDisk&1)?"B":"A");
+void FCEU_FDSSelect(void) {
+  if (InDisk!=255) {
+    FCEU_DispMessage("Eject disk before selecting.");
+    return;
+  }
+  SelectDisk=((SelectDisk+1)%TotalSides)&3;
+  FCEU_DispMessage("Disk %d Side %s Selected",SelectDisk>>1,(SelectDisk&1)?"B":"A");
 }
 
 static void FP_FASTAPASS(1) FDSFix(int a)
@@ -223,52 +216,43 @@ static DECLFR(FDSRead4030)
   return ret;
 }
 
-static DECLFR(FDSRead4031)
-{
+static DECLFR(FDSRead4031) {
   static uint8 z=0;
-  if (InDisk!=255)
-  {
-         z=diskdata[InDisk][DiskPtr];
-   if (!fceuindbg)
-   {
-          if (DiskPtr<64999) DiskPtr++;
-          DiskSeekIRQ=150;
-          X6502_IRQEnd(FCEU_IQEXT2);
-   }
+  if (InDisk!=255) {
+    z=diskdata[InDisk][DiskPtr];
+    if (!fceuindbg) {
+      if (DiskPtr<64999) DiskPtr++;
+      DiskSeekIRQ=150;
+      X6502_IRQEnd(FCEU_IQEXT2);
+    }
   }
-        return z;
-}
-static DECLFR(FDSRead4032)
-{      
-        uint8 ret;
-
-        ret=X.DB&~7;
-        if (InDisk==255)
-         ret|=5;
-
-        if (InDisk==255 || !(FDSRegs[5]&1) || (FDSRegs[5]&2))       
-         ret|=2;
-        return ret;
+  return z;
 }
 
-static DECLFR(FDSRead4033)
-{
+static DECLFR(FDSRead4032) {      
+  uint8 ret;
+
+  ret=X.DB&~7;
+  if (InDisk==255) ret|=5;
+
+  if (InDisk==255 || !(FDSRegs[5]&1) || (FDSRegs[5]&2)) ret|=2;
+  return ret;
+}
+
+static DECLFR(FDSRead4033) {
   return 0x80; // battery
 }
 
-static DECLFW(FDSRAMWrite)
-{
- (FDSRAM-0x6000)[A]=V;
+static DECLFW(FDSRAMWrite) {
+  (FDSRAM-0x6000)[A]=V;
 }
 
-static DECLFR(FDSBIOSRead)
-{
- return (FDSBIOS-0xE000)[A];
+static DECLFR(FDSBIOSRead) {
+  return (FDSBIOS-0xE000)[A];
 }
 
-static DECLFR(FDSRAMRead)
-{
- return (FDSRAM-0x6000)[A];
+static DECLFR(FDSRAMRead) {
+  return (FDSRAM-0x6000)[A];
 }
 
 /* Begin FDS sound */
@@ -276,22 +260,22 @@ static DECLFR(FDSRAMRead)
 #define FDSClock (1789772.7272727272727272/2)
 
 typedef struct {
-        int64 cycles;           // Cycles per PCM sample
-        int64 count;    // Cycle counter
+  int64 cycles;           // Cycles per PCM sample
+  int64 count;    // Cycle counter
   int64 envcount;    // Envelope cycle counter
   uint32 b19shiftreg60;
   uint32 b24adder66;
   uint32 b24latch68;
   uint32 b17latch76;
-        int32 clockcount;  // Counter to divide frequency by 8.
+  int32 clockcount;  // Counter to divide frequency by 8.
   uint8 b8shiftreg88;  // Modulation register.
   uint8 amplitude[2];  // Current amplitudes.
   uint8 speedo[2];
   uint8 mwcount;
   uint8 mwstart;
-        uint8 mwave[0x20];      // Modulation waveform
-        uint8 cwave[0x40];      // Game-defined waveform(carrier)
-        uint8 SPSG[0xB];
+  uint8 mwave[0x20];      // Modulation waveform
+  uint8 cwave[0x40];      // Game-defined waveform(carrier)
+  uint8 SPSG[0xB];
 } FDSSOUND;
 
 static FDSSOUND fdso;

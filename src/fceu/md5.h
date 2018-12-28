@@ -1,11 +1,10 @@
 #ifndef _MD5_H
 #define _MD5_H
 
-struct md5_context
-{
-    uint32 total[2];
-    uint32 state[4];
-    uint8 buffer[64];
+struct md5_context {
+  uint32 total[2];
+  uint32 state[4];
+  uint8 buffer[64];
 };
 
 void md5_starts( struct md5_context *ctx );

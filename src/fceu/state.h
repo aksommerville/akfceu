@@ -29,9 +29,9 @@ extern int CurrentState;
 void FCEUSS_CheckStates(void);
 
 typedef struct {
-           void *v;
-           uint32 s;
-     char *desc;
+  void *v;
+  uint32 s;
+  char *desc;
 } SFORMAT;
 
 void ResetExState(void (*PreSave)(void),void (*PostSave)(void));

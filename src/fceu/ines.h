@@ -64,14 +64,14 @@ extern uint8 iNESIRQa;
 #else
 #endif
 
-  typedef struct {
-    char ID[4]; /*NES^Z*/
-                uint8 ROM_size;
-                uint8 VROM_size;
-                uint8 ROM_type;
-                uint8 ROM_type2;
-                uint8 reserve[8];
-  } iNES_HEADER;
+typedef struct {
+  char ID[4]; /*NES^Z*/
+  uint8 ROM_size;
+  uint8 VROM_size;
+  uint8 ROM_type;
+  uint8 ROM_type2;
+  uint8 reserve[8];
+} iNES_HEADER;
 
 void FASTAPASS(2) VRAM_BANK1(uint32 A, uint8 V);
 void FASTAPASS(2) VRAM_BANK4(uint32 A,uint32 V);
@@ -346,8 +346,6 @@ void NSFAY_Init(void);
 void NSFN106_Init(void);
 void NSFVRC7_Init(void);
 void Mapper19_ESI(void);
-
-
 
 void Mapper1_Init(CartInfo *);
 void Mapper4_Init(CartInfo *);
