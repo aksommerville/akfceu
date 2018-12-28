@@ -420,6 +420,7 @@ static int init(const char *rompath) {
   FCEUI_SetSoundVolume(100);
   FCEUI_SetSoundQuality(0);
   FCEUI_Sound(22050);
+  FCEUI_DisableSpriteLimitation(1);
 
   if (rompath&&rompath[0]) {
     if (load_rom_file(rompath)<0) return -1;

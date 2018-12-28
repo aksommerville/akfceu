@@ -136,5 +136,11 @@ src/fceu/mappers/69.c:234: SetWriteHandler(0xe000,0xffff,Mapper69_SWH);
 src/fceu/mappers/69.c:246: SetWriteHandler(0xe000,0xffff,Mapper69_SWH); <-- this does happen
 ...Not seeing it. I'll leave the line disabled, with a log entry after, in case we ever find a ROM that invokes it.
 
-[ ] Is there anything we can do about the sprite flickering? I see it in most games.
+[X] Is there anything we can do about the sprite flickering? I see it in most games.
+    Easily reproducible with Chip N Dale's Rescue Rangers, enter 2-player mode and just stand next to each other.
+    Sprites are drawn per scanline at ppu.c:1116, CopySprites().
+    ppu.c:988: RefreshSprites() draws one scanline of sprites only, which is then composited onto the framebuffer.
+    Seems the vanished sprites are missing from "SPRBUF"...
+    um.
+    Looks like this is already known. Just call FCEUI_DisableSpriteLimitation(1) during init.
 [X] Finder: "akfceu can not open files of this type". Can we? Hell yeah we can.
