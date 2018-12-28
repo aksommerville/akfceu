@@ -158,8 +158,13 @@ static int audiorp=0;
 static int audiowp=0;
 
 static void cb_audio(int16_t *dst,int dstc) {
-  for (;dstc-->0;dst++) {
-    *dst=audiobuf[audiorp++];
+  while (dstc>0) {
+    int cpc=AUDIO_BUFFER_SIZE-audiorp;
+    if (cpc>dstc) cpc=dstc;
+    memcpy(dst,audiobuf+audiorp,cpc<<1);
+    dst+=cpc;
+    dstc-=cpc;
+    audiorp+=cpc;
     if (audiorp>=AUDIO_BUFFER_SIZE) audiorp=0;
   }
 }
@@ -455,12 +460,13 @@ static int update() {
     return -1;
   }
 
+  uint8_t *real_framebuffer=framebuffer;
   if (vmrunning) {
     uint8 *vmfb=0;
     int32 *vmab=0;
     int32 vmabc=0;
     FCEUI_Emulate(&vmfb,&vmab,&vmabc,0);
-    if (vmfb) memcpy(framebuffer,vmfb,sizeof(framebuffer)); //TODO This copy really isn't necessary.
+    if (vmfb) real_framebuffer=vmfb;
     if (vmabc) {
       if (receive_audio_from_vm(vmab,vmabc)<0) return -1;
     } else {
@@ -473,7 +479,7 @@ static int update() {
     usleep(16000);
   }
 
-  if (akfceu_video_render(framebuffer+256*11,palette)<0) {
+  if (akfceu_video_render(real_framebuffer+256*11,palette)<0) {
     return -1;
   }
   
