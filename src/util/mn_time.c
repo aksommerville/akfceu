@@ -28,7 +28,7 @@ void mn_time_sleep(int us) {
 
 /* Assistant clock, setup.
  */
- 
+
 int mn_clockassist_setup(struct mn_clockassist *clockassist,int rate_hz) {
   if (!clockassist) return -1;
   if (rate_hz<1) return -1;
@@ -38,7 +38,7 @@ int mn_clockassist_setup(struct mn_clockassist *clockassist,int rate_hz) {
   clockassist->mode=MN_CLOCKASSIST_MODE_AUTO;
   clockassist->delay=1000000/rate_hz;
   clockassist->next=mn_time_now();
-  
+ 
   clockassist->cyclep=0;
   clockassist->cycle_start_time=clockassist->next;
   clockassist->cycle_expect=clockassist->delay*MN_CLOCKASSIST_CYCLE_LENGTH;
@@ -120,6 +120,6 @@ int mn_clockassist_update(struct mn_clockassist *clock) {
       } break;
     default: return -1;
   }
-  
+ 
   return 0;
 }

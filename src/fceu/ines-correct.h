@@ -53,7 +53,7 @@
    {0xf518dd58,7,8},  /* Captain Skyhawk */
    {0x7ccb12a3,43,-1},  /* SMB2j */
    {0x6f12afc5,235,-1},  /* Golden Game 150-in-1 */
-   {0xccc03440,156,-1},  
+   {0xccc03440,156,-1}, 
    {0xc9ee15a7,3,-1},  /* 3 is probably best.  41 WILL NOT WORK. */
 
    {0x3e1271d5,79,1},  /* Tiles of Fate */
@@ -80,7 +80,7 @@
 {0xc2730c30,34,0},  /* Deadly Towers */
 {0x932ff06e,34,1},  /* Classic Concentration */
 {0x4c7c1af3,34,1},  /* Caesar's Palace */
-   
+  
 {0x15141401,4,8},       /* Asmik Kun Land */
 {0x59280bec,4,8},       /* Jackie Chan */
 {0x4cccd878,4,8},  /* Cat Ninden Teyandee */

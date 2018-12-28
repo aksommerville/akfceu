@@ -27,9 +27,9 @@ static DECLFW(Mapper33_write)
         //printf("%04x:%02x, %d\n",A,V,scanline);
 
         A&=0xF003;
-        if(A>=0xA000 && A<=0xA003)
+        if (A>=0xA000 && A<=0xA003)
          VROM_BANK1(0x1000+((A&3)<<10),V);
-        else switch(A)
+        else switch (A)
   {
     case 0x8000:if(!is48) MIRROR_SET((V>>6)&1);
                ROM_BANK8(0x8000,V);
@@ -42,22 +42,22 @@ static DECLFW(Mapper33_write)
 
 static DECLFW(Mapper48_HiWrite)
 {
-  switch(A&0xF003)
+  switch (A&0xF003)
   {
          case 0xc000:IRQLatch=V;break;
          case 0xc001:IRQCount=IRQLatch;break;
          case 0xc003:IRQa=0;X6502_IRQEnd(FCEU_IQEXT);break;
          case 0xc002:IRQa=1;break;
-         case 0xe000:MIRROR_SET((V>>6)&1);break; 
+         case 0xe000:MIRROR_SET((V>>6)&1);break;
   }
 }
 
 static void heho(void)
 {
- if(IRQa)
+ if (IRQa)
  {
    IRQCount++;
-   if(IRQCount==0x100) 
+   if (IRQCount==0x100)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;

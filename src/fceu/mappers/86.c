@@ -22,7 +22,7 @@
 
 DECLFW(Mapper86_write)
 {
- if(A>=0x6000 && A<=0x6fFF)
+ if (A>=0x6000 && A<=0x6fFF)
  {
   VROM_BANK8((V&3)|((V>>4)&4));
   ROM_BANK32((V>>4)&3);

@@ -30,7 +30,7 @@ static void DoSync(uint32 A)
  rg[1]=A>>8;
 
  MIRROR_SET((A>>1)&1);
- if(A&1)  //32 KB
+ if (A&1)  //32 KB
  {
   ROM_BANK32(p);
  }
@@ -39,14 +39,14 @@ static void DoSync(uint32 A)
   ROM_BANK16(0x8000,(p<<1)|((A&4)>>2));
   ROM_BANK16(0xc000,(p<<1)|((A&4)>>2));
  }
- if(A&0x80)
+ if (A&0x80)
  {
   PPUCHRRAM=0;
  }
  else
  {
   PPUCHRRAM=0xFF;
-  if(A&0x200)
+  if (A&0x200)
    ROM_BANK16(0xC000,(p<<1)|7);
   else
    ROM_BANK16(0xC000,(p<<1)&(~7));

@@ -31,7 +31,7 @@
 
 #define IOPTION_GUN             0x1
 #define IOPTION_SWAPDIRAB       0x2
-  
+ 
 #define IOPTION_PREDIP          0x10
 typedef struct
 {
@@ -61,10 +61,10 @@ void FCEU_VSUniToggleDIP(int w)
 
 void FCEUI_VSUniSetDIP(int w, int state)
 {
- if(((vsdip >> w) & 1) != state)
+ if (((vsdip >> w) & 1) != state)
   FCEUI_VSUniToggleDIP(w);
 }
- 
+
 uint8 FCEUI_VSUniGetDIPs(void)
 {
  return(vsdip);
@@ -89,14 +89,14 @@ static uint8 secdata[2][32]=
 static uint8 *secptr;
 
 static uint8 VSindex;
-         
+        
 static DECLFR(VSSecRead)
 {
- switch(A)
+ switch (A)
  {
   case 0x5e00: VSindex=0;return X.DB;
   case 0x5e01: return(secptr[(VSindex++)&0x1F]);
- }       
+ }      
  return(0x00);
 }
 uint8 coinon=0;
@@ -110,7 +110,7 @@ static int curppu;
 static int64 curmd5;
 
 #define RP2C04_001      1
-#define RP2C04_002      2 
+#define RP2C04_002      2
 #define RP2C04_003      3
 #define RP2C05_004      4
 #define RCP2C03B        5
@@ -145,19 +145,19 @@ static uint8 xevselect = 0;
 static DECLFR(XevRead)
 {
  //printf("%04x\n",A);
- if(A == 0x54FF)
+ if (A == 0x54FF)
  {
   return(0x5);
  }
- else if(A == 0x5678)
+ else if (A == 0x5678)
  {
   return(xevselect?0:1);
  }
- else if(A == 0x578F)
+ else if (A == 0x578F)
  {
   return(xevselect?0xd1:0x89);
  }
- else if(A == 0x5567)
+ else if (A == 0x5567)
  {
   xevselect ^=1;
   return(xevselect?0x37:0x3E);
@@ -167,7 +167,7 @@ static DECLFR(XevRead)
 
 void FCEU_VSUniSwap(uint8 *j0, uint8 *j1)
 {
- if(curvs->ioption & IOPTION_SWAPDIRAB)
+ if (curvs->ioption & IOPTION_SWAPDIRAB)
  {
   uint16 t=*j0;
   *j0=(*j0&0xC)|(*j1&0xF3);
@@ -180,31 +180,31 @@ void FCEU_VSUniPower(void)
  coinon = 0;
  VSindex = 0;
 
- if(secptr)
+ if (secptr)
   SetReadHandler(0x5e00,0x5e01,VSSecRead);
 
- if(curppu == RC2C05_04)
+ if (curppu == RC2C05_04)
  {
-  OldReadPPU = GetReadHandler(0x2002);  
+  OldReadPPU = GetReadHandler(0x2002); 
   SetReadHandler(0x2002, 0x2002, A2002_Topgun);
  }
- else if(curppu == RC2C05_03)
+ else if (curppu == RC2C05_03)
  {
   OldReadPPU = GetReadHandler(0x2002);
   SetReadHandler(0x2002, 0x2002, A2002_Gumshoe);
  }
- else if(curppu == RC2C05_02)
+ else if (curppu == RC2C05_02)
  {
   OldReadPPU = GetReadHandler(0x2002);
   SetReadHandler(0x2002, 0x2002, A2002_MBJ);
  }
- if(curppu == RC2C05_04 || curppu == RC2C05_01 || curppu == RC2C05_03 || curppu == RC2C05_02)
+ if (curppu == RC2C05_04 || curppu == RC2C05_01 || curppu == RC2C05_03 || curppu == RC2C05_02)
  {
   OldWritePPU[0] = GetWriteHandler(0x2000);
   OldWritePPU[1] = GetWriteHandler(0x2001);
   SetWriteHandler(0x2000, 0x2001, B2000_2001_2C05);
  }
- if(curmd5 == 0x2d396247cf58f9faLL) /* Super Xevious */
+ if (curmd5 == 0x2d396247cf58f9faLL) /* Super Xevious */
  {
   SetReadHandler(0x5400,0x57FF,XevRead);
  }
@@ -223,17 +223,17 @@ void FCEU_VSUniPower(void)
    this list as "this game must use this PPU".
 
 RP2C04-001:
-- Baseball   
+- Baseball  
 - Freedom Force
 - Gradius
 - Hogan's Alley
 - Mach Rider (Japan, Fighting Course)
 - Pinball
-- Platoon  
+- Platoon 
 - Super Xevious
 
 RP2C04-002:
-- Castlevania 
+- Castlevania
 - Ladies golf
 - Mach Rider (Endurance Course)
 - Raid on Bungeling Bay (Japan)
@@ -252,7 +252,7 @@ RP2c05-004:
 - Clu Clu Land
 - Excite Bike (Japan)
 - Ice Climber
-- Ice Climber Dual (Japan)  
+- Ice Climber Dual (Japan) 
 - Super Mario Bros.
 
 Rcp2c03b:
@@ -261,7 +261,7 @@ Rcp2c03b:
 - Mahjang
 - Pinball (Japan)
 - Rbi Baseball
-- Star Luster 
+- Star Luster
 - Stroke and Match Golf (Japan)
 - Super Skykid
 - Tennis
@@ -274,9 +274,9 @@ RC2C05-02:
 - Mighty Bomb Jack (Japan)
 
 RC2C05-03:
-- Gumshoe   
+- Gumshoe  
 
-RC2C05-04: 
+RC2C05-04:
 - Top Gun
 */
 
@@ -328,12 +328,12 @@ void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
 {
  VSUNIENTRY *vs = VSUniGames;
 
- while(vs->name)
+ while (vs->name)
  {
-  if(md5partial == vs->md5partial)
+  if (md5partial == vs->md5partial)
   {
 
-   if(vs->ppu < RCP2C03B) pale = vs->ppu;
+   if (vs->ppu < RCP2C03B) pale = vs->ppu;
    //puts(vs->name);
    *MapperNo = vs->mapper;
    *Mirroring = vs->mirroring;
@@ -347,18 +347,18 @@ void FCEU_VSUniCheck(uint64 md5partial, int *MapperNo, uint8 *Mirroring)
 
    {
     static int64 tko=0x6e1ee06171d8ce3aULL, rbi=0x6a02d345812938afULL;
-    if(md5partial == tko)
-     secptr=secdata[0]; 
-    if(md5partial == rbi)
-     secptr = secdata[1]; 
+    if (md5partial == tko)
+     secptr=secdata[0];
+    if (md5partial == rbi)
+     secptr = secdata[1];
    }
 
    vsdip = 0x0;
-   if(vs->ioption & IOPTION_PREDIP)
+   if (vs->ioption & IOPTION_PREDIP)
    {
     vsdip= vs->predip;
    }
-   if(vs->ioption & IOPTION_GUN)
+   if (vs->ioption & IOPTION_GUN)
    {
     FCEUGameInfo->input[0] = SI_ZAPPER;
     FCEUGameInfo->input[1] = SI_NONE;
@@ -379,39 +379,39 @@ void FCEU_VSUniDraw(uint8 *XBuf)
   uint32 *dest;
   int y,x;
 
-  if(!DIPS) return;
+  if (!DIPS) return;
 
   dest=(uint32 *)(XBuf+256*12+164);
-  for(y=24;y;y--,dest+=(256-72)>>2)
+  for (y=24;y;y--,dest+=(256-72)>>2)
   {
-   for(x=72>>2;x;x--,dest++) 
+   for (x=72>>2;x;x--,dest++)
     *dest=0;
   }
-   
+  
   dest=(uint32 *)(XBuf+256*(12+4)+164+6 );
-  for(y=16;y;y--,dest+=(256>>2)-16)
-   for(x=8;x;x--)
+  for (y=16;y;y--,dest+=(256>>2)-16)
+   for (x=8;x;x--)
    {
     *dest=0x01010101;
     dest+=2;
    }
 
   dest=(uint32 *)(XBuf+256*(12+4)+164+6 );
-  for(x=0;x<8;x++,dest+=2)
+  for (x=0;x<8;x++,dest+=2)
   {
    uint32 *da=dest+(256>>2);
 
-   if(!((vsdip>>x)&1))
+   if (!((vsdip>>x)&1))
     da+=(256>>2)*10;
-   for(y=4;y;y--,da+=256>>2)
+   for (y=4;y;y--,da+=256>>2)
     *da=0;
-  } 
+  }
 }
 
 
 SFORMAT FCEUVSUNI_STATEINFO[]={
   { &vsdip, 1, "vsdp"},
-  { &coinon, 1, "vscn"}, 
+  { &coinon, 1, "vscn"},
   { &VSindex, 1, "vsin"},
   { 0}
 };

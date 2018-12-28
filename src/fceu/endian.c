@@ -31,9 +31,9 @@ void FlipByteOrder(uint8 *src, uint32 count)
  uint8 *start=src;
  uint8 *end=src+count-1;
 
- if((count&1) || !count)        return;         /* This shouldn't happen. */
+ if ((count&1) || !count)        return;         /* This shouldn't happen. */
 
- while(count--)
+ while (count--)
  {
   uint8 tmp;
 
@@ -66,7 +66,7 @@ int write32le(uint32 b, FILE *fp)
 int read32le(uint32 *Bufo, FILE *fp)
 {
  uint32 buf;
- if(fread(&buf,1,4,fp)<4)
+ if (fread(&buf,1,4,fp)<4)
   return 0;
  #ifdef LSB_FIRST
  *(uint32*)Bufo=buf;
@@ -89,12 +89,12 @@ int read16le(char *d, FILE *fp)
 }
 
 void FCEU_en32lsb(uint8 *buf, uint32 morp)
-{ 
+{
  buf[0]=morp;
  buf[1]=morp>>8;
  buf[2]=morp>>16;
  buf[3]=morp>>24;
-} 
+}
 
 uint32 FCEU_de32lsb(uint8 *morp)
 {

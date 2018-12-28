@@ -36,7 +36,7 @@ static void Sync(void)
 
  setchr2(0x0000,DRegs[0]);
  setchr2(0x0800,DRegs[1]);
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
   setchr1(0x1000+(x<<10),DRegs[2+x]);
  setprg8(0x8000,DRegs[6]);
  setprg8(0xa000,DRegs[7]);
@@ -48,12 +48,12 @@ static void StateRestore(int version)
 }
 static DECLFW(DEIWrite)
 {
- switch(A&0x8001)
+ switch (A&0x8001)
  {
   case 0x8000:cmd=V&0x07;break;
   case 0x8001:if(cmd<=0x05) V&=0x3F;
         else V&=0x0F;
-        if(cmd<=0x01) V>>=1;
+        if (cmd<=0x01) V>>=1;
         DRegs[cmd&0x07]=V;
         Sync();
         break;

@@ -27,15 +27,15 @@ static DECLFW(Mapper92_write)
  uint8 reg=(A&0xF0)>>4;
  uint8 bank=A&0xF;
 
- if(A>=0x9000)
+ if (A>=0x9000)
  {
-  if(reg==0xD) ROM_BANK16(0xc000,bank);
-  else if(reg==0xE) VROM_BANK8(bank);
+  if (reg==0xD) ROM_BANK16(0xc000,bank);
+  else if (reg==0xE) VROM_BANK8(bank);
  }
  else
  {
-  if(reg==0xB) ROM_BANK16(0xc000,bank);
-  else if(reg==0x7) VROM_BANK8(bank);
+  if (reg==0xB) ROM_BANK16(0xc000,bank);
+  else if (reg==0x7) VROM_BANK8(bank);
  }
 }
 

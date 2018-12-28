@@ -20,7 +20,7 @@ pal unvpalette[7] = {
 { 0x1d<<2,0x1d<<2,0x24<<2}, // Greyish
 { 190,0,0    }, // Redish
 { 51,255,51}, // Bright green
-{ 49,14,200}, 
+{ 49,14,200},
 };
 
 

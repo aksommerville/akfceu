@@ -1,7 +1,7 @@
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
- *  Copyright (C) 1998 BERO 
+ *  Copyright (C) 1998 BERO
  *  Copyright (C) 2002 Xodnizel
  *
  * This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ static int MapperNo;
 
 static iNES_HEADER head;
 
-/*  MapperReset() is called when the NES is reset(with the reset button).  
+/*  MapperReset() is called when the NES is reset(with the reset button). 
     Mapperxxx_init is called when the NES has been powered on.
 */
 
@@ -77,24 +77,24 @@ static DECLFR(TrainerRead)
 
 static void iNESGI(int h)
 {
- switch(h)
+ switch (h)
  {
   case GI_RESETM2:
-    if(MapperReset)
+    if (MapperReset)
      MapperReset();
-    if(iNESCart.Reset)
+    if (iNESCart.Reset)
      iNESCart.Reset();
     break;
   case GI_POWER:
-                if(iNESCart.Power)
+                if (iNESCart.Power)
                  iNESCart.Power();
-    if(trainerpoo)
+    if (trainerpoo)
     {
      int x;
-     for(x=0;x<512;x++)
+     for (x=0;x<512;x++)
      {
       X6502_DMW(0x7000+x,trainerpoo[x]);
-      if(X6502_DMR(0x7000+x)!=trainerpoo[x])
+      if (X6502_DMR(0x7000+x)!=trainerpoo[x])
       {
                     SetReadHandler(0x7000,0x71FF,TrainerRead);
         break;
@@ -106,11 +106,11 @@ static void iNESGI(int h)
     {
                  FCEU_SaveGameSave(&iNESCart);
 
-     if(iNESCart.Close) iNESCart.Close();
-      if(ROM) {free(ROM);ROM=0;}
-     if(VROM) {free(VROM);VROM=0;}
-           if(MapClose) MapClose();
-     if(trainerpoo) {FCEU_gfree(trainerpoo);trainerpoo=0;}
+     if (iNESCart.Close) iNESCart.Close();
+      if (ROM) {free(ROM);ROM=0;}
+     if (VROM) {free(VROM);VROM=0;}
+           if (MapClose) MapClose();
+     if (trainerpoo) {FCEU_gfree(trainerpoo);trainerpoo=0;}
           }
           break;
      }
@@ -201,9 +201,9 @@ static void SetInput(void)
   };
  int x=0;
 
- while(moo[x].input1>=0 || moo[x].input2>=0 || moo[x].inputfc>=0)
+ while (moo[x].input1>=0 || moo[x].input2>=0 || moo[x].inputfc>=0)
  {
-  if(moo[x].crc32==iNESGameCRC32)
+  if (moo[x].crc32==iNESGameCRC32)
   {
    FCEUGameInfo->input[0]=moo[x].input1;
    FCEUGameInfo->input[1]=moo[x].input2;
@@ -236,9 +236,9 @@ void CheckBad(uint64 md5partial)
 
  x=0;
  //printf("0x%llx\n",md5partial);
- while(BadROMImages[x].name)
+ while (BadROMImages[x].name)
  {
-  if(BadROMImages[x].md5partial == md5partial)
+  if (BadROMImages[x].md5partial == md5partial)
   {
    FCEU_PrintError("The copy game you have loaded, \"%s\", is bad, and will not work properly on FCE Ultra.", BadROMImages[x].name);
    return;
@@ -250,7 +250,7 @@ void CheckBad(uint64 md5partial)
 
 
 struct CHINF {
-  uint32 crc32;  
+  uint32 crc32; 
   int32 mapper;
   int32 mirror;
 };
@@ -268,7 +268,7 @@ static void CheckHInfo(void)
   {
    0x498c10dc463cfe95LL,  /* Battle Fleet */
    0x6917ffcaca2d8466LL,  /* Famista '90 */
-         
+        
          0xd63dcc68c2b20adcLL,    /* Final Fantasy J */
          0x012df596e2b31174LL,    /* Final Fantasy 1+2 */
          0xf6b359a720549ecdLL,    /* Final Fantasy 2 */
@@ -306,7 +306,7 @@ static void CheckHInfo(void)
 
          0x94b9484862a26cbaLL,    /* Legend of Zelda */
          0x04a31647de80fdabLL,    /*      ""      */
-         
+        
          0x9aa1dc16c05e7de5LL,    /* Startropics */
          0x1b084107d0878bd0LL,    /* Startropics 2*/
 
@@ -323,7 +323,7 @@ static void CheckHInfo(void)
  int x;
  uint64 partialmd5=0;
 
- for(x=0;x<8;x++)
+ for (x=0;x<8;x++)
  {
   partialmd5 |= (uint64)iNESCart.MD5[15-x] << (x*8);
   //printf("%16llx\n",partialmd5);
@@ -334,37 +334,37 @@ static void CheckHInfo(void)
 
  do
  {
-  if(moo[x].crc32==iNESGameCRC32)
+  if (moo[x].crc32==iNESGameCRC32)
   {
-   if(moo[x].mapper>=0)
+   if (moo[x].mapper>=0)
    {
-    if(moo[x].mapper&0x800 && VROM_size)
+    if (moo[x].mapper&0x800 && VROM_size)
     {
      VROM_size=0;
      free(VROM);
      VROM=0;
      tofix|=8;
     }
-    if(MapperNo!=(moo[x].mapper&0xFF))
+    if (MapperNo!=(moo[x].mapper&0xFF))
     {
      tofix|=1;
      MapperNo=moo[x].mapper&0xFF;
     }
    }
-   if(moo[x].mirror>=0)
+   if (moo[x].mirror>=0)
    {
-    if(moo[x].mirror==8)
+    if (moo[x].mirror==8)
     {
-     if(Mirroring==2)  /* Anything but hard-wired(four screen). */
+     if (Mirroring==2)  /* Anything but hard-wired(four screen). */
      {
       tofix|=2;
       Mirroring=0;
      }
     }
-    else if(Mirroring!=moo[x].mirror)
+    else if (Mirroring!=moo[x].mirror)
     {
-     if(Mirroring!=(moo[x].mirror&~4))
-      if((moo[x].mirror&~4)<=2)  /* Don't complain if one-screen mirroring
+     if (Mirroring!=(moo[x].mirror&~4))
+      if ((moo[x].mirror&~4)<=2)  /* Don't complain if one-screen mirroring
            needs to be set(the iNES header can't
            hold this information).
         */
@@ -375,14 +375,14 @@ static void CheckHInfo(void)
    break;
   }
   x++;
- } while(moo[x].mirror>=0 || moo[x].mapper>=0);
+ } while (moo[x].mirror>=0 || moo[x].mapper>=0);
 
  x=0;
- while(savie[x] != 0)
+ while (savie[x] != 0)
  {
-  if(savie[x] == partialmd5)
+  if (savie[x] == partialmd5)
   {
-   if(!(head.ROM_type&2))
+   if (!(head.ROM_type&2))
    {
     tofix|=4;
     head.ROM_type|=2;
@@ -394,30 +394,30 @@ static void CheckHInfo(void)
  /* Games that use these iNES mappers tend to have the four-screen bit set
     when it should not be.
  */
- if((MapperNo==118 || MapperNo==24 || MapperNo==26) && (Mirroring==2))
+ if ((MapperNo==118 || MapperNo==24 || MapperNo==26) && (Mirroring==2))
  {
   Mirroring=0;
   tofix|=2;
  }
 
  /* Four-screen mirroring implicitly set. */
- if(MapperNo==99)
-  Mirroring=2;   
-  
- if(tofix)
+ if (MapperNo==99)
+  Mirroring=2;  
+ 
+ if (tofix)
  {
   char gigastr[768];
   strcpy(gigastr,"The iNES header contains incorrect information.  For now, the information will be corrected in RAM.  ");
-  if(tofix&1)
+  if (tofix&1)
    sprintf(gigastr+strlen(gigastr),"The mapper number should be set to %d.  ",MapperNo);
-  if(tofix&2)
+  if (tofix&2)
   {
    char *mstr[3]={"Horizontal","Vertical","Four-screen"};
    sprintf(gigastr+strlen(gigastr),"Mirroring should be set to \"%s\".  ",mstr[Mirroring&3]);
   }
-  if(tofix&4)
-   strcat(gigastr,"The battery-backed bit should be set.  ");  
-  if(tofix&8)
+  if (tofix&4)
+   strcat(gigastr,"The battery-backed bit should be set.  "); 
+  if (tofix&8)
    strcat(gigastr,"This game should not have any CHR ROM.  ");
   strcat(gigastr,"\n");
   FCEU_printf("%s",gigastr);
@@ -433,33 +433,33 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 {
         struct md5_context md5;
 
-  if(FCEU_fread(&head,1,16,fp)!=16)
+  if (FCEU_fread(&head,1,16,fp)!=16)
     return 0;
 
-        if(memcmp(&head,"NES\x1a",4))
+        if (memcmp(&head,"NES\x1a",4))
          return 0;
 
   memset(&iNESCart,0,sizeof(iNESCart));
 
-        if(!memcmp((char *)(&head)+0x7,"DiskDude",8))
+        if (!memcmp((char *)(&head)+0x7,"DiskDude",8))
         {
          memset((char *)(&head)+0x7,0,0x9);
         }
 
-        if(!memcmp((char *)(&head)+0x7,"demiforce",9))
+        if (!memcmp((char *)(&head)+0x7,"demiforce",9))
         {
          memset((char *)(&head)+0x7,0,0x9);
         }
 
-        if(!memcmp((char *)(&head)+0xA,"Ni03",4))
+        if (!memcmp((char *)(&head)+0xA,"Ni03",4))
         {
-         if(!memcmp((char *)(&head)+0x7,"Dis",3))
+         if (!memcmp((char *)(&head)+0x7,"Dis",3))
           memset((char *)(&head)+0x7,0,0x9);
          else
           memset((char *)(&head)+0xA,0,0x6);
         }
 
-        if(!head.ROM_size)
+        if (!head.ROM_size)
   {
    FCEU_PrintError("No PRG ROM!");
    return(0);
@@ -469,28 +469,28 @@ int iNESLoad(const char *name, FCEUFILE *fp)
         VROM_size = head.VROM_size;
   ROM_size=uppow2(ROM_size);
 
-        if(VROM_size)
+        if (VROM_size)
    VROM_size=uppow2(VROM_size);
 
         MapperNo = (head.ROM_type>>4);
         MapperNo|=(head.ROM_type2&0xF0);
         Mirroring = (head.ROM_type&1);
 
-  if(head.ROM_type&8) Mirroring=2;
+  if (head.ROM_type&8) Mirroring=2;
 
-        if(!(ROM=(uint8 *)FCEU_malloc(ROM_size<<14)))
+        if (!(ROM=(uint8 *)FCEU_malloc(ROM_size<<14)))
    return 0;
-    
-        if (VROM_size) 
-         if(!(VROM=(uint8 *)FCEU_malloc(VROM_size<<13)))
+   
+        if (VROM_size)
+         if (!(VROM=(uint8 *)FCEU_malloc(VROM_size<<13)))
    {
     free(ROM);
     return 0;
    }
 
         memset(ROM,0xFF,ROM_size<<14);
-        if(VROM_size) memset(VROM,0xFF,VROM_size<<13);
-        if(head.ROM_type&4)   /* Trainer */
+        if (VROM_size) memset(VROM,0xFF,VROM_size<<13);
+        if (head.ROM_type&4)   /* Trainer */
   {
    trainerpoo=(uint8 *)FCEU_gmalloc(512);
     FCEU_fread(trainerpoo,512,1,fp);
@@ -504,15 +504,15 @@ int iNESLoad(const char *name, FCEUFILE *fp)
 
         FCEU_fread(ROM,0x4000,head.ROM_size,fp);
 
-  if(VROM_size)
+  if (VROM_size)
    FCEU_fread(VROM,0x2000,head.VROM_size,fp);
 
-        md5_starts(&md5);  
+        md5_starts(&md5); 
         md5_update(&md5,ROM,ROM_size<<14);
 
   iNESGameCRC32=CalcCRC32(0,ROM,ROM_size<<14);
 
-  if(VROM_size)
+  if (VROM_size)
   {
    iNESGameCRC32=CalcCRC32(iNESGameCRC32,VROM,VROM_size<<13);
          md5_update(&md5,VROM,VROM_size<<13);
@@ -528,13 +528,13 @@ int iNESLoad(const char *name, FCEUFILE *fp)
         {
          int x;
          FCEU_printf(" ROM MD5:  0x");
-         for(x=0;x<16;x++) 
+         for (x=0;x<16;x++)
           FCEU_printf("%02x",iNESCart.MD5[x]);
          FCEU_printf("\n");
         }
   FCEU_printf(" Mapper:  %d\n Mirroring: %s\n", MapperNo,Mirroring==2?"None(Four-screen)":Mirroring?"Vertical":"Horizontal");
-        if(head.ROM_type&2) FCEU_printf(" Battery-backed.\n");
-        if(head.ROM_type&4) FCEU_printf(" Trained.\n");
+        if (head.ROM_type&2) FCEU_printf(" Battery-backed.\n");
+        if (head.ROM_type&4) FCEU_printf(" Trained.\n");
 
 
   SetInput();
@@ -543,44 +543,44 @@ int iNESLoad(const char *name, FCEUFILE *fp)
    int x;
    uint64 partialmd5=0;
 
-   for(x=0;x<8;x++)
+   for (x=0;x<8;x++)
    {
     partialmd5 |= (uint64)iNESCart.MD5[7-x] << (x*8);
-   } 
+   }
 
    FCEU_VSUniCheck(partialmd5, &MapperNo, &Mirroring);
   }
   /* Must remain here because above functions might change value of
      VROM_size and free(VROM).
   */
-  if(VROM_size)
+  if (VROM_size)
          SetupCartCHRMapping(0,VROM,VROM_size*0x2000,0);
 
-        if(Mirroring==2)
+        if (Mirroring==2)
          SetupCartMirroring(4,1,ExtraNTARAM);
-        else if(Mirroring>=0x10)
+        else if (Mirroring>=0x10)
    SetupCartMirroring(2+(Mirroring&1),1,0);
   else
          SetupCartMirroring(Mirroring&1,(Mirroring&4)>>2,0);
-  
+ 
   iNESCart.battery=(head.ROM_type&2)?1:0;
   iNESCart.mirror=Mirroring;
 
   //if(MapperNo != 18) {
-  //  if(ROM) free(ROM);
-  //  if(VROM) free(VROM);
+  //  if (ROM) free(ROM);
+  //  if (VROM) free(VROM);
   //  ROM=VROM=0;
   //  return(0);
   // }
 
-  if(NewiNES_Init(MapperNo))
+  if (NewiNES_Init(MapperNo))
   {
 
   }
   else
   {
    iNESCart.Power=iNESPower;
-         if(head.ROM_type&2)
+         if (head.ROM_type&2)
    {
     iNESCart.SaveGame[0]=WRAM;
     iNESCart.SaveGameLen[0]=8192;
@@ -600,7 +600,7 @@ void FASTAPASS(2) VRAM_BANK1(uint32 A, uint8 V)
  CHRBankList[(A)>>10]=V;
  VPage[(A)>>10]=&CHRRAM[V<<10]-(A);
 }
- 
+
 void FASTAPASS(2) VRAM_BANK4(uint32 A, uint32 V)
 {
  V&=1;
@@ -616,7 +616,7 @@ void FASTAPASS(2) VROM_BANK1(uint32 A,uint32 V)
  setchr1(A,V);
  CHRBankList[(A)>>10]=V;
 }
- 
+
 void FASTAPASS(2) VROM_BANK2(uint32 A,uint32 V)
 {
  setchr2(A,V);
@@ -649,19 +649,19 @@ void FASTAPASS(1) VROM_BANK8(uint32 V)
 void FASTAPASS(2) ROM_BANK8(uint32 A, uint32 V)
 {
  setprg8(A,V);
- if(A>=0x8000)
+ if (A>=0x8000)
   PRGBankList[((A-0x8000)>>13)]=V;
 }
- 
+
 void FASTAPASS(2) ROM_BANK16(uint32 A, uint32 V)
 {
  setprg16(A,V);
- if(A>=0x8000) 
+ if (A>=0x8000)
  {
   PRGBankList[((A-0x8000)>>13)]=V<<1;
   PRGBankList[((A-0x8000)>>13)+1]=(V<<1)+1;
  }
-} 
+}
 
 void FASTAPASS(1) ROM_BANK32(uint32 V)
 {
@@ -674,8 +674,8 @@ void FASTAPASS(1) ROM_BANK32(uint32 V)
 
 void FASTAPASS(1) onemir(uint8 V)
 {
-  if(Mirroring==2) return;
-        if(V>1)
+  if (Mirroring==2) return;
+        if (V>1)
          V=1;
   Mirroring=0x10|V;
   setmirror(MI_0+V);
@@ -683,14 +683,14 @@ void FASTAPASS(1) onemir(uint8 V)
 
 void FASTAPASS(1) MIRROR_SET2(uint8 V)
 {
-  if(Mirroring==2) return;
+  if (Mirroring==2) return;
   Mirroring=V;
   setmirror(V);
 }
 
 void FASTAPASS(1) MIRROR_SET(uint8 V)
 {
-  if(Mirroring==2) return;
+  if (Mirroring==2) return;
   V^=1;
   Mirroring=V;
   setmirror(V);
@@ -701,7 +701,7 @@ static void NONE_init(void)
         ROM_BANK16(0x8000,0);
         ROM_BANK16(0xC000,~0);
 
-        if(VROM_size) 
+        if (VROM_size)
    VROM_BANK8(0);
         else
    setvram8(CHRRAM);
@@ -768,17 +768,17 @@ void (*MapStateRestore)(int version);
 void iNESStateRestore(int version)
 {
  int x;
- 
- if(!MapperNo) return;
 
- for(x=0;x<4;x++)
+ if (!MapperNo) return;
+
+ for (x=0;x<4;x++)
   setprg8(0x8000+x*8192,PRGBankList[x]);
 
- if(VROM_size)
-  for(x=0;x<8;x++) 
+ if (VROM_size)
+  for (x=0;x<8;x++)
     setchr1(0x400*x,CHRBankList[x]);
 
-if(0) switch(Mirroring)
+if(0) switch (Mirroring)
  {
    case 0:setmirror(MI_H);break;
    case 1:setmirror(MI_V);break;
@@ -787,7 +787,7 @@ if(0) switch(Mirroring)
    case 0x13:
    case 0x11:setmirror(MI_1);break;
  }
- if(MapStateRestore) MapStateRestore(version);
+ if (MapStateRestore) MapStateRestore(version);
 }
 
 static void iNESPower(void)
@@ -810,7 +810,7 @@ static void iNESPower(void)
   /* This statement represents atrocious code.  I need to rewrite
      all of the iNES mapper code... */
   IRQCount=IRQLatch=IRQa=0;
-        if(head.ROM_type&2)
+        if (head.ROM_type&2)
          memset(GameMemBlock+8192,0,sizeof(GameMemBlock)-8192);
   else
          memset(GameMemBlock,0,sizeof(GameMemBlock));
@@ -818,21 +818,21 @@ static void iNESPower(void)
         NONE_init();
 
         ResetExState(0,0);
-  if(FCEUGameInfo->type == GIT_VSUNI)
+  if (FCEUGameInfo->type == GIT_VSUNI)
     AddExState(FCEUVSUNI_STATEINFO, ~0, 0, 0);
 
         AddExState(WRAM, 8192, 0, "WRAM");
-        if(type==19 || type==6 || type==69 || type==85 || type==96)
+        if (type==19 || type==6 || type==69 || type==85 || type==96)
          AddExState(MapperExRAM, 32768, 0, "MEXR");
-        if((!VROM_size || type==6 || type==19) &&
+        if ((!VROM_size || type==6 || type==19) &&
      (type!=13 && type!=96))
          AddExState(CHRRAM, 8192, 0, "CHRR");
-        if(head.ROM_type&8)
+        if (head.ROM_type&8)
          AddExState(ExtraNTARAM, 2048, 0, "EXNR");
 
-  /* Exclude some mappers whose emulation code handle save state stuff 
+  /* Exclude some mappers whose emulation code handle save state stuff
      themselves. */
-  if(type && type!=13 && type!=96)
+  if (type && type!=13 && type!=96)
   {
          AddExState(mapbyte1, 32, 0, "MPBY");
          AddExState(&Mirroring, 1, 0, "MIRR");
@@ -840,16 +840,16 @@ static void iNESPower(void)
          AddExState(&IRQLatch, 4, 1, "IQL1");
          AddExState(&IRQa, 1, 0, "IRQA");
          AddExState(PRGBankList, 4, 0, "PBL");
-         for(x=0;x<8;x++)
+         for (x=0;x<8;x++)
          {
           char tak[8];
-          sprintf(tak,"CBL%d",x);         
+          sprintf(tak,"CBL%d",x);        
           AddExState(&CHRBankList[x], 2, 1,tak);
          }
   }
 
-        if(MapInitTab[type]) MapInitTab[type]();
-        else if(type)
+        if (MapInitTab[type]) MapInitTab[type]();
+        else if (type)
         {
          FCEU_PrintError("iNES mapper #%d is not supported at all.",type);
         }
@@ -857,7 +857,7 @@ static void iNESPower(void)
 
 
 typedef struct {
-           int number;   
+           int number;  
            void (*init)(CartInfo *);
 } BMAPPING;
 
@@ -901,20 +901,20 @@ static int NewiNES_Init(int num)
 {
  BMAPPING *tmp=bmap;
 
- if(FCEUGameInfo->type == GIT_VSUNI)
+ if (FCEUGameInfo->type == GIT_VSUNI)
   AddExState(FCEUVSUNI_STATEINFO, ~0, 0, 0);
 
- while(tmp->init)
+ while (tmp->init)
  {
-  if(num==tmp->number)
+  if (num==tmp->number)
   {
-   if(!VROM_size)
+   if (!VROM_size)
    {
     VROM=(uint8 *)malloc(8192);
     SetupCartCHRMapping(0x0,VROM,8192,1);
     AddExState(VROM, 8192, 0, "CHRR");
    }
-   if(head.ROM_type&8)
+   if (head.ROM_type&8)
     AddExState(ExtraNTARAM, 2048, 0, "EXNR");
    tmp->init(&iNESCart);
    return(1);

@@ -59,7 +59,7 @@ static void NetError(void)
 
 void FCEUI_NetplayStop(void)
 {
-  if(FCEUnetplay)
+  if (FCEUnetplay)
   {
    FCEUnetplay = 0;
     FCEU_FlushGameCheats(0,1);  /* Don't save netplay cheats. */
@@ -90,7 +90,7 @@ int FCEUNET_SendCommand(uint8 cmd, uint32 len)
  FCEU_en32lsb(&buf[numlocal], len);
  buf[numlocal + 4] = cmd;
  #ifdef NETWORK
- if(!FCEUD_SendData(buf,numlocal + 1 + 4)) 
+ if (!FCEUD_SendData(buf,numlocal + 1 + 4))
  {
   NetError();
   return(0);
@@ -105,9 +105,9 @@ void FCEUI_NetplayText(uint8 *text)
 
  len = strlen(text);
 
- if(!FCEUNET_SendCommand(FCEUNPCMD_TEXT,len)) return;
+ if (!FCEUNET_SendCommand(FCEUNPCMD_TEXT,len)) return;
 
- if(!FCEUD_SendData(text,len))
+ if (!FCEUD_SendData(text,len))
   NetError();
 }
 
@@ -119,7 +119,7 @@ int FCEUNET_SendFile(uint8 cmd, char *fn)
  FILE *fp;
  struct stat sb;
 
- if(!(fp=FCEUD_UTF8fopen(fn,"rb"))) return(0);
+ if (!(fp=FCEUD_UTF8fopen(fn,"rb"))) return(0);
 
  fstat(fileno(fp),&sb);
  len = sb.st_size;
@@ -137,12 +137,12 @@ int FCEUNET_SendFile(uint8 cmd, char *fn)
  len = clen + 4;
 
  #ifdef NETWORK
- if(!FCEUNET_SendCommand(cmd,len))
+ if (!FCEUNET_SendCommand(cmd,len))
  {
   free(cbuf);
   return(0);
  }
- if(!FCEUD_SendData(cbuf, len))
+ if (!FCEUD_SendData(cbuf, len))
  {
   NetError();
   free(cbuf);
@@ -159,11 +159,11 @@ static FILE *FetchFile(uint32 remlen)
         uint32 clen = remlen;
                                  char *cbuf;
                                 uLongf len;
-                                char *buf;  
+                                char *buf; 
                                 FILE *fp;
-                                char *fn;   
-                                 
-        if(clen > 500000)  // Sanity check
+                                char *fn;  
+                                
+        if (clen > 500000)  // Sanity check
         {
          NetError();
          return(0);
@@ -171,10 +171,10 @@ static FILE *FetchFile(uint32 remlen)
 
                                 //printf("Receiving file: %d...\n",clen);
                                 fn = FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
-                                if((fp = fopen(fn,"w+b")))
+                                if ((fp = fopen(fn,"w+b")))
                                 {
                                  cbuf = malloc(clen);
-                                 if(!FCEUD_RecvData(cbuf, clen))
+                                 if (!FCEUD_RecvData(cbuf, clen))
          {
           NetError();
           unlink(fn);
@@ -183,9 +183,9 @@ static FILE *FetchFile(uint32 remlen)
           free(fn);
           return(0);
          }
-                             
+                            
                                  len = FCEU_de32lsb(cbuf);
-         if(len > 500000)    // Another sanity check
+         if (len > 500000)    // Another sanity check
          {
           NetError();
           unlink(fn);
@@ -196,7 +196,7 @@ static FILE *FetchFile(uint32 remlen)
          }
                                  buf = malloc(len);
                                  uncompress(buf, &len, cbuf + 4, clen - 4);
-                                
+                               
                                  fwrite(buf, 1, len, fp);
                                  free(buf);
                                  fseek(fp, 0, SEEK_SET);
@@ -216,26 +216,26 @@ void NetplayUpdate(uint8 *joyp)
  memcpy(joypb,joyp,4);
 
  /* This shouldn't happen, but just in case.  0xFF is used as a command escape elsewhere. */
- if(joypb[0] == 0xFF) 
+ if (joypb[0] == 0xFF)
   joypb[0] = 0xF;
  #ifdef NETWORK
- if(!netdcount)
-  if(!FCEUD_SendData(joypb,numlocal))
+ if (!netdcount)
+  if (!FCEUD_SendData(joypb,numlocal))
   {
    NetError();
    return;
   }
 
- if(!netdcount)
+ if (!netdcount)
  do
  {
-  if(!FCEUD_RecvData(buf,5))
+  if (!FCEUD_RecvData(buf,5))
   {
    NetError();
    return;
   }
 
-  switch(buf[4])
+  switch (buf[4])
   {
    default: FCEU_DoSimpleCommand(buf[4]);break;
    case FCEUNPCMD_TEXT:
@@ -243,14 +243,14 @@ void NetplayUpdate(uint8 *joyp)
       uint8 *tbuf;
       uint32 len = FCEU_de32lsb(buf);
 
-      if(len > 100000)  // Insanity check!
+      if (len > 100000)  // Insanity check!
       {
        NetError();
        return;
       }
       tbuf = malloc(len + 1);
       tbuf[len] = 0;
-                        if(!FCEUD_RecvData(tbuf, len))
+                        if (!FCEUD_RecvData(tbuf, len))
                         {
                          NetError();
                          free(tbuf);
@@ -260,7 +260,7 @@ void NetplayUpdate(uint8 *joyp)
       free(tbuf);
            }
            break;
-   case FCEUNPCMD_SAVESTATE:  
+   case FCEUNPCMD_SAVESTATE: 
           {
              char *fn;
               FILE *fp;
@@ -278,14 +278,14 @@ void NetplayUpdate(uint8 *joyp)
                                //  return;
                                // }
         free(fn);
-                                if(!FCEUnetplay) return;
-                               
+                                if (!FCEUnetplay) return;
+                              
               fn = FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
               fp = fopen(fn, "wb");
-              if(FCEUSS_SaveFP(fp))
+              if (FCEUSS_SaveFP(fp))
               {
                fclose(fp);
-               if(!FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn))
+               if (!FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn))
          {
           unlink(fn);
           free(fn);
@@ -308,24 +308,24 @@ void NetplayUpdate(uint8 *joyp)
    case FCEUNPCMD_LOADCHEATS:
         {
          FILE *fp = FetchFile(FCEU_de32lsb(buf));
-         if(!fp) return;
+         if (!fp) return;
          FCEU_FlushGameCheats(0,1);
          FCEU_LoadGameCheats(fp);
         }
-        break;  
+        break; 
  case FCEUNPCMD_LOADSTATE:
         {
          FILE *fp = FetchFile(FCEU_de32lsb(buf));
-         if(!fp) return;
-         if(FCEUSS_LoadFP(fp))
+         if (!fp) return;
+         if (FCEUSS_LoadFP(fp))
          {
-          fclose(fp);        
+          fclose(fp);       
                 FCEU_DispMessage("Remote state loaded.");
          } else FCEUD_PrintError("File error.  (K)ill, (M)aim, (D)estroy?");
           }
           break;
   }
- } while(buf[4]);
+ } while (buf[4]);
  #endif
 
  netdcount=(netdcount+1)%netdivisor;

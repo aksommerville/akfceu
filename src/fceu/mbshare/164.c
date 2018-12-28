@@ -43,7 +43,7 @@ static void StateRestore(int version)
 
 static DECLFW(Write)
 {
- if((A&0x7300)==0x5000)
+ if ((A&0x7300)==0x5000)
   setprg32(0x8000,V);
  //else
  //if(A==0x5200)

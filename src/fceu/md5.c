@@ -6,7 +6,7 @@
 
 /* Modified October 3, 2003, to remove testing code, and add
    include of "types.h".
- 
+
    Added simple MD5 to ASCII string conversion function.
    -Xodnizel
 */
@@ -115,7 +115,7 @@ void md5_process( struct md5_context *ctx, uint8 data[64] )
     P( B, C, D, A, 12, 20, 0x8D2A4C8A );
 
 #undef F
-    
+   
 #define F(x,y,z) (x ^ y ^ z)
 
     P( A, B, C, D,  5,  4, 0xFFFA3942 );
@@ -168,7 +168,7 @@ void md5_update( struct md5_context *ctx, uint8 *input, uint32 length )
 {
     uint32 left, fill;
 
-    if( ! length ) return;
+    if ( ! length ) return;
 
     left = ( ctx->total[0] >> 3 ) & 0x3F;
     fill = 64 - left;
@@ -179,7 +179,7 @@ void md5_update( struct md5_context *ctx, uint8 *input, uint32 length )
     ctx->total[0] &= 0xFFFFFFFF;
     ctx->total[1] += ctx->total[0] < ( length << 3 );
 
-    if( left && length >= fill )
+    if ( left && length >= fill )
     {
         memcpy( (void *) (ctx->buffer + left), (void *) input, fill );
         md5_process( ctx, ctx->buffer );
@@ -188,14 +188,14 @@ void md5_update( struct md5_context *ctx, uint8 *input, uint32 length )
         left = 0;
     }
 
-    while( length >= 64 )
+    while ( length >= 64 )
     {
         md5_process( ctx, input );
         length -= 64;
         input  += 64;
     }
 
-    if( length )
+    if ( length )
     {
         memcpy( (void *) (ctx->buffer + left), (void *) input, length );
     }
@@ -237,7 +237,7 @@ char *md5_asciistr(uint8 digest[16])
  static char trans[16]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
  int x;
 
- for(x=0;x<16;x++)
+ for (x=0;x<16;x++)
  {
   str[x*2]=trans[digest[x]&0x0F];
   str[x*2+1]=trans[digest[x]>>4];

@@ -26,7 +26,7 @@ static char side;
 
 static uint8 FP_FASTAPASS(2) FT_Read(int w, uint8 ret)
 {
- if(w) 
+ if (w)
  {
   ret|=FTValR;
  }
@@ -38,15 +38,15 @@ static void FP_FASTAPASS(1) FT_Write(uint8 V)
  FTValR=0;
 
  //printf("%08x\n",FTVal);
- if(!(V&0x1))
+ if (!(V&0x1))
   FTValR=(FTVal>>8);
- else if(!(V&0x2))
+ else if (!(V&0x2))
   FTValR=(FTVal>>4);
- else if(!(V&0x4))
+ else if (!(V&0x4))
   FTValR=FTVal;
 
  FTValR=(~FTValR)&0xF;
- if(side=='B')
+ if (side=='B')
   FTValR=((FTValR&0x8)>>3) | ((FTValR&0x4)>>1) | ((FTValR&0x2)<<1) | ((FTValR&0x1)<<3);
  FTValR<<=1;
 }

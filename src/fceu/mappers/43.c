@@ -25,10 +25,10 @@
 static DECLFW(Mapper43_write)
 {
  //printf("$%04x:$%02x\n",A,V);
- if((A&0x8122)==0x8122)
+ if ((A&0x8122)==0x8122)
  {
   X6502_IRQEnd(FCEU_IQEXT);
-  if(V&2) IRQa=1;
+  if (V&2) IRQa=1;
   else
    IRQCount=IRQa=0;
  }
@@ -38,7 +38,7 @@ static DECLFW(M43Low)
 {
  int transo[8]={4,3,4,4,4,7,5,6};
  A&=0xF0FF;
- if(A==0x4022)
+ if (A==0x4022)
   setprg8(0x6000,transo[V&7]);
  //printf("$%04x:$%02x\n",A,V);
 }
@@ -46,8 +46,8 @@ static DECLFW(M43Low)
 static void FP_FASTAPASS(1) M43Ho(int a)
 {
  IRQCount+=a;
- if(IRQa)
-  if(IRQCount>=4096)
+ if (IRQa)
+  if (IRQCount>=4096)
   {
    X6502_IRQBegin(FCEU_IQEXT);
   }

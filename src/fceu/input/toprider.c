@@ -26,11 +26,11 @@ static uint32 boop;
 
 static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
 {
- if(w) 
+ if (w)
  {
   ret|=(bs&1)<<3;
   ret|=(boop&1)<<4;
-  bs>>=1;  
+  bs>>=1; 
   boop>>=1;
 //  puts("Read");
  }
@@ -39,7 +39,7 @@ static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
 
 static void FP_FASTAPASS(1) Write(uint8 V)
 {
- // if(V&0x2) 
+ // if (V&0x2)
  bs=bss;
  //printf("Write: %02x\n",V);
 // boop=0xC0;

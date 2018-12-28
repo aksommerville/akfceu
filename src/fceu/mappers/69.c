@@ -31,14 +31,14 @@ static uint8 sunindex;
 
 static DECLFW(SUN5BWRAM)
 {
- if((sungah&0xC0)==0xC0)
+ if ((sungah&0xC0)==0xC0)
   (WRAM-0x6000)[A]=V;
 }
 
 static DECLFR(SUN5AWRAM)
 {
- if((sungah&0xC0)==0x40)
-  return X.DB; 
+ if ((sungah&0xC0)==0x40)
+  return X.DB;
  return CartBR(A);
 }
 
@@ -54,7 +54,7 @@ static DECLFW(Mapper69_SWH)
        GameExpSound.HiFill=AYSoundHQ;
        //if(FSettings.SndRate); // aks: intention of this no-op statement was unclear
        printf("SndRate: %d, sunindex: %d\n",FSettings.SndRate,sunindex);
-             switch(sunindex)
+             switch (sunindex)
              {
               case 0:
               case 1:
@@ -66,30 +66,30 @@ static DECLFW(Mapper69_SWH)
               case 5:
               case 10:if(FSettings.soundq>=1) DoAYSQHQ(2); else DoAYSQ(2);break;
               case 7:
-         for(x=0;x<2;x++)
-            if(FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
+         for (x=0;x<2;x++)
+            if (FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
          break;
              }
-             MapperExRAM[sunindex]=V; 
+             MapperExRAM[sunindex]=V;
 }
 
 static DECLFW(Mapper69_write)
 {
- switch(A&0xE000)
+ switch (A&0xE000)
  {
   case 0x8000:sunselect=V;break;
   case 0xa000:
               sunselect&=0xF;
-              if(sunselect<=7)
+              if (sunselect<=7)
                VROM_BANK1(sunselect<<10,V);
               else
-               switch(sunselect&0x0f)
+               switch (sunselect&0x0f)
                {
                 case 8:
                        sungah=V;
-                       if(V&0x40)
+                       if (V&0x40)
                         {
-                         if(V&0x80) // Select WRAM
+                         if (V&0x80) // Select WRAM
                           setprg8r(0x10,0x6000,0);
                         }
                         else
@@ -99,7 +99,7 @@ static DECLFW(Mapper69_write)
                 case 0xa:ROM_BANK8(0xa000,V);break;
                 case 0xb:ROM_BANK8(0xc000,V);break;
                 case 0xc:
-                         switch(V&3)
+                         switch (V&3)
                          {
                           case 0:MIRROR_SET2(1);break;
                           case 1:MIRROR_SET2(0);break;
@@ -128,26 +128,26 @@ static void DoAYSQ(int x)
 
     amp+=amp>>1;
 
-    start=CAYBC[x];    
+    start=CAYBC[x];   
     end=(SOUNDTS<<16)/soundtsinc;
-    if(end<=start) return;
+    if (end<=start) return;
     CAYBC[x]=end;
 
-    if(amp)
-    for(V=start;V<end;V++)
+    if (amp)
+    for (V=start;V<end;V++)
     {
-     if(dcount[x])
+     if (dcount[x])
       Wave[V>>4]+=amp;
      vcount[x]-=nesincsize;
-     while(vcount[x]<=0)
+     while (vcount[x]<=0)
      {
-      dcount[x]^=1;   
+      dcount[x]^=1;  
       vcount[x]+=freq;
      }
     }
 }
 
-static void DoAYSQHQ(int x) 
+static void DoAYSQHQ(int x)
 {
  int32 V;
  int32 freq=((MapperExRAM[x<<1]|((MapperExRAM[(x<<1)+1]&15)<<8))+1)<<4;
@@ -155,19 +155,19 @@ static void DoAYSQHQ(int x)
 
  amp+=amp>>1;
 
- if(!(MapperExRAM[0x7]&(1<<x)))
+ if (!(MapperExRAM[0x7]&(1<<x)))
  {
-  for(V=CAYBC[x];V<SOUNDTS;V++)
+  for (V=CAYBC[x];V<SOUNDTS;V++)
   {
-   if(dcount[x])
+   if (dcount[x])
     WaveHi[V]+=amp;
    vcount[x]--;
-   if(vcount[x]<=0)
+   if (vcount[x]<=0)
    {
     dcount[x]^=1;
     vcount[x]=freq;
    }
-  } 
+  }
  }
  CAYBC[x]=SOUNDTS;
 }
@@ -178,7 +178,7 @@ static void AYSound(int Count)
     DoAYSQ(0);
     DoAYSQ(1);
     DoAYSQ(2);
-    for(x=0;x<3;x++)
+    for (x=0;x<3;x++)
      CAYBC[x]=Count;
 }
 
@@ -193,25 +193,25 @@ static void AYHiSync(int32 ts)
 {
  int x;
 
- for(x=0;x<3;x++)
+ for (x=0;x<3;x++)
   CAYBC[x]=ts;
 }
 
 static void FP_FASTAPASS(1) SunIRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount-=a;
-   if(IRQCount<=0)
+   if (IRQCount<=0)
    {X6502_IRQBegin(FCEU_IQEXT);IRQa=0;IRQCount=0xFFFF;}
   }
 }
 
 void Mapper69_StateRestore(int version)
 {
-   if(mapbyte1[1]&0x40)
+   if (mapbyte1[1]&0x40)
    {
-    if(mapbyte1[1]&0x80) // Select WRAM
+    if (mapbyte1[1]&0x80) // Select WRAM
      setprg8r(0x10,0x6000,0);
    }
    else

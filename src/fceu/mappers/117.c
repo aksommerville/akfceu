@@ -26,7 +26,7 @@ DECLFW(Mapper117_write)
 {
  //if(A>=0xc000)
  //printf("$%04x:$%02x, %d,%d\n",A,V,scanline,timestamp);
- switch(A)
+ switch (A)
  {
   case 0xc001:IRQLatch=V;break;
   case 0xc003:IRQCount=IRQLatch;IRQa|=2;break;
@@ -51,10 +51,10 @@ static void Mapper117_hb(void)
 {
  //if(scanline==0x40) X6502_IRQBegin(FCEU_IQEXT);
  //return;
- if(IRQa==3 && IRQCount)
+ if (IRQa==3 && IRQCount)
  {
   IRQCount--;
-  if(!IRQCount)
+  if (!IRQCount)
   {
    IRQa&=1;
    X6502_IRQBegin(FCEU_IQEXT);

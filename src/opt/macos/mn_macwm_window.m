@@ -21,7 +21,7 @@
   if (!(self=[super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag screen:screen])) {
     return 0;
   }
-  
+ 
   mn_macwm.window=self;
   self.delegate=self;
 
@@ -35,8 +35,8 @@
 /* Preferred public initializer.
  */
 
-+(MNWindow*)newWithWidth:(int)width 
-  height:(int)height 
++(MNWindow*)newWithWidth:(int)width
+  height:(int)height
   title:(const char*)title
   fullscreen:(int)fullscreen
 {
@@ -61,7 +61,7 @@
     NSWindowStyleMaskMiniaturizable|
     NSWindowStyleMaskResizable|
   0;
-  
+ 
   MNWindow *window=[[MNWindow alloc]
     initWithContentRect:bounds
     styleMask:styleMask
@@ -73,7 +73,7 @@
 
   window->w=width;
   window->h=height;
-  
+ 
   window.releasedWhenClosed=0;
   window.acceptsMouseMovedEvents=TRUE;
   window->cursor_visible=1;
@@ -90,7 +90,7 @@
   if (fullscreen) {
     [window toggleFullScreen:window];
   }
-  
+ 
   return window;
 }
 
@@ -117,7 +117,7 @@
   if (!context) return -1;
   [context retain];
   [context setView:self.contentView];
-  
+ 
   [context makeCurrentContext];
   glEnable(GL_POINT_SPRITE);
   glEnable(GL_PROGRAM_POINT_SIZE);
@@ -133,7 +133,7 @@
 
 /* Frame control.
  */
- 
+
 -(int)beginFrame {
   [context makeCurrentContext];
   return 0;
@@ -184,7 +184,7 @@
     modifiers=nmodifiers;
     if (mn_macwm.delegate.key) {
       int mask=1; for (;mask;mask<<=1) {
-    
+   
         if ((nmodifiers&mask)&&!(omodifiers&mask)) {
           int key=mn_macwm_translate_modifier(mask);
           if (key) {

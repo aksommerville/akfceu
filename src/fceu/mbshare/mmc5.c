@@ -28,9 +28,9 @@ static void (*psfun)(void);
 void MMC5RunSound(int Count);
 void MMC5RunSoundHQ(void);
 
-static INLINE void MMC5SPRVROM_BANK1(uint32 A,uint32 V) 
+static INLINE void MMC5SPRVROM_BANK1(uint32 A,uint32 V)
 {
- if(CHRptr[0])
+ if (CHRptr[0])
  {
   V&=CHRmask1[0];
   MMC5SPRVPage[(A)>>10]=&CHRptr[0][(V)<<10]-(A);
@@ -115,8 +115,8 @@ int DetectMMC5WRAMSize(uint32 crc32)
 {
  int x;
 
- for(x=0;x<MMC5_NOCARTS;x++)
-  if(crc32==MMC5CartList[x].crc32)
+ for (x=0;x<MMC5_NOCARTS;x++)
+  if (crc32==MMC5CartList[x].crc32)
   {
     FCEU_printf(" >8KB external WRAM present.  Use UNIF if you hack the ROM image.\n");
     return(MMC5CartList[x].size*8);
@@ -128,9 +128,9 @@ static void BuildWRAMSizeTable(void)
 {
  int x;
 
- for(x=0;x<8;x++)
+ for (x=0;x<8;x++)
  {
-  switch(MMC5WRAMsize)
+  switch (MMC5WRAMsize)
   {
     case 0:MMC5WRAMIndex[x]=255;break;
     case 1:MMC5WRAMIndex[x]=(x>3)?255:0;break;
@@ -143,7 +143,7 @@ static void BuildWRAMSizeTable(void)
 static void MMC5CHRA(void)
 {
   int x;
-  switch(mmc5vsize&3)
+  switch (mmc5vsize&3)
   {
    case 0:setchr8(CHRBanksA[7]);
     MMC5SPRVROM_BANK8(CHRBanksA[7]);
@@ -163,7 +163,7 @@ static void MMC5CHRA(void)
                 MMC5SPRVROM_BANK2(0x1800,CHRBanksA[7]);
           break;
    case 3:
-     for(x=0;x<8;x++)
+     for (x=0;x<8;x++)
           {
            setchr1(x<<10,CHRBanksA[x]);
            MMC5SPRVROM_BANK1(x<<10,CHRBanksA[x]);
@@ -175,21 +175,21 @@ static void MMC5CHRA(void)
 static void MMC5CHRB(void)
 {
  int x;
- switch(mmc5vsize&3)
+ switch (mmc5vsize&3)
  {
-  case 0:  
+  case 0: 
     setchr8(CHRBanksB[3]);
     MMC5BGVROM_BANK8(CHRBanksB[3]);
           break;
 
-  case 1: 
+  case 1:
     setchr4(0x0000,CHRBanksB[3]);
            setchr4(0x1000,CHRBanksB[3]);
           MMC5BGVROM_BANK4(0x0000,CHRBanksB[3]);
           MMC5BGVROM_BANK4(0x1000,CHRBanksB[3]);
           break;
 
-  case 2:  
+  case 2: 
     setchr2(0x0000,CHRBanksB[1]);
     setchr2(0x0800,CHRBanksB[3]);
     setchr2(0x1000,CHRBanksB[1]);
@@ -200,7 +200,7 @@ static void MMC5CHRB(void)
           MMC5BGVROM_BANK2(0x1800,CHRBanksB[3]);
           break;
   case 3:
-          for(x=0;x<8;x++)
+          for (x=0;x<8;x++)
     {
      setchr1(x<<10,CHRBanksB[x&3]);
            MMC5BGVROM_BANK1(x<<10,CHRBanksB[x&3]);
@@ -213,7 +213,7 @@ static void FASTAPASS(2) MMC5WRAM(uint32 A, uint32 V)
 {
    //printf("%02x\n",V);
    V=MMC5WRAMIndex[V&7];
-   if(V!=255)
+   if (V!=255)
    {
     setprg8r(0x10,A,V);
     MMC5MemIn[(A-0x6000)>>13]=1;
@@ -226,17 +226,17 @@ static void MMC5PRG(void)
 {
  int x;
 
- switch(mmc5psize&3)
+ switch (mmc5psize&3)
  {
   case 0:
            MMC5ROMWrProtect[0]=MMC5ROMWrProtect[1]=
            MMC5ROMWrProtect[2]=MMC5ROMWrProtect[3]=1;
            setprg32(0x8000,((PRGBanks[1]&0x7F)>>2));
-     for(x=0;x<4;x++)
+     for (x=0;x<4;x++)
        MMC5MemIn[1+x]=1;
            break;
   case 1:
-         if(PRGBanks[1]&0x80)
+         if (PRGBanks[1]&0x80)
           {
            MMC5ROMWrProtect[0]=MMC5ROMWrProtect[1]=1;
            setprg16(0x8000,(PRGBanks[1]>>1));
@@ -253,7 +253,7 @@ static void MMC5PRG(void)
           setprg16(0xC000,(PRGBanks[3]&0x7F)>>1);
          break;
   case 2:
-         if(PRGBanks[1]&0x80)
+         if (PRGBanks[1]&0x80)
           {
      MMC5MemIn[1]=MMC5MemIn[2]=1;
            MMC5ROMWrProtect[0]=MMC5ROMWrProtect[1]=1;
@@ -265,7 +265,7 @@ static void MMC5PRG(void)
            MMC5WRAM(0x8000,PRGBanks[1]&7&0xFE);
            MMC5WRAM(0xA000,(PRGBanks[1]&7&0xFE)+1);
           }
-         if(PRGBanks[2]&0x80)
+         if (PRGBanks[2]&0x80)
           {MMC5ROMWrProtect[2]=1;MMC5MemIn[3]=1;setprg8(0xC000,PRGBanks[2]&0x7F);}
          else
           {MMC5ROMWrProtect[2]=0;MMC5WRAM(0xC000,PRGBanks[2]&7);}
@@ -274,8 +274,8 @@ static void MMC5PRG(void)
          setprg8(0xE000,PRGBanks[3]&0x7F);
          break;
   case 3:
-   for(x=0;x<3;x++)
-    if(PRGBanks[x]&0x80)
+   for (x=0;x<3;x++)
+    if (PRGBanks[x]&0x80)
     {
      MMC5ROMWrProtect[x]=1;
      setprg8(0x8000+(x<<13),PRGBanks[x]&0x7F);
@@ -295,13 +295,13 @@ static void MMC5PRG(void)
 
 static DECLFW(Mapper5_write)
 {
- if(A >= 0x5120 && A<=0x5127)
+ if (A >= 0x5120 && A<=0x5127)
  {
   ABMode = 0;
   CHRBanksA[A&7]=V;
   MMC5CHRA();
  }
- else switch(A)
+ else switch (A)
  {
    default:
      //printf("$%04x, $%02x\n",A,V);
@@ -309,9 +309,9 @@ static DECLFW(Mapper5_write)
    case 0x5105:
                 {
                 int x;
-                for(x=0;x<4;x++)
+                for (x=0;x<4;x++)
                 {
-                 switch((V>>(x<<1))&3)
+                 switch ((V>>(x<<1))&3)
                  {
                   case 0:PPUNTARAM|=1<<x;vnapage[x]=NTARAM;break;
                   case 1:PPUNTARAM|=1<<x;vnapage[x]=NTARAM+0x400;break;
@@ -326,7 +326,7 @@ static DECLFW(Mapper5_write)
    case 0x5113:WRAMPage=V;MMC5WRAM(0x6000,V&7);break;
    case 0x5100:mmc5psize=V;MMC5PRG();break;
    case 0x5101:mmc5vsize=V;
-               if(!ABMode)
+               if (!ABMode)
                 {MMC5CHRB();MMC5CHRA();}
                else
                 {MMC5CHRA();MMC5CHRB();}
@@ -377,7 +377,7 @@ static DECLFW(Mapper5_write)
 
 static DECLFR(MMC5_ReadROMRAM)
 {
-  if(MMC5MemIn[(A-0x6000)>>13])
+  if (MMC5MemIn[(A-0x6000)>>13])
          return Page[A>>11][A];
   else
    return X.DB;
@@ -385,17 +385,17 @@ static DECLFR(MMC5_ReadROMRAM)
 
 static DECLFW(MMC5_WriteROMRAM)
 {
-       if(A>=0x8000)
-        if(MMC5ROMWrProtect[(A-0x8000)>>13])
+       if (A>=0x8000)
+        if (MMC5ROMWrProtect[(A-0x8000)>>13])
          return;
-       if(MMC5MemIn[(A-0x6000)>>13])
-        if(((WRAMMaskEnable[0]&3)|((WRAMMaskEnable[1]&3)<<2)) == 6)
+       if (MMC5MemIn[(A-0x6000)>>13])
+        if (((WRAMMaskEnable[0]&3)|((WRAMMaskEnable[1]&3)<<2)) == 6)
          Page[A>>11][A]=V;
 }
 
 static DECLFW(MMC5_ExRAMWr)
 {
- if(MMC5HackCHRMode!=3)
+ if (MMC5HackCHRMode!=3)
   ExRAM[A&0x3ff]=V;
 }
 
@@ -410,14 +410,14 @@ static DECLFR(MMC5_ExRAMRd)
 
 static DECLFR(MMC5_read)
 {
- switch(A)
+ switch (A)
  {
   //default:printf("$%04x\n",A);break;
   case 0x5204:X6502_IRQEnd(FCEU_IQEXT);
               {
     uint8 x;
     x=MMC5IRQR;
-    if(!fceuindbg)
+    if (!fceuindbg)
      MMC5IRQR&=0x40;
     return x;
         }
@@ -432,9 +432,9 @@ void MMC5Synco(void)
  int x;
 
  MMC5PRG();
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
  {
-  switch((NTAMirroring>>(x<<1))&3)
+  switch ((NTAMirroring>>(x<<1))&3)
    {
     case 0:PPUNTARAM|=1<<x;vnapage[x]=NTARAM;break;
     case 1:PPUNTARAM|=1<<x;vnapage[x]=NTARAM+0x400;break;
@@ -443,7 +443,7 @@ void MMC5Synco(void)
    }
  }
  MMC5WRAM(0x6000,WRAMPage&7);
- if(!ABMode)
+ if (!ABMode)
  {
   MMC5CHRB();
   MMC5CHRA();
@@ -472,7 +472,7 @@ void MMC5Synco(void)
 void MMC5_hb(int scanline)
 {
   //printf("%d:%d, ",scanline,MMC5LineCounter);
-  if(scanline==240)
+  if (scanline==240)
   {
   // printf("\n%d:%d\n",scanline,MMC5LineCounter);
    MMC5LineCounter=0;
@@ -480,18 +480,18 @@ void MMC5_hb(int scanline)
    return;
   }
 
-  if(MMC5LineCounter<240)
+  if (MMC5LineCounter<240)
   {
-   if(MMC5LineCounter==IRQScanline) 
+   if (MMC5LineCounter==IRQScanline)
    {
     MMC5IRQR|=0x80;
-    if(IRQEnable&0x80)
+    if (IRQEnable&0x80)
      X6502_IRQBegin(FCEU_IQEXT);
    }
    MMC5LineCounter++;
   }
 //  printf("%d:%d\n",MMC5LineCounter,scanline);
- if(MMC5LineCounter==240)
+ if (MMC5LineCounter==240)
    MMC5IRQR=0;
 }
 
@@ -524,22 +524,22 @@ static void Do5PCM()
 
    start=MMC5Sound.BC[2];
    end=(SOUNDTS<<16)/soundtsinc;
-   if(end<=start) return;
+   if (end<=start) return;
    MMC5Sound.BC[2]=end;
-   
-   if(!(MMC5Sound.rawcontrol&0x40) && MMC5Sound.raw)
-    for(V=start;V<end;V++)
+  
+   if (!(MMC5Sound.rawcontrol&0x40) && MMC5Sound.raw)
+    for (V=start;V<end;V++)
      Wave[V>>4]+=MMC5Sound.raw<<1;
 }
 
 static void Do5PCMHQ()
 {
    int32 V;
-   if(!(MMC5Sound.rawcontrol&0x40) && MMC5Sound.raw)
-    for(V=MMC5Sound.BC[2];V<SOUNDTS;V++)
+   if (!(MMC5Sound.rawcontrol&0x40) && MMC5Sound.raw)
+    for (V=MMC5Sound.BC[2];V<SOUNDTS;V++)
      WaveHi[V]+=MMC5Sound.raw<<5;
    MMC5Sound.BC[2]=SOUNDTS;
-} 
+}
 
 
 static DECLFW(Mapper5_SW)
@@ -549,14 +549,14 @@ static DECLFW(Mapper5_SW)
  GameExpSound.Fill=MMC5RunSound;
  GameExpSound.HiFill=MMC5RunSoundHQ;
 
- switch(A)
+ switch (A)
  {
   case 0x10:if(psfun) psfun();MMC5Sound.rawcontrol=V;break;
   case 0x11:if(psfun) psfun();MMC5Sound.raw=V;break;
 
   case 0x0:
   case 0x4://printf("%04x:$%02x\n",A,V&0x30);
-     if(sfun) sfun(A>>2);
+     if (sfun) sfun(A>>2);
            MMC5Sound.env[A>>2]=V;
            break;
   case 0x2:
@@ -567,7 +567,7 @@ static DECLFW(Mapper5_SW)
   case 0x3:
   case 0x7://printf("%04x:$%02x\n",A,V>>3);
      MMC5Sound.wl[A>>2]&=~0x0700;
-           MMC5Sound.wl[A>>2]|=(V&0x07)<<8;           
+           MMC5Sound.wl[A>>2]|=(V&0x07)<<8;          
      MMC5Sound.running|=1<<(A>>2);
      break;
   case 0x15:if(sfun)
@@ -583,34 +583,34 @@ static DECLFW(Mapper5_SW)
 }
 
 static void Do5SQ(int P)
-{  
+{ 
  static int tal[4]={1,2,4,6};
  int32 V,amp,rthresh,wl;
  int32 start,end;
 
  start=MMC5Sound.BC[P];
- end=(SOUNDTS<<16)/soundtsinc;  
- if(end<=start) return;
+ end=(SOUNDTS<<16)/soundtsinc; 
+ if (end<=start) return;
  MMC5Sound.BC[P]=end;
-    
+   
  wl=MMC5Sound.wl[P]+1;
  amp=(MMC5Sound.env[P]&0xF)<<4;
  rthresh=tal[(MMC5Sound.env[P]&0xC0)>>6];
-     
- if(wl>=8 && (MMC5Sound.running&(P+1)))
- { 
-  int dc,vc;   
-  
+    
+ if (wl>=8 && (MMC5Sound.running&(P+1)))
+ {
+  int dc,vc;  
+ 
   wl<<=18;
   dc=MMC5Sound.dcount[P];
   vc=MMC5Sound.vcount[P];
 
-  for(V=start;V<end;V++)
+  for (V=start;V<end;V++)
   {
-    if(dc<rthresh)
+    if (dc<rthresh)
      Wave[V>>4]+=amp;
     vc-=nesincsize;
-    while(vc<=0) 
+    while (vc<=0)
     {
      vc+=wl;
      dc=(dc+1)&7;
@@ -625,30 +625,30 @@ static void Do5SQHQ(int P)
 {
  static int tal[4]={1,2,4,6};
  int32 V,amp,rthresh,wl;
-  
+ 
  wl=MMC5Sound.wl[P]+1;
  amp=((MMC5Sound.env[P]&0xF)<<8);
  rthresh=tal[(MMC5Sound.env[P]&0xC0)>>6];
-     
- if(wl>=8 && (MMC5Sound.running&(P+1)))
+    
+ if (wl>=8 && (MMC5Sound.running&(P+1)))
  {
   int dc,vc;
-  
+ 
   wl<<=1;
 
-  dc=MMC5Sound.dcount[P];   
+  dc=MMC5Sound.dcount[P];  
   vc=MMC5Sound.vcount[P];
-  for(V=MMC5Sound.BC[P];V<SOUNDTS;V++)
+  for (V=MMC5Sound.BC[P];V<SOUNDTS;V++)
   {
-    if(dc<rthresh)
+    if (dc<rthresh)
      WaveHi[V]+=amp;
     vc--;
-    if(vc<=0)   /* Less than zero when first started. */
+    if (vc<=0)   /* Less than zero when first started. */
     {
      vc=wl;
      dc=(dc+1)&7;
     }
-  }  
+  } 
   MMC5Sound.dcount[P]=dc;
   MMC5Sound.vcount[P]=vc;
  }
@@ -656,7 +656,7 @@ static void Do5SQHQ(int P)
 }
 
 void MMC5RunSoundHQ(void)
-{  
+{ 
   Do5SQHQ(0);
   Do5SQHQ(1);
   Do5PCMHQ();
@@ -665,7 +665,7 @@ void MMC5RunSoundHQ(void)
 void MMC5HiSync(int32 ts)
 {
  int x;
- for(x=0;x<3;x++) MMC5Sound.BC[x]=ts;
+ for (x=0;x<3;x++) MMC5Sound.BC[x]=ts;
 }
 
 void MMC5RunSound(int Count)
@@ -674,19 +674,19 @@ void MMC5RunSound(int Count)
   Do5SQ(0);
   Do5SQ(1);
   Do5PCM();
-  for(x=0;x<3;x++)
+  for (x=0;x<3;x++)
    MMC5Sound.BC[x]=Count;
 }
 
 void Mapper5_ESI(void)
 {
  GameExpSound.RChange=Mapper5_ESI;
- if(FSettings.SndRate)
+ if (FSettings.SndRate)
  {
-  if(FSettings.soundq>=1)
+  if (FSettings.soundq>=1)
   {
    sfun=Do5SQHQ;
-   psfun=Do5PCMHQ;   
+   psfun=Do5PCMHQ;  
   }
   else
   {
@@ -711,7 +711,7 @@ void NSFMMC5_Init(void)
   ExRAM=(uint8*)FCEU_gmalloc(1024);
   Mapper5_ESI();
   SetWriteHandler(0x5c00,0x5fef,MMC5_ExRAMWr);
-  SetReadHandler(0x5c00,0x5fef,MMC5_ExRAMRd); 
+  SetReadHandler(0x5c00,0x5fef,MMC5_ExRAMRd);
   MMC5HackCHRMode=2;
   SetWriteHandler(0x5000,0x5015,Mapper5_SW);
   SetWriteHandler(0x5205,0x5206,Mapper5_write);
@@ -728,9 +728,9 @@ static void GenMMC5Reset(void)
 {
  int x;
 
- for(x=0;x<4;x++) PRGBanks[x]=~0;
- for(x=0;x<8;x++) CHRBanksA[x]=~0;
- for(x=0;x<4;x++) CHRBanksB[x]=~0;
+ for (x=0;x<4;x++) PRGBanks[x]=~0;
+ for (x=0;x<8;x++) CHRBanksA[x]=~0;
+ for (x=0;x<4;x++) CHRBanksB[x]=~0;
  WRAMMaskEnable[0]=WRAMMaskEnable[1]=~0;
 
  mmc5psize=mmc5vsize=3;
@@ -762,7 +762,7 @@ static SFORMAT MMC5_StateRegs[]={
         { PRGBanks, 4, "PRGB"},
         { CHRBanksA, 8, "CHRA"},
         { CHRBanksB, 4, "CHRB"},
-        { &WRAMPage, 1, "WRMP"}, 
+        { &WRAMPage, 1, "WRMP"},
   { WRAMMaskEnable, 2, "WRME"},
   { &ABMode, 1, "ABMD"},
   { &IRQScanline, 1, "IRQS"},
@@ -784,7 +784,7 @@ static SFORMAT MMC5_StateRegs[]={
 
 static void GenMMC5_Init(CartInfo *info, int wsize, int battery)
 {
- if(wsize)
+ if (wsize)
  {
   WRAM=(uint8*)FCEU_gmalloc(wsize*1024);
   SetupCartPRGMapping(0x10,WRAM,wsize*1024,1);
@@ -801,15 +801,15 @@ static void GenMMC5_Init(CartInfo *info, int wsize, int battery)
  AddExState(&MMC5HackSPScroll, 1, 0, "SPLS");
  AddExState(&MMC5HackSPPage, 1, 0, "SPLP");
 
- MMC5WRAMsize=wsize/8; 
+ MMC5WRAMsize=wsize/8;
  BuildWRAMSizeTable();
  GameStateRestore=MMC5_StateRestore;
  info->Power=GenMMC5Reset;
 
- if(battery)
+ if (battery)
  {
   info->SaveGame[0]=WRAM;
-  if(wsize<=16)
+  if (wsize<=16)
    info->SaveGameLen[0]=8192;
   else
    info->SaveGameLen[0]=32768;

@@ -24,11 +24,11 @@
 
 static void FP_FASTAPASS(1) FFEIRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount+=a;
 
-   if(IRQCount>=0x10000)
+   if (IRQCount>=0x10000)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;
@@ -40,7 +40,7 @@ static void FP_FASTAPASS(1) FFEIRQHook(int a)
 
 DECLFW(Mapper17_write)
 {
-        switch(A){
+        switch (A){
         default:
              break;
         case 0x42FE:

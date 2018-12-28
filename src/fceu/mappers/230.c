@@ -26,7 +26,7 @@ void Mapper230_Reset(void)
 {
   rom_sw ^= 1; //1 - rom_sw;
 
-  if( rom_sw ) {
+  if ( rom_sw ) {
     ROM_BANK16(0x8000,0);
     ROM_BANK16(0xc000,7);
   } else {
@@ -38,10 +38,10 @@ void Mapper230_Reset(void)
 
 static DECLFW(Mapper230_write)
 {
-  if( rom_sw ) {
+  if ( rom_sw ) {
     ROM_BANK16( 0x8000, V&0x07 );
   } else {
-    if( V & 0x20 ) {
+    if ( V & 0x20 ) {
       ROM_BANK16( 0x8000, (V&0x1F)+8 );
       ROM_BANK16( 0xc000, (V&0x1F)+8 );
     } else {

@@ -3,7 +3,7 @@
 static DECLFW(m193w)
 {
   //printf("$%04x:$%02x\n",A,V);
- switch(A&3)
+ switch (A&3)
  {
   case 0:VROM_BANK4(0x0000,V>>2);break;
   case 1:VROM_BANK2(0x1000,V>>1);break;

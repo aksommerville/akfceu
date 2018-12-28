@@ -26,12 +26,12 @@
 static uint32 Get8K(uint32 A)
 {
  uint32 bank;
- 
+
  bank=(page<<2)|((A>>13)&1);
 
- if(A&0x4000 && !(mode&1)) bank|=0xC;
- if(!(A&0x8000)) bank|=0x20;
- if(mode==2) bank|=2;
+ if (A&0x4000 && !(mode&1)) bank|=0xC;
+ if (!(A&0x8000)) bank|=0x20;
+ if (mode==2) bank|=2;
  else bank|=(A>>13)&2;
  return(bank);
 }
@@ -39,20 +39,20 @@ static uint32 Get8K(uint32 A)
 static void Synco(void)
 {
  uint32 x;
- if(mapbyte1[0]<=2)
+ if (mapbyte1[0]<=2)
   MIRROR_SET2(1);
  else
   MIRROR_SET2(0);
- for(x=0x6000;x<0x10000;x+=8192)
+ for (x=0x6000;x<0x10000;x+=8192)
   ROM_BANK8(x,Get8K(x));
 }
 
 static DECLFW(Write)
 {
- if(A&0x8000) mapbyte1[1]=V&0xF;
+ if (A&0x8000) mapbyte1[1]=V&0xF;
  else mapbyte1[0]=(mapbyte1[0]&2)|((V>>1)&1);
 
- if(A&0x4000) mapbyte1[0]=(mapbyte1[0]&1)|((V>>3)&2);
+ if (A&0x4000) mapbyte1[0]=(mapbyte1[0]&1)|((V>>3)&2);
  Synco();
 }
 

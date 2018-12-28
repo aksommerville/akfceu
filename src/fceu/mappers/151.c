@@ -24,7 +24,7 @@
 
 DECLFW(Mapper151_write)
 {
- switch(A&0xF000)
+ switch (A&0xF000)
  {
   case 0x8000:ROM_BANK8(0x8000,V);break;
   case 0xA000:ROM_BANK8(0xA000,V);break;

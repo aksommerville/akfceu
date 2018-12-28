@@ -42,7 +42,7 @@ static uint8 *xbsave=NULL;
 
 void FCEU_KillVirtualVideo(void)
 {
- if(xbsave)
+ if (xbsave)
  {
   free(xbsave);
   xbsave=0;
@@ -51,20 +51,20 @@ void FCEU_KillVirtualVideo(void)
 
 int FCEU_InitVirtualVideo(void)
 {
- if(!XBuf)    /* Some driver code may allocate XBuf externally. */
+ if (!XBuf)    /* Some driver code may allocate XBuf externally. */
       /* 256 bytes per scanline, * 240 scanline maximum, +8 for alignment,
       */
- if(!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
+ if (!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
   return 0;
  xbsave=XBuf;
 
- if(sizeof(uint8*)==4)
+ if (sizeof(uint8*)==4)
  {
   uint32 m;
   m=(uint32)XBuf;
   m=(4-m)&3;
   XBuf+=m;
- } 
+ }
  memset(XBuf,128,256*256); //*240);
  return 1;
 }
@@ -82,13 +82,13 @@ void FCEU_PutImageDummy(void)
  #ifdef SHOWFPS
  ShowFPS();
  #endif
- if(FCEUGameInfo->type!=GIT_NSF)
+ if (FCEUGameInfo->type!=GIT_NSF)
  {
   FCEU_DrawNTSCControlBars(XBuf);
   FCEU_DrawSaveStates(XBuf);
   FCEU_DrawMovies(XBuf);
  }
- if(howlong) howlong--; /* DrawMessage() */
+ if (howlong) howlong--; /* DrawMessage() */
 }
 #endif
 
@@ -97,11 +97,11 @@ void FCEUI_SaveSnapshot(void)
 {
  dosnapsave=1;
 }
- 
+
 static void ReallySnap(void)
 {
  int x=SaveSnapshot();
- if(!x)
+ if (!x)
   FCEU_DispMessage("Error saving screen snapshot.");
  else
   FCEU_DispMessage("Screen snapshot %d saved.",x-1);
@@ -112,27 +112,27 @@ void FCEU_PutImage(void)
   #ifdef SHOWFPS
   ShowFPS();
   #endif
-        if(FCEUGameInfo->type==GIT_NSF)
+        if (FCEUGameInfo->type==GIT_NSF)
         {
          DrawNSF(XBuf);
          /* Save snapshot after NSF screen is drawn.  Why would we want to
             do it before?
          */
-         if(dosnapsave)
+         if (dosnapsave)
          {
           ReallySnap();
           dosnapsave=0;
          }
-        } 
+        }
         else
-        {   
+        {  
          /* Save snapshot before overlay stuff is written. */
-         if(dosnapsave)
+         if (dosnapsave)
          {
           ReallySnap();
           dosnapsave=0;
          }
-         if(FCEUGameInfo->type==GIT_VSUNI)
+         if (FCEUGameInfo->type==GIT_VSUNI)
           FCEU_VSUniDraw(XBuf);
    FCEU_DrawSaveStates(XBuf);
    FCEU_DrawMovies(XBuf);
@@ -170,17 +170,17 @@ static int WritePNGChunk(FILE *fp, uint32 size, char *type, uint8 *data)
  tempo[2]=size>>8;
  tempo[3]=size;
 
- if(fwrite(tempo,4,1,fp)!=1)
+ if (fwrite(tempo,4,1,fp)!=1)
   return 0;
- if(fwrite(type,4,1,fp)!=1)
+ if (fwrite(type,4,1,fp)!=1)
   return 0;
 
- if(size)
-  if(fwrite(data,1,size,fp)!=size)
+ if (size)
+  if (fwrite(data,1,size,fp)!=size)
    return 0;
 
  crc=CalcCRC32(0,(uint8 *)type,4);
- if(size)
+ if (size)
   crc=CalcCRC32(crc,data,size);
 
  tempo[0]=crc>>24;
@@ -188,7 +188,7 @@ static int WritePNGChunk(FILE *fp, uint32 size, char *type, uint8 *data)
  tempo[2]=crc>>8;
  tempo[3]=crc;
 
- if(fwrite(tempo,4,1,fp)!=1)
+ if (fwrite(tempo,4,1,fp)!=1)
   return 0;
  return 1;
 }
@@ -204,19 +204,19 @@ int SaveSnapshot(void)
  uint8 *compmem=NULL;
  uLongf compmemsize=totallines*263+12;
 
- if(!(compmem=(uint8 *)FCEU_malloc(compmemsize)))
+ if (!(compmem=(uint8 *)FCEU_malloc(compmemsize)))
   return 0;
 
- for(u=lastu;u<99999;u++)
+ for (u=lastu;u<99999;u++)
  {
   pp=FCEUD_UTF8fopen((fn=FCEU_MakeFName(FCEUMKF_SNAP,u,"png")),"rb");
-  if(pp==NULL) break;
+  if (pp==NULL) break;
   fclose(pp);
  }
 
  lastu=u;
 
- if(!(pp=FCEUD_UTF8fopen(fn,"wb")))
+ if (!(pp=FCEUD_UTF8fopen(fn,"wb")))
  {
   free(fn);
   return 0;
@@ -224,7 +224,7 @@ int SaveSnapshot(void)
  free(fn);
  {
   static uint8 header[8]={137,80,78,71,13,10,26,10};
-  if(fwrite(header,8,1,pp)!=1)
+  if (fwrite(header,8,1,pp)!=1)
    goto PNGerr;
  }
 
@@ -243,15 +243,15 @@ int SaveSnapshot(void)
   chunko[11]=0;        // Basic adapative filter set(though none are used).
   chunko[12]=0;        // No interlace.
 
-  if(!WritePNGChunk(pp,13,"IHDR",chunko))
+  if (!WritePNGChunk(pp,13,"IHDR",chunko))
    goto PNGerr;
  }
 
  {
   uint8 pdata[256*3];
-  for(x=0;x<256;x++)
+  for (x=0;x<256;x++)
    FCEUD_GetPalette(x,pdata+x*3,pdata+x*3+1,pdata+x*3+2);
-  if(!WritePNGChunk(pp,256*3,"PLTE",pdata))
+  if (!WritePNGChunk(pp,256*3,"PLTE",pdata))
    goto PNGerr;
  }
 
@@ -259,28 +259,28 @@ int SaveSnapshot(void)
   uint8 *tmp=XBuf+FSettings.FirstSLine*256;
   uint8 *dest,*mal,*mork;
 
-  if(!(mal=mork=dest=(uint8 *)malloc((totallines<<8)+totallines)))
+  if (!(mal=mork=dest=(uint8 *)malloc((totallines<<8)+totallines)))
    goto PNGerr;
  //   mork=dest=XBuf;
 
-  for(y=0;y<totallines;y++)
+  for (y=0;y<totallines;y++)
   {
    *dest=0;      // No filter.
    dest++;
-   for(x=256;x;x--,tmp++,dest++)
-    *dest=*tmp;   
+   for (x=256;x;x--,tmp++,dest++)
+    *dest=*tmp;  
   }
 
-  if(compress(compmem,&compmemsize,mork,(totallines<<8)+totallines)!=Z_OK)
+  if (compress(compmem,&compmemsize,mork,(totallines<<8)+totallines)!=Z_OK)
   {
-   if(mal) free(mal);
+   if (mal) free(mal);
    goto PNGerr;
   }
-  if(mal) free(mal);
-  if(!WritePNGChunk(pp,compmemsize,"IDAT",compmem))
+  if (mal) free(mal);
+  if (!WritePNGChunk(pp,compmemsize,"IDAT",compmem))
    goto PNGerr;
  }
- if(!WritePNGChunk(pp,0,"IEND",0))
+ if (!WritePNGChunk(pp,0,"IEND",0))
   goto PNGerr;
 
  free(compmem);
@@ -290,9 +290,9 @@ int SaveSnapshot(void)
 
 
  PNGerr:
- if(compmem)
+ if (compmem)
   free(compmem);
- if(pp)
+ if (pp)
   fclose(pp);
  return(0);
 }
@@ -304,7 +304,7 @@ static uint64 boop[60];
 static int boopcount = 0;
 
 void ShowFPS(void)
-{ 
+{
  uint64 da = FCEUD_GetTime() - boop[boopcount];
  char fpsmsg[16];
  int booplimit = PAL?50:60;

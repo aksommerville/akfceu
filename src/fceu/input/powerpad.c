@@ -32,13 +32,13 @@ static uint8 FP_FASTAPASS(1) ReadPP(int w)
                 uint8 ret=0;
                 ret|=((pprdata[w]>>pprsb[w])&1)<<3;
                 ret|=((pprdata[w]>>(pprsb[w]+8))&1)<<4;
-    if(pprsb[w]>=4) 
+    if (pprsb[w]>=4)
     {
      ret|=0x10;
-     if(pprsb[w]>=8) 
+     if (pprsb[w]>=8)
       ret|=0x08;
     }
-    if(!fceuindbg)
+    if (!fceuindbg)
                  pprsb[w]++;
                 return ret;
 }
@@ -56,11 +56,11 @@ void FP_FASTAPASS(3) UpdatePP(int w, void *data, int arg)
 
  pprdata[w]=0;
 
- if(side=='A')
-  for(x=0;x<12;x++)
+ if (side=='A')
+  for (x=0;x<12;x++)
    pprdata[w]|=(((*(uint32 *)data)>>x)&1)<<shifttableA[x];
  else
-  for(x=0;x<12;x++)
+  for (x=0;x<12;x++)
    pprdata[w]|=(((*(uint32 *)data)>>x)&1)<<shifttableB[x];
 }
 

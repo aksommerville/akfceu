@@ -34,7 +34,7 @@ static DECLFW(Mapper59_write)
 
 static DECLFR(m59rd)
 {
- if(ay&0x100) return(0);
+ if (ay&0x100) return(0);
  else
   return(CartBR(A));
 }

@@ -26,8 +26,8 @@
   int fullscreen;
 }
 
-+(MNWindow*)newWithWidth:(int)width 
-  height:(int)height 
++(MNWindow*)newWithWidth:(int)width
+  height:(int)height
   title:(const char*)title
   fullscreen:(int)fullscreen
 ;

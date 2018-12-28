@@ -71,7 +71,7 @@ int mn_macwm_translate_codepoint(int src) {
 
 /* MacOS to USB-HID keysyms.
  */
- 
+
 int mn_macwm_translate_keysym(int key) {
   switch (key) {
     #define _(macname,usage) case kVK_##macname: return 0x0007##usage;

@@ -31,7 +31,7 @@ static DECLFW(Mapper255_write)
 // printf("$%04x:$%02x\n",A,V);
 // printf("%2x:%2x:%2x,%2x\n",pbank,cbank,rbank,(A&0x40)>>6);
 
- if(A&0x1000)
+ if (A&0x1000)
  {
   ROM_BANK16(0x8000,((pbank|(rbank<<5))<<1)|((A&0x40)>>6));
   ROM_BANK16(0xc000,((pbank|(rbank<<5))<<1)|((A&0x40)>>6));

@@ -24,7 +24,7 @@
 static DECLFW(Mapper61_write)
 {
 // printf("$%04x:$%02x\n",A,V);
- switch(A&0x30)
+ switch (A&0x30)
  {
   case 0x00:
   case 0x30:
@@ -37,7 +37,7 @@ static DECLFW(Mapper61_write)
     break;
  }
  #ifdef moo
- if(!(A&0x10))
+ if (!(A&0x10))
   ROM_BANK32(A&0xF);
  else
  {

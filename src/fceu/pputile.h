@@ -1,17 +1,17 @@
-        uint8 *C; 
+        uint8 *C;
         register uint8 cc;
         uint32 vadr;
-       
+      
   #ifndef PPUT_MMC5SP
   register uint8 zz;
   #else
-        uint8 xs,ys;  
+        uint8 xs,ys; 
         xs=X1;
         ys=((scanline>>3)+MMC5HackSPScroll)&0x1F;
-        if(ys>=0x1E) ys-=0x1E;
+        if (ys>=0x1E) ys-=0x1E;
   #endif
-  
-  if(X1>=2)
+ 
+  if (X1>=2)
         {
    uint8 *S=PALRAM;
    uint32 pixdata;
@@ -119,8 +119,8 @@
   #endif
 
         atlatch>>=2;
-        atlatch|=cc<<2;  
-       
+        atlatch|=cc<<2; 
+      
         pshift[0]<<=8;
         pshift[1]<<=8;
 
@@ -130,7 +130,7 @@
   #else
     #ifdef PPUT_MMC5CHR1
     C = MMC5HackVROMPTR;
-         C += (((MMC5HackExNTARAMPtr[RefreshAddr & 0x3ff]) & 0x3f & 
+         C += (((MMC5HackExNTARAMPtr[RefreshAddr & 0x3ff]) & 0x3f &
      MMC5HackVROMMask) << 12) + (vadr & 0xfff);
    #elif defined(PPUT_MMC5)
    C=MMC5BGVRAMADR(vadr);
@@ -140,13 +140,13 @@
   #endif
 
   #ifdef PPUT_HOOK
-  PPU_hook(vadr);  
+  PPU_hook(vadr); 
   #endif
 
         pshift[0]|=C[0];
         pshift[1]|=C[8];
 
-        if((RefreshAddr&0x1f)==0x1f)
+        if ((RefreshAddr&0x1f)==0x1f)
          RefreshAddr^=0x41F;
         else
          RefreshAddr++;

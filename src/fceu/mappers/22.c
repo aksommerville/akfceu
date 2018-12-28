@@ -26,9 +26,9 @@
 
 DECLFW(Mapper22_write)
 {
-        if(A<=0xAFFF)
+        if (A<=0xAFFF)
          {
-          switch(A&0xF000)
+          switch (A&0xF000)
           {
           case 0x8000:ROM_BANK8(0x8000,V);break;
           case 0xa000:ROM_BANK8(0xA000,V);break;
@@ -45,7 +45,7 @@ DECLFW(Mapper22_write)
         else
         {
     A&=0xF003;
-    if(A>=0xb000 && A<=0xe003)
+    if (A>=0xb000 && A<=0xe003)
     {
      int x=(A&1)|((A-0xB000)>>11);
 

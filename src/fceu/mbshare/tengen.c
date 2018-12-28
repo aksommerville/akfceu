@@ -42,16 +42,16 @@ static int nomirror;
 static void FP_FASTAPASS(1) RAMBO1_IRQHook(int a)
 {
  static int smallcount;
- if(!IRQmode) return;
+ if (!IRQmode) return;
 
  smallcount+=a;
- while(smallcount>=4)
+ while (smallcount>=4)
  {
   smallcount-=4;
   IRQCount--;
-  if(IRQCount==0xFF)
+  if (IRQCount==0xFF)
   {
-   if(IRQa)
+   if (IRQa)
    {
     //printf("IRQ: %d\n",scanline);
     //rmode = 1;
@@ -63,14 +63,14 @@ static void FP_FASTAPASS(1) RAMBO1_IRQHook(int a)
 
 static void RAMBO1_hb(void)
 {
-      if(IRQmode) return;
-      if(scanline==240) return;  /* hmm.  Maybe that should be an mmc3-only
+      if (IRQmode) return;
+      if (scanline==240) return;  /* hmm.  Maybe that should be an mmc3-only
              call in fce.c. */
       rmode=0;
       IRQCount--;
-      if(IRQCount==0xFF)
+      if (IRQCount==0xFF)
       {
-       if(IRQa)
+       if (IRQa)
        {
         rmode = 1;
         X6502_IRQBegin(FCEU_IQEXT);
@@ -82,7 +82,7 @@ static void Synco(void)
 {
  int x;
 
- if(cmd&0x20)
+ if (cmd&0x20)
  {
   setchr1wrap(0x0000,DRegs[0]);
   setchr1wrap(0x0800,DRegs[1]);
@@ -97,7 +97,7 @@ static void Synco(void)
   setchr1wrap(0x0C00,(DRegs[1]&0xFE)|1);
  }
 
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
   setchr1wrap(0x1000+x*0x400,DRegs[2+x]);
 
  setprg8(0x8000,DRegs[6]);
@@ -110,23 +110,23 @@ static void Synco(void)
 static DECLFW(RAMBO1_write)
 {
  //if(A>=0xC000 && A<=0xFFFF) printf("$%04x:$%02x, %d, %d\n",A,V,scanline,timestamp);
- switch(A&0xF001)
+ switch (A&0xF001)
  {
         case 0xa000:mir=V&1;
-        if(!nomirror)
+        if (!nomirror)
          setmirror(mir^1);
         break;
         case 0x8000:cmd = V;
         break;
         case 0x8001:
-        if((cmd&0xF)<10)
+        if ((cmd&0xF)<10)
          DRegs[cmd&0xF]=V;
-        else if((cmd&0xF)==0xF)
+        else if ((cmd&0xF)==0xF)
          DRegs[10]=V;
         Synco();
         break;
         case 0xc000:IRQLatch=V;
-                    if(rmode==1)
+                    if (rmode==1)
                      {
                       IRQCount=IRQLatch;
                      }
@@ -136,32 +136,32 @@ static DECLFW(RAMBO1_write)
         IRQmode=V&1;
                     break;
         case 0xE000:IRQa=0;X6502_IRQEnd(FCEU_IQEXT);
-                    if(rmode==1)
+                    if (rmode==1)
                      {IRQCount=IRQLatch;}
                     break;
         case 0xE001:IRQa=1;
-                    if(rmode==1)
+                    if (rmode==1)
                      {IRQCount=IRQLatch;}
                     break;
-  }  
+  } 
 }
 
 static void RAMBO1_Restore(int version)
 {
  Synco();
- if(!nomirror)
+ if (!nomirror)
   setmirror(mir^1);
 }
 
 static void RAMBO1_init(void)
 {
   int x;
- 
-        for(x=0;x<11;x++)
+
+        for (x=0;x<11;x++)
          DRegs[x]=~0;
         cmd=0;
         mir=0;
-  if(!nomirror)
+  if (!nomirror)
          setmirror(1);
         Synco();
         GameHBIRQHook=RAMBO1_hb;
@@ -190,7 +190,7 @@ static unsigned int PPUCHRBus;
 static void FP_FASTAPASS(2) MirWrap(unsigned int A, unsigned int V)
 {
  MirCache[A>>10]=(V>>7)&1;
- if(PPUCHRBus==(A>>10))
+ if (PPUCHRBus==(A>>10))
   setmirror(MI_0+((V>>7)&1));
  setchr1(A,V);
 }

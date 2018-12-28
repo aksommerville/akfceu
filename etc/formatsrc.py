@@ -2,7 +2,8 @@
 import sys,os,stat
 
 def process_text(src):
-  return src.replace("\t","  ").replace("\r","")
+  #return src.replace("\t","  ").replace("\r","")
+  return src.replace(" if("," if (").replace(" for("," for (").replace(" switch("," switch (").replace(" while("," while (").replace(" \n","\n")
 
 def process_regular(path):
   ext=path.split('.')[-1].lower()

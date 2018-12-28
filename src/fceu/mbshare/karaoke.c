@@ -31,9 +31,9 @@ static void Sync(void)
 {
  //if(!DReg)
  //printf("%02x\n",DReg);
- if(DReg)
+ if (DReg)
  {
-  if(DReg & 0x10)
+  if (DReg & 0x10)
    setprg16(0x8000, (DReg & 0x7));
   else
    setprg16(0x8000, (DReg&0x7) | 0x8);

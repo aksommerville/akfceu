@@ -29,23 +29,23 @@ static int32 IRQCount,IRQa;
 
 static void DoPRG(void)
 {
- if(master&0x80)
+ if (master&0x80)
  {
-  if(master&0x20)
+  if (master&0x20)
   {
    setprg32(0x8000,(master&0xF)>>1);
   }
   else
   {
    setprg16(0x8000,master&0xF);
-   setprg16(0xC000,master&0xF);  
+   setprg16(0xC000,master&0xF); 
   }
  }
  else
  {
   setprg8(0xA000,regs[4]);
   setprg8(0xE000,~0);
-  if(cmd&0x40)
+  if (cmd&0x40)
   {
    setprg8(0xC000,regs[2]);
    setprg8(0x8000,~1);
@@ -65,7 +65,7 @@ static void DoCHR(void)
 
  setchr2(0x0000^base,(orie|regs[0])>>1); //K
  setchr2(0x0800^base,(orie|regs[3])>>1); //43
- 
+
  setchr1(0x1000,orie|regs[1]);
  setchr1(0x1400,orie|regs[5]);
  setchr1(0x1800,orie|regs[6]);
@@ -74,26 +74,26 @@ static void DoCHR(void)
 
 static DECLFW(UNL8237Write)
 {
- switch(A&0xF000)
+ switch (A&0xF000)
  {
   case 0xf000:IRQCount=V;break;
   case 0xE000:X6502_IRQEnd(FCEU_IQEXT);break;
  }
-// if(A<0x8000)
+// if (A<0x8000)
 //  printf("$%04x:$%02x, %d\n",A&0xFFFF,V,scanline);
- if(A==0x5000)
+ if (A==0x5000)
  {
   master=V;
   DoPRG();
-  DoCHR();  
+  DoCHR(); 
  }
- else if(A==0x5001)
+ else if (A==0x5001)
  {
   chrm=V;
   DoCHR();
  }
  else
- switch(A&0xE000)
+ switch (A&0xE000)
  {
   case 0x8000:setmirror(((V|(V>>7))&1)^1);break;
   case 0xa000:cmd=V;cmdin=1;DoPRG();DoCHR();break;
@@ -110,7 +110,7 @@ static void UNL8237Reset(void)
 {
   int x;
 
-  for(x=0;x<8;x++) regs[x]=0;  
+  for (x=0;x<8;x++) regs[x]=0; 
   master=chrm=cmd=cmdin=IRQCount=IRQa=0;
   SetReadHandler(0x8000,0xFFFF,CartBR);
   SetWriteHandler(0x5000,0xFFFF,UNL8237Write);
@@ -120,10 +120,10 @@ static void UNL8237Reset(void)
 
 static void hooko(void)
 {
- if(IRQCount)
+ if (IRQCount)
  {
   IRQCount--;
-  if(!IRQCount)
+  if (!IRQCount)
   {
    X6502_IRQBegin(FCEU_IQEXT);
    //printf("IRQ: %d\n",scanline);

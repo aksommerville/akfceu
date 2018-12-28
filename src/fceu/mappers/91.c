@@ -1,5 +1,5 @@
 /* FCE Ultra - NES/Famicom Emulator
- * 
+ *
  * Copyright notice for this file:
  *  Copyright (C) 2002 Xodnizel
  *
@@ -26,8 +26,8 @@ static DECLFW(Mapper91_write)
 //printf("$%04x:$%02x, %d\n",A,V,scanline);
  A&=0xF007;
 
- if(A>=0x6000 && A<=0x6003) VROM_BANK2((A&3)*2048,V);
- else switch(A&0xF003)
+ if (A>=0x6000 && A<=0x6003) VROM_BANK2((A&3)*2048,V);
+ else switch (A&0xF003)
  {
   case 0x7000:
   case 0x7001:ROM_BANK8(0x8000+(A&1)*8192,V);break;
@@ -41,13 +41,13 @@ static DECLFW(Mapper91_write)
 
 static void Mapper91_hb(void)
 {
- if(IRQCount<8 && IRQa)
+ if (IRQCount<8 && IRQa)
  {
   IRQCount++;
-  if(IRQCount>=8)
+  if (IRQCount>=8)
   {
-    X6502_IRQBegin(FCEU_IQEXT);   
-  } 
+    X6502_IRQBegin(FCEU_IQEXT);  
+  }
  }
 }
 
@@ -55,5 +55,5 @@ void Mapper91_init(void)
 {
   SetWriteHandler(0x4020,0xFFFF,Mapper91_write);
   GameHBIRQHook=Mapper91_hb;
-} 
+}
 

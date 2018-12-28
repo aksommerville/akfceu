@@ -24,12 +24,12 @@
 
 static DECLFW(Mapper76_write)
 {
-        switch(A&0xE001){
+        switch (A&0xE001){
         case 0x8000:
          MMC3_cmd = V;
          break;
         case 0x8001:
-                switch(MMC3_cmd&0x07){
+                switch (MMC3_cmd&0x07){
                 case 2: VROM_BANK2(0x000,V);break;
                 case 3: VROM_BANK2(0x800,V);break;
                 case 4: VROM_BANK2(0x1000,V);break;

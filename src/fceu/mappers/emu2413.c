@@ -9,7 +9,7 @@
              : Version 0.32 -- LPF implemented.
   2001 01-18 : Version 0.33 -- Fixed the drum problem, refine the mix-down method.
                             -- Fixed the LFO bug.
-  2001 01-24 : Version 0.35 -- Fixed the drum problem, 
+  2001 01-24 : Version 0.35 -- Fixed the drum problem,
                                support undocumented EG behavior.
   2001 02-02 : Version 0.38 -- Improved the performance.
                                Fixed the hi-hat and cymbal model.
@@ -35,7 +35,7 @@
 
   2004 01-24 : Modified by xodnizel to remove code not needed for the VRC7, among other things.
 
-  References: 
+  References:
     fmopl.c        -- 1999,2000 written by Tatsuyuki Satoh (MAME development).
     fmopl.c(fixed) -- (C) 2002 Jarek Burczynski.
     s_opl.c        -- 2001 written by Mamiya (NEZplug development).
@@ -185,9 +185,9 @@ static e_int32 rksTable[2][8][2];
 static e_uint32 dphaseTable[512][8][16];
 
 /***************************************************
- 
+
                   Create tables
- 
+
 ****************************************************/
 INLINE static e_int32
 Min (e_int32 i, e_int32 j)
@@ -403,7 +403,7 @@ makeDphaseARTable (void)
         dphaseARTable[AR][Rks] = 0;
         break;
       case 15:
-        dphaseARTable[AR][Rks] = 0;/*EG_DP_WIDTH;*/ 
+        dphaseARTable[AR][Rks] = 0;/*EG_DP_WIDTH;*/
         break;
       default:
 #ifdef USE_SPEC_ENV_SPEED
@@ -861,7 +861,7 @@ calc_envelope (OPLL_SLOT * slot, e_int32 lfo)
   case ATTACK:
     egout = AR_ADJUST_TABLE[HIGHBITS (slot->eg_phase, EG_DP_BITS - EG_BITS)];
     slot->eg_phase += slot->eg_dphase;
-    if((EG_DP_WIDTH & slot->eg_phase)||(slot->patch.AR==15))
+    if ((EG_DP_WIDTH & slot->eg_phase)||(slot->patch.AR==15))
     {
       egout = 0;
       slot->eg_phase = 0;
@@ -926,7 +926,7 @@ calc_envelope (OPLL_SLOT * slot, e_int32 lfo)
 
   if (egout >= DB_MUTE)
     egout = DB_MUTE - 1;
-  
+ 
   slot->egout = egout;
 }
 
@@ -999,7 +999,7 @@ static INLINE e_int16 calc (OPLL * opll)
 
 void moocow(OPLL* opll, e_int32 *buf, e_int32 len, int shift)
 {
- while(len > 0)
+ while (len > 0)
  {
   *buf+=(calc(opll)+32768)<<shift;
   buf++;
@@ -1017,7 +1017,7 @@ OPLL_calc (OPLL * opll)
 e_int16
 OPLL_calc (OPLL * opll)
 {
-  if (!opll->quality)  
+  if (!opll->quality) 
    return calc (opll);
 
   while (opll->realstep > opll->oplltime)
@@ -1078,7 +1078,7 @@ static void setInstrument(OPLL * opll, e_uint i, e_uint inst)
 
  opll->patch_number[i]=inst;
 
- if(inst)
+ if (inst)
   src=default_inst[inst-1];
  else
   src=opll->CustInst;
@@ -1096,12 +1096,12 @@ static void setInstrument(OPLL * opll, e_uint i, e_uint inst)
  carp->PM=(src[1]>>6)&1;
  carp->EG=(src[1]>>5)&1;
  carp->KR=(src[1]>>4)&1;
- carp->ML=(src[1]&0xF);  
+ carp->ML=(src[1]&0xF); 
 
  modp->KL=(src[2]>>6)&3;
  modp->TL=(src[2]&0x3F);
 
- carp->KL = (src[3] >> 6) & 3; 
+ carp->KL = (src[3] >> 6) & 3;
  carp->WF = (src[3] >> 4) & 1;
 
  modp->WF = (src[3] >> 3) & 1;
@@ -1116,7 +1116,7 @@ static void setInstrument(OPLL * opll, e_uint i, e_uint inst)
 
  modp->SL = (src[6]>>4)&0xF;
  modp->RR = (src[6]&0xF);
- 
+
  carp->SL = (src[7]>>4)&0xF;
  carp->RR = (src[7]&0xF);
 }

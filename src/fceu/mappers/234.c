@@ -25,7 +25,7 @@
 
 static void DoBS(void)
 {
- if(r1&0x40)
+ if (r1&0x40)
  {
   ROM_BANK32((r1&0xE)|(r2&1));
   VROM_BANK8( ((r1&0xE)<<2) | ((r2>>4)&7) );
@@ -39,7 +39,7 @@ static void DoBS(void)
 
 static void R1Set(uint8 V)
 {
- if(r1) return;
+ if (r1) return;
  r1=V;
  MIRROR_SET(V>>7);
  DoBS();
@@ -100,7 +100,7 @@ void Mapper234_init(void)
   SetWriteHandler(0x6000,0x7FFF,0);
 
   M15Reset();
-    
+   
   GameStateRestore=M15Restore;
   MapperReset=M15Reset;
 }

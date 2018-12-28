@@ -27,15 +27,15 @@ static uint8 bdata[20];
 
 static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
 {
- if(w && have) 
+ if (w && have)
  {
-  switch(seq)
+  switch (seq)
   {
    case 0: seq++; ptr=0; ret|=0x4; break;
    case 1: seq++; bit=bdata[ptr]; cnt=0; ret|=0x4; break;
-   case 2: ret|=((bit&0x01)^0x01)<<2; bit>>=1; if(++cnt > 7) seq++;
+   case 2: ret|=((bit&0x01)^0x01)<<2; bit>>=1; if (++cnt > 7) seq++;
      break;
-   case 3: if(++ptr > 19)
+   case 3: if (++ptr > 19)
      {
       seq=-1;
       have=0;
@@ -55,7 +55,7 @@ static void FP_FASTAPASS(1) Write(uint8 V)
 
 static void FP_FASTAPASS(2) Update(void *data, int arg)
 {
- if(*(uint8 *)data)
+ if (*(uint8 *)data)
  {
   *(uint8 *)data=0;
   seq=ptr=0;

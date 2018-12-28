@@ -23,10 +23,10 @@
 
 void FP_FASTAPASS(1) IREMIRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount-=a;
-   if(IRQCount<-4)
+   if (IRQCount<-4)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;
@@ -39,7 +39,7 @@ static DECLFW(Mapper65_write)
 {
  //if(A>=0x9000 && A<=0x9006)
  // printf("$%04x:$%02x, %d\n",A,V,scanline);
- switch(A)
+ switch (A)
  {
   //default: printf("$%04x:$%02x\n",A,V);
   //  break;

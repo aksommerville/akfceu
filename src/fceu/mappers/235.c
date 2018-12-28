@@ -25,7 +25,7 @@ static DECLFW(Mapper235_write)
   uint32 m;
   int z;
 
-  if(A&0x400)
+  if (A&0x400)
    onemir(0);
   else
    setmirror(((A>>13)&1)^1);
@@ -33,7 +33,7 @@ static DECLFW(Mapper235_write)
 
   z=(A>>8)&3;
 
-   if(A&0x800)
+   if (A&0x800)
    {
     setprg16r(0x10|z,0x8000,(m<<1)|((A>>12)&1));
     setprg16r(0x10|z,0xC000,(m<<1)|((A>>12)&1));

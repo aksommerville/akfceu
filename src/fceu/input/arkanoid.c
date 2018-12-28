@@ -40,14 +40,14 @@ static uint8 FP_FASTAPASS(2) ReadARKFC(int w,uint8 ret)
 {
  ret&=~2;
 
- if(w)  
+ if (w) 
  {
-  if(FCArk.readbit>=8) 
+  if (FCArk.readbit>=8)
    ret|=2;
   else
   {
    ret|=((FCArk.mzx>>(7-FCArk.readbit))&1)<<1;
-   if(!fceuindbg)
+   if (!fceuindbg)
     FCArk.readbit++;
   }
  }
@@ -59,7 +59,7 @@ static uint8 FP_FASTAPASS(2) ReadARKFC(int w,uint8 ret)
 static uint32 FixX(uint32 x)
 {
  x=98+x*144/240;
- if(x>242) x=242;
+ if (x>242) x=242;
  x=~x;
  return(x);
 }
@@ -84,12 +84,12 @@ static uint8 FP_FASTAPASS(1) ReadARK(int w)
 {
  uint8 ret=0;
 
- if(NESArk[w].readbit>=8)
+ if (NESArk[w].readbit>=8)
   ret|=1<<4;
  else
  {
   ret|=((NESArk[w].mzx>>(7-NESArk[w].readbit))&1)<<4;
-  if(!fceuindbg)
+  if (!fceuindbg)
    NESArk[w].readbit++;
  }
  ret|=(NESArk[w].mzb&1)<<3;

@@ -1,6 +1,6 @@
 /* mn_time.h
  */
- 
+
 #ifndef MN_TIME_H
 #define MN_TIME_H
 

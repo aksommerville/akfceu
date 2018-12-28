@@ -118,13 +118,13 @@ void Mapper13_init(void)
 
 static DECLFW(Mapper34_write)
 {
- switch(A)
+ switch (A)
  {
   case 0x7FFD:ROM_BANK32(V);break;
   case 0x7FFE:VROM_BANK4(0x0000,V);break;
   case 0x7fff:VROM_BANK4(0x1000,V);break;
  }
- if(A>=0x8000)
+ if (A>=0x8000)
   ROM_BANK32(V);
 }
 
@@ -245,7 +245,7 @@ static DECLFW(Mapper96_write)
 
 static void FP_FASTAPASS(1) M96Hook(uint32 A)
 {
- if((A&0x3000)!=0x2000) return;
+ if ((A&0x3000)!=0x2000) return;
  //if((A&0x3ff)>=0x3c0) return;
  M96LA=(A>>8)&3;
  setchr4r(0x10,0x0000,(latche&4)|M96LA);
@@ -289,16 +289,16 @@ static void M185Sync(int version)
 
  //printf("%02x\n",mapbyte1[0]);
  //if((mapbyte1[0]&3)==3)
- if(VROM_size == 1)
+ if (VROM_size == 1)
  {
-  if((mapbyte1[0]&3) == 1)
+  if ((mapbyte1[0]&3) == 1)
    setchr8(0);
   else
    setchr8r(0x10,0);
  }
- else if(VROM_size == 2)
+ else if (VROM_size == 2)
  {
-  if((mapbyte1[0]&2)) setchr8(mapbyte1[0]&1);
+  if ((mapbyte1[0]&2)) setchr8(mapbyte1[0]&1);
   else setchr8r(0x10,0);
  }
 }
@@ -313,7 +313,7 @@ static DECLFW(Mapper185_write)
 void Mapper185_init(void)
 {
  int x;
- for(x=0;x<8192;x++)
+ for (x=0;x<8192;x++)
   MapperExRAM[x]=0xFF;
  //memset(MapperExRAM,0xFF,1024);
  MapStateRestore=M185Sync;
@@ -326,11 +326,11 @@ void Mapper185_init(void)
 
 static DECLFW(M156Write)
 {
- if(A>=0xc000 && A<=0xC003)
-  VROM_BANK1((A&3)*1024,V); 
- else if(A>=0xc008 &&  A<=0xc00b)
+ if (A>=0xc000 && A<=0xC003)
+  VROM_BANK1((A&3)*1024,V);
+ else if (A>=0xc008 &&  A<=0xc00b)
   VROM_BANK1(0x1000+(A&3)*1024,V);
- if(A==0xc010) ROM_BANK16(0x8000,V);
+ if (A==0xc010) ROM_BANK16(0x8000,V);
 // printf("$%04x:$%02x\n",A,V);
 }
 
@@ -343,7 +343,7 @@ void Mapper156_init(void)
 static DECLFW(Mapper157_write)
 {
  printf("$%04x:$%02x\n",A,V);
- if(A<0xc000)
+ if (A<0xc000)
  setprg16(0xc000,V);
 }
 static DECLFR(m157rd)

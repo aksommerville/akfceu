@@ -25,10 +25,10 @@
 
 void FP_FASTAPASS(1) JalecoIRQHook(int a)
 {
-  if(IRQa && IRQCount)
+  if (IRQa && IRQCount)
   {
    IRQCount-=a;
-   if(IRQCount<=0)
+   if (IRQCount<=0)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQCount=0;
@@ -40,7 +40,7 @@ void FP_FASTAPASS(1) JalecoIRQHook(int a)
 DECLFW(Mapper18_write)
 {
   A&=0xF003;
-  if(A>=0x8000 && A<=0x9001)
+  if (A>=0x8000 && A<=0x9001)
   {
          int x=((A>>1)&1)|((A-0x8000)>>11);
 
@@ -48,7 +48,7 @@ DECLFW(Mapper18_write)
          K4buf2[x]|=(V&0xF)<<((A&1)<<2);
          ROM_BANK8(0x8000+(x<<13),K4buf2[x]);
   }
-  else if(A>=0xa000 && A<=0xd003)
+  else if (A>=0xa000 && A<=0xd003)
   {
    int x=((A>>1)&1)|((A-0xA000)>>11);
 
@@ -56,7 +56,7 @@ DECLFW(Mapper18_write)
          K4buf[x]|=(V&0xF)<<((A&1)<<2);
          VROM_BANK1(x<<10,K4buf[x]);
   }
-        else switch(A)
+        else switch (A)
         {
      case 0xe000:IRQLatch&=0xFFF0;IRQLatch|=(V&0x0f);break;
    case 0xe001:IRQLatch&=0xFF0F;IRQLatch|=(V&0x0f)<<4;break;
@@ -68,7 +68,7 @@ DECLFW(Mapper18_write)
          X6502_IRQEnd(FCEU_IQEXT);
          break;
    case 0xf002:MIRROR_SET2(V&1);
-               if(V&2) onemir(0);
+               if (V&2) onemir(0);
                 break;
         }
 }

@@ -97,18 +97,18 @@ static uint8 *ExWRAM=0;
 
 void NSFGI(int h)
 {
- switch(h)
+ switch (h)
  {
  case GI_CLOSE:
-  if(NSFDATA) {free(NSFDATA);NSFDATA=0;}
-  if(ExWRAM) {free(ExWRAM);ExWRAM=0;}
-  if(NSFHeader.SoundChip&1) {
+  if (NSFDATA) {free(NSFDATA);NSFDATA=0;}
+  if (ExWRAM) {free(ExWRAM);ExWRAM=0;}
+  if (NSFHeader.SoundChip&1) {
 //   NSFVRC6_Init();
   } else if (NSFHeader.SoundChip&2) {
 //   NSFVRC7_Init();
   } else if (NSFHeader.SoundChip&4) {
 //   FDSSoundReset();
-  } else if (NSFHeader.SoundChip&8) { 
+  } else if (NSFHeader.SoundChip&8) {
    NSFMMC5_Close();
   } else if (NSFHeader.SoundChip&0x10) {
 //   NSFN106_Init();
@@ -126,9 +126,9 @@ void NSFGI(int h)
 static INLINE void BANKSET(uint32 A, uint32 bank)
 {
  bank&=NSFMaxBank;
- if(NSFHeader.SoundChip&4)
+ if (NSFHeader.SoundChip&4)
   memcpy(ExWRAM+(A-0x6000),NSFDATA+(bank<<12),4096);
- else 
+ else
   setprg4(A,bank);
 }
 
@@ -145,7 +145,7 @@ int NSFLoad(FCEUFILE *fp)
   LoadAddr=NSFHeader.LoadAddressLow;
   LoadAddr|=NSFHeader.LoadAddressHigh<<8;
 
-  if(LoadAddr<0x6000)
+  if (LoadAddr<0x6000)
   {
    FCEUD_PrintError("Invalid load address.");
    return(0);
@@ -161,26 +161,26 @@ int NSFLoad(FCEUFILE *fp)
   NSFMaxBank=((NSFSize+(LoadAddr&0xfff)+4095)/4096);
   NSFMaxBank=uppow2(NSFMaxBank);
 
-  if(!(NSFDATA=(uint8 *)FCEU_malloc(NSFMaxBank*4096)))
+  if (!(NSFDATA=(uint8 *)FCEU_malloc(NSFMaxBank*4096)))
    return 0;
 
   FCEU_fseek(fp,0x80,SEEK_SET);
   memset(NSFDATA,0x00,NSFMaxBank*4096);
   FCEU_fread(NSFDATA+(LoadAddr&0xfff),1,NSFSize,fp);
- 
+
   NSFMaxBank--;
 
   BSon=0;
-  for(x=0;x<8;x++)
+  for (x=0;x<8;x++)
    BSon|=NSFHeader.BankSwitch[x];
 
  FCEUGameInfo->type=GIT_NSF;
  FCEUGameInfo->input[0]=FCEUGameInfo->input[1]=SI_GAMEPAD;
  FCEUGameInfo->cspecial=SIS_NSF;
 
- for(x=0;;x++)
+ for (x=0;;x++)
  {
-  if(NSFROM[x]==0x20)
+  if (NSFROM[x]==0x20)
   {
    NSFROM[x+1]=InitAddr&0xFF;
    NSFROM[x+2]=InitAddr>>8;
@@ -190,34 +190,34 @@ int NSFLoad(FCEUFILE *fp)
   }
  }
 
- if(NSFHeader.VideoSystem==0)
+ if (NSFHeader.VideoSystem==0)
   FCEUGameInfo->vidsys=GIV_NTSC;
- else if(NSFHeader.VideoSystem==1)
+ else if (NSFHeader.VideoSystem==1)
   FCEUGameInfo->vidsys=GIV_PAL;
 
  GameInterface=NSFGI;
 
  FCEU_printf("NSF Loaded.  File information:\n\n");
  FCEU_printf(" Name:       %s\n Artist:     %s\n Copyright:  %s\n\n",NSFHeader.SongName,NSFHeader.Artist,NSFHeader.Copyright);
- if(NSFHeader.SoundChip)
+ if (NSFHeader.SoundChip)
  {
   static char *tab[6]={"Konami VRCVI","Konami VRCVII","Nintendo FDS","Nintendo MMC5","Namco 106","Sunsoft FME-07"};
 
-  for(x=0;x<6;x++)
-   if(NSFHeader.SoundChip&(1<<x))
+  for (x=0;x<6;x++)
+   if (NSFHeader.SoundChip&(1<<x))
    {
     FCEU_printf(" Expansion hardware:  %s\n",tab[x]);
     NSFHeader.SoundChip=1<<x;  /* Prevent confusing weirdness if more than one bit is set. */
     break;
    }
  }
- if(BSon)
+ if (BSon)
   FCEU_printf(" Bank-switched.\n");
  FCEU_printf(" Load address:  $%04x\n Init address:  $%04x\n Play address:  $%04x\n",LoadAddr,InitAddr,PlayAddr);
  FCEU_printf(" %s\n",(NSFHeader.VideoSystem&1)?"PAL":"NTSC");
  FCEU_printf(" Starting song:  %d / %d\n\n",NSFHeader.StartingSong,NSFHeader.TotalSongs);
 
- if(NSFHeader.SoundChip&4)
+ if (NSFHeader.SoundChip&4)
   ExWRAM=FCEU_gmalloc(32768+8192);
  else
   ExWRAM=FCEU_gmalloc(8192);
@@ -226,12 +226,12 @@ int NSFLoad(FCEUFILE *fp)
 
 static DECLFR(NSFVectorRead)
 {
- if(((NSFNMIFlags&1) && SongReload) || (NSFNMIFlags&2) || doreset)
+ if (((NSFNMIFlags&1) && SongReload) || (NSFNMIFlags&2) || doreset)
  {
-  if(A==0xFFFA) return(0x00);
-  else if(A==0xFFFB) return(0x38);
-  else if(A==0xFFFC) return(0x20);
-  else if(A==0xFFFD) {doreset=0;return(0x38);}
+  if (A==0xFFFA) return(0x00);
+  else if (A==0xFFFB) return(0x38);
+  else if (A==0xFFFC) return(0x20);
+  else if (A==0xFFFD) {doreset=0;return(0x38);}
   return(X.DB);
  }
  else
@@ -249,7 +249,7 @@ void NSF_init(void)
   doreset=1;
 
   ResetCartMapping();
-  if(NSFHeader.SoundChip&4)
+  if (NSFHeader.SoundChip&4)
   {
    SetupCartPRGMapping(0,ExWRAM,32768+8192,1);
    setprg32(0x6000,0);
@@ -269,12 +269,12 @@ void NSF_init(void)
    SetReadHandler(0x8000,0xFFFF,CartBR);
   }
 
-  if(BSon)
+  if (BSon)
   {
    int32 x;
-   for(x=0;x<8;x++)
+   for (x=0;x<8;x++)
    {
-    if(NSFHeader.SoundChip&4 && x>=6)
+    if (NSFHeader.SoundChip&4 && x>=6)
      BANKSET(0x6000+(x-6)*4096,NSFHeader.BankSwitch[x]);
     BANKSET(0x8000+x*4096,NSFHeader.BankSwitch[x]);
    }
@@ -282,7 +282,7 @@ void NSF_init(void)
   else
   {
    int32 x;
-   for(x=(LoadAddr&0xF000);x<0x10000;x+=0x1000)
+   for (x=(LoadAddr&0xF000);x<0x10000;x+=0x1000)
     BANKSET(x,((x-(LoadAddr&0x7000))>>12));
   }
 
@@ -299,7 +299,7 @@ void NSF_init(void)
   SetReadHandler(0x3ff0,0x3fff,NSF_read);
 
 
-  if(NSFHeader.SoundChip&1) { 
+  if (NSFHeader.SoundChip&1) {
    NSFVRC6_Init();
   } else if (NSFHeader.SoundChip&2) {
    NSFVRC7_Init();
@@ -319,7 +319,7 @@ void NSF_init(void)
 
 static DECLFW(NSF_write)
 {
- switch(A)
+ switch (A)
  {
   case 0x3FF3:NSFNMIFlags|=1;break;
   case 0x3FF4:NSFNMIFlags&=~2;break;
@@ -338,36 +338,36 @@ static DECLFW(NSF_write)
               A&=0xF;
               BANKSET((A*4096),V);
           break;
- } 
+ }
 }
 
 static DECLFR(NSF_read)
 {
  int x;
 
- switch(A)
+ switch (A)
  {
  case 0x3ff0:x=SongReload;
-       if(!fceuindbg)
+       if (!fceuindbg)
         SongReload=0;
        return x;
  case 0x3ff1:
-      if(!fceuindbg)
+      if (!fceuindbg)
       {
              memset(RAM,0x00,0x800);
 
              BWrite[0x4015](0x4015,0x0);
-             for(x=0;x<0x14;x++)
+             for (x=0;x<0x14;x++)
               BWrite[0x4000+x](0x4000+x,0);
              BWrite[0x4015](0x4015,0xF);
 
-       if(NSFHeader.SoundChip&4) 
+       if (NSFHeader.SoundChip&4)
        {
         BWrite[0x4017](0x4017,0xC0);  /* FDS BIOS writes $C0 */
         BWrite[0x4089](0x4089,0x80);
         BWrite[0x408A](0x408A,0xE8);
        }
-       else 
+       else
        {
         memset(ExWRAM,0x00,8192);
         BWrite[0x4017](0x4017,0xC0);
@@ -375,9 +375,9 @@ static DECLFR(NSF_read)
               BWrite[0x4017](0x4017,0x40);
        }
 
-             if(BSon)
+             if (BSon)
              {
-              for(x=0;x<8;x++)
+              for (x=0;x<8;x++)
          BANKSET(0x8000+x*4096,NSFHeader.BankSwitch[x]);
              }
              return (CurrentSong-1);
@@ -396,7 +396,7 @@ void DrawNSF(uint8 *XBuf)
  char snbuf[16];
  int x;
 
- if(vismode==0) return;
+ if (vismode==0) return;
 
  memset(XBuf,0,256*240);
 
@@ -408,23 +408,23 @@ void DrawNSF(uint8 *XBuf)
   int l;
   l=GetSoundBuffer(&Bufpl);
 
-  if(special==0)
+  if (special==0)
   {
-   if(FSettings.SoundVolume)
+   if (FSettings.SoundVolume)
     mul=8192*240/(16384*FSettings.SoundVolume/50);
-   for(x=0;x<256;x++)
+   for (x=0;x<256;x++)
    {
     uint32 y;
     y=142+((Bufpl[(x*l)>>8]*mul)>>14);
-    if(y<240)
+    if (y<240)
      XBuf[x+y*256]=3;
-   }   
-  }  
-  else if(special==1)
+   }  
+  } 
+  else if (special==1)
   {
-   if(FSettings.SoundVolume)
+   if (FSettings.SoundVolume)
     mul=8192*240/(8192*FSettings.SoundVolume/50);
-   for(x=0;x<256;x++)
+   for (x=0;x<256;x++)
    {
     double r;
     uint32 xp,yp;
@@ -437,31 +437,31 @@ void DrawNSF(uint8 *XBuf)
     XBuf[xp+yp*256]=3;
    }
   }
-  else if(special==2)
+  else if (special==2)
   {
    static double theta=0;
-   if(FSettings.SoundVolume)
+   if (FSettings.SoundVolume)
     mul=8192*240/(16384*FSettings.SoundVolume/50);
-   for(x=0;x<128;x++)
+   for (x=0;x<128;x++)
    {
     double xc,yc;
     double r,t;
     uint32 m,n;
-    
+   
     xc=(double)128-x;
     yc=0-((double)( ((Bufpl[(x*l)>>8]) *mul)>>14));
     t=M_PI+atan(yc/xc);
     r=sqrt(xc*xc+yc*yc);
-    
+   
     t+=theta;
     m=128+r*cos(t);
     n=120+r*sin(t);
-    
-    if(m<256 && n<240)
-     XBuf[m+n*256]=3; 
+   
+    if (m<256 && n<240)
+     XBuf[m+n*256]=3;
 
    }
-   for(x=128;x<256;x++)
+   for (x=128;x<256;x++)
    {
     double xc,yc;
     double r,t;
@@ -471,12 +471,12 @@ void DrawNSF(uint8 *XBuf)
     yc=(double)((Bufpl[(x*l)>>8]*mul)>>14);
     t=atan(yc/xc);
     r=sqrt(xc*xc+yc*yc);
-    
+   
     t+=theta;
     m=128+r*cos(t);
     n=120+r*sin(t);
-    
-    if(m<256 && n<240)
+   
+    if (m<256 && n<240)
      XBuf[m+n*256]=3;
 
    }
@@ -487,7 +487,7 @@ void DrawNSF(uint8 *XBuf)
  DrawTextTrans(XBuf+10*256+4+(((31-strlen((char*)NSFHeader.SongName))<<2)), 256, NSFHeader.SongName, 6);
  DrawTextTrans(XBuf+26*256+4+(((31-strlen((char*)NSFHeader.Artist))<<2)), 256,NSFHeader.Artist, 6);
  DrawTextTrans(XBuf+42*256+4+(((31-strlen((char*)NSFHeader.Copyright))<<2)), 256,NSFHeader.Copyright, 6);
- 
+
  DrawTextTrans(XBuf+70*256+4+(((31-strlen("Song:"))<<2)), 256, (uint8*)"Song:", 6);
  sprintf(snbuf,"<%d/%d>",CurrentSong,NSFHeader.TotalSongs);
  DrawTextTrans(XBuf+82*256+4+(((31-strlen(snbuf))<<2)), 256, (uint8*)snbuf, 6);
@@ -496,37 +496,37 @@ void DrawNSF(uint8 *XBuf)
   static uint8 last=0;
   uint8 tmp;
   tmp=FCEU_GetJoyJoy();
-  if((tmp&JOY_RIGHT) && !(last&JOY_RIGHT))
+  if ((tmp&JOY_RIGHT) && !(last&JOY_RIGHT))
   {
-   if(CurrentSong<NSFHeader.TotalSongs) 
+   if (CurrentSong<NSFHeader.TotalSongs)
    {
-    CurrentSong++;   
+    CurrentSong++;  
     SongReload=0xFF;
    }
   }
-  else if((tmp&JOY_LEFT) && !(last&JOY_LEFT))
+  else if ((tmp&JOY_LEFT) && !(last&JOY_LEFT))
   {
-   if(CurrentSong>1)
+   if (CurrentSong>1)
    {
     CurrentSong--;
     SongReload=0xFF;
    }
   }
-  else if((tmp&JOY_UP) && !(last&JOY_UP))
+  else if ((tmp&JOY_UP) && !(last&JOY_UP))
   {
    CurrentSong+=10;
-   if(CurrentSong>NSFHeader.TotalSongs) CurrentSong=NSFHeader.TotalSongs;
+   if (CurrentSong>NSFHeader.TotalSongs) CurrentSong=NSFHeader.TotalSongs;
    SongReload=0xFF;
   }
-  else if((tmp&JOY_DOWN) && !(last&JOY_DOWN))
+  else if ((tmp&JOY_DOWN) && !(last&JOY_DOWN))
   {
    CurrentSong-=10;
-   if(CurrentSong<1) CurrentSong=1;
+   if (CurrentSong<1) CurrentSong=1;
    SongReload=0xFF;
   }
-  else if((tmp&JOY_START) && !(last&JOY_START))
+  else if ((tmp&JOY_START) && !(last&JOY_START))
    SongReload=0xFF;
-  else if((tmp&JOY_A) && !(last&JOY_A))
+  else if ((tmp&JOY_A) && !(last&JOY_A))
   {
    special=(special+1)%3;
   }
@@ -536,7 +536,7 @@ void DrawNSF(uint8 *XBuf)
 
 void DoNSFFrame(void)
 {
- if(((NSFNMIFlags&1) && SongReload) || (NSFNMIFlags&2))
+ if (((NSFNMIFlags&1) && SongReload) || (NSFNMIFlags&2))
   TriggerNMI();
 }
 
@@ -548,8 +548,8 @@ void FCEUI_NSFSetVis(int mode)
 int FCEUI_NSFChange(int amount)
 {
    CurrentSong+=amount;
-   if(CurrentSong<1) CurrentSong=1;
-   else if(CurrentSong>NSFHeader.TotalSongs) CurrentSong=NSFHeader.TotalSongs;
+   if (CurrentSong<1) CurrentSong=1;
+   else if (CurrentSong>NSFHeader.TotalSongs) CurrentSong=NSFHeader.TotalSongs;
    SongReload=0xFF;
 
    return(CurrentSong);

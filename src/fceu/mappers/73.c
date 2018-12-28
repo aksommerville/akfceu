@@ -24,9 +24,9 @@
 
 static DECLFW(Mapper73_write)
 {
- //if(A>=0xd000 && A<=0xdfff) 
+ //if(A>=0xd000 && A<=0xdfff)
   X6502_IRQEnd(FCEU_IQEXT);  /* How are IRQs acknowledged on this chip? */
- switch(A&0xF000)
+ switch (A&0xF000)
  {
   //default: printf("$%04x:$%02x\n",A,V);break;
   case 0x8000:IRQCount&=0xFFF0;IRQCount|=(V&0xF);break;
@@ -40,10 +40,10 @@ static DECLFW(Mapper73_write)
 
 static void FP_FASTAPASS(1) Mapper73IRQHook(int a)
 {
- if(IRQa)
+ if (IRQa)
  {
   IRQCount+=a;
-  if(IRQCount>=0xFFFF)
+  if (IRQCount>=0xFFFF)
   {
    IRQCount&=0xFFFF;
    IRQa=0;

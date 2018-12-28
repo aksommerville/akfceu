@@ -23,9 +23,9 @@
 
 static void FP_FASTAPASS(1) Mapper50IRQ(int a)
 {
- if(IRQa)
+ if (IRQa)
  {
-        if(IRQCount<4096)
+        if (IRQCount<4096)
          IRQCount+=a;
         else
         {
@@ -42,12 +42,12 @@ static void M50Restore(int version)
 
 static DECLFW(M50W)
 {
- if((A&0xD060)==0x4020)
+ if ((A&0xD060)==0x4020)
  {
-  if(A&0x100)
+  if (A&0x100)
   {
    IRQa=V&1;
-   if(!IRQa) IRQCount=0;
+   if (!IRQa) IRQCount=0;
    X6502_IRQEnd(FCEU_IQEXT);
   }
   else

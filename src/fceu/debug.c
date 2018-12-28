@@ -33,7 +33,7 @@ void FCEUI_DumpMem(const char *fname, uint32 start, uint32 end)
 {
  FILE *fp=FCEUD_UTF8fopen(fname,"wb");
  fceuindbg=1;
- for(;start<=end;start++)
+ for (;start<=end;start++)
   fputc(ARead[start](start),fp);
  fclose(fp);
  fceuindbg=0;
@@ -44,13 +44,13 @@ void FCEUI_LoadMem(const char *fname, uint32 start, int hl)
  int t;
 
  FILE *fp=FCEUD_UTF8fopen(fname,"rb");
- while((t=fgetc(fp))>=0)
+ while ((t=fgetc(fp))>=0)
  {
-  if(start>0xFFFF) break;
-  if(hl)
+  if (start>0xFFFF) break;
+  if (hl)
   {
-   extern uint8 *Page[32];   
-   if(Page[start/2048])
+   extern uint8 *Page[32];  
+   if (Page[start/2048])
     Page[start/2048][start]=t;
   }
   else
@@ -63,7 +63,7 @@ void FCEUI_LoadMem(const char *fname, uint32 start, int hl)
 #ifdef FCEUDEF_DEBUGGER
 
 static char *fstrings[12]=
-{ 
+{
         "#$%02X",       // immediate
         "$%04X",        // RELATIVE(jump)
         "$%02X",        // Z
@@ -181,12 +181,12 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
   buf=ARead[a](a);
   a++;
 
-  for(x=0;x<NUMOPS;x++)
+  for (x=0;x<NUMOPS;x++)
   {
    y=0;
-   while(optable[x].modes[y]>=0)
+   while (optable[x].modes[y]>=0)
    {
-    if((optable[x].modes[y]&0xFF)==buf)
+    if ((optable[x].modes[y]&0xFF)==buf)
     {
      info=optable[x].modes[y];
      goto endy;
@@ -197,24 +197,24 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
 
   endy:
   sprintf(stringo,"%02X ",buf);
-  if(info>=0)
+  if (info>=0)
   {
    int z=flengths[(info>>16)];
-  
-   if(z)
+ 
+   if (z)
    {
     arg=ARead[a](a);
     sprintf(stringo+strlen(stringo),"%02X ",arg);
     a++;
-    if(z==2) {arg|=ARead[a](a)<<8;sprintf(stringo+strlen(stringo),"%02X ",arg>>8);a++;}
+    if (z==2) {arg|=ARead[a](a)<<8;sprintf(stringo+strlen(stringo),"%02X ",arg>>8);a++;}
     else
      strcat(stringo,"   ");
 
-    if((info>>16)==1)   /* Relative branch */
+    if ((info>>16)==1)   /* Relative branch */
      arg=a+(char)arg;
     sprintf(stringo+strlen(stringo),"%s ",optable[x].name);
     sprintf(stringo+strlen(stringo),fstrings[info>>16],arg);
-/*      
+/*     
         0  "#$%02X",       // immediate
         1  "$%04X",        // RELATIVE(jump)
         2  "$%02X",        // Z
@@ -230,10 +230,10 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
 */
     {
      unsigned int tmp;
-     switch(info>>16)
+     switch (info>>16)
      {
       case 2:tmp=arg;
-             if(optable[x].type&1)
+             if (optable[x].type&1)
              {
               sprintf(stringo+strlen(stringo),"    @ $%04X",tmp);
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
@@ -241,16 +241,16 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
              break;
       case 3:tmp=(arg+X->X)&0xff;
              sprintf(stringo+strlen(stringo),"    @ $%04X",tmp);
-             if(optable[x].type&1)
+             if (optable[x].type&1)
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
              break;
       case 4:tmp=(arg+X->Y)&0xff;
              sprintf(stringo+strlen(stringo),"    @ $%04X",tmp);
-             if(optable[x].type&1)
+             if (optable[x].type&1)
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
              break;
       case 5:tmp=arg;
-             if(optable[x].type&1) 
+             if (optable[x].type&1)
              {
               sprintf(stringo+strlen(stringo),"  @ $%04X",tmp);
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
@@ -258,12 +258,12 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
              break;
       case 6:tmp=(arg+X->X)&0xffff;
              sprintf(stringo+strlen(stringo),"  @ $%04X",tmp);
-             if(optable[x].type&1)
+             if (optable[x].type&1)
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
              break;
       case 7:tmp=(arg+X->Y)&0xffff;
              sprintf(stringo+strlen(stringo),"  @ $%04X",tmp);
-             if(optable[x].type&1)
+             if (optable[x].type&1)
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
              break;
       case 8:tmp=ARead[arg](arg)|(ARead[(arg+1)&0xffff]((arg+1)&0xffff)<<8);
@@ -272,13 +272,13 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
       case 9:tmp=(arg+X->X)&0xFF;
              tmp=ARead[tmp](tmp) | (ARead[(tmp+1)&0xFF]((tmp+1)&0xFF)<<8);
              sprintf(stringo+strlen(stringo),"  @ $%04X",tmp);
-             if(optable[x].type&1)
+             if (optable[x].type&1)
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
              break;
       case 10:tmp=ARead[arg](arg) | (ARead[(arg+1)&0xFF]((arg+1)&0xFF)<<8);
              tmp=(tmp+X->Y)&0xFFFF;
              sprintf(stringo+strlen(stringo),"  @ $%04X",tmp);
-             if(optable[x].type&1)
+             if (optable[x].type&1)
               sprintf(stringo+strlen(stringo)," = $%02X",ARead[tmp](tmp));
              break;
 
@@ -302,7 +302,7 @@ uint16 FCEUI_Disassemble(void *XA, uint16 a, char *stringo)
 void FCEUI_MemDump(uint16 a, int32 len, void (*callb)(uint16 a, uint8 v))
 {
  fceuindbg=1;
- while(len)
+ while (len)
  {
   callb(a,ARead[a](a));
   a++;
@@ -324,9 +324,9 @@ uint8 FCEUI_MemSafePeek(uint16 A)
 void FCEUI_MemPoke(uint16 a, uint8 v, int hl)
 {
  extern uint8 *Page[32];
- if(hl)
+ if (hl)
  {
-  if(Page[a/2048])
+  if (Page[a/2048])
    Page[a/2048][a]=v;
  }
  else
@@ -350,14 +350,14 @@ static int FindBPoint(X6502 *X, int who, unsigned int A)
  BPOINT *tmp;
 
  tmp=BreakPoints;
- while(tmp)
+ while (tmp)
  {
-  if(tmp->type&who)
+  if (tmp->type&who)
   {
-   if(tmp->type&BPOINT_PC)
-    if(X->PC!=A) goto don;  /* Doesn't match, so go on. */
+   if (tmp->type&BPOINT_PC)
+    if (X->PC!=A) goto don;  /* Doesn't match, so go on. */
 
-   if((A>=tmp->A[0]) && (A<=tmp->A[1]))  /* Whee, match. */
+   if ((A>=tmp->A[0]) && (A<=tmp->A[1]))  /* Whee, match. */
    {
     tmp->Handler(X,tmp->type,A);
     return(1);
@@ -373,7 +373,7 @@ static uint8 ReadHandler(X6502 *X, unsigned int A)
 {
  extern X6502 XSave;
 
- if(X->preexec)
+ if (X->preexec)
   FindBPoint(&XSave,BPOINT_READ,A);
  return(ARead[A](A));
 }
@@ -382,13 +382,13 @@ static void WriteHandler(X6502 *X, unsigned int A, uint8 V)
 {
  extern X6502 XSave;
 
- if(X->preexec)
+ if (X->preexec)
   FindBPoint(&XSave,BPOINT_WRITE,A);
  else
   BWrite[A](A,V);
 }
 
-int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2, 
+int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2,
     void (*Handler)(X6502 *, int type, unsigned int A))
 {
  BPOINT *tmp;
@@ -401,7 +401,7 @@ int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2,
  tmp->type=type;
  tmp->next=0;
 
- if(BreakPoints==NULL)
+ if (BreakPoints==NULL)
   BreakPoints=tmp;
  else
   LastBP->next=tmp;
@@ -420,9 +420,9 @@ int FCEUI_SetBreakPoint(uint32 w, int type, unsigned int A1, unsigned int A2,
 
  tmp=BreakPoints;
 
- while(tmp)
+ while (tmp)
  {
-  if(w==x)
+  if (w==x)
   {
    tmp->type=type;
    tmp->A[0]=A1;
@@ -439,21 +439,21 @@ int FCEUI_SetBreakPoint(uint32 w, int type, unsigned int A1, unsigned int A2,
 int FCEUI_GetBreakPoint(uint32 w, int *type, unsigned int *A1, unsigned int *A2,
                 void (**Handler)(X6502 *, int type, unsigned int A))
 {
- uint32 x=0; 
+ uint32 x=0;
  BPOINT *tmp;
- 
+
  tmp=BreakPoints;
-   
- while(tmp)
+  
+ while (tmp)
  {
-  if(w==x)
+  if (w==x)
   {
    *type=tmp->type;
    *A1=tmp->A[0];
    *A2=tmp->A[1];
    *Handler=tmp->Handler;
    return(1);
-  }   
+  }  
   x++;
   tmp=tmp->next;
  }
@@ -465,7 +465,7 @@ int FCEUI_ListBreakPoints(int (*callb)(int type, unsigned int A1, unsigned int A
 {
  BPOINT *tmp;
  tmp=BreakPoints;
- while(tmp)
+ while (tmp)
  {
   callb(tmp->type,tmp->A[0],tmp->A[1],tmp->Handler);
   tmp=tmp->next;
@@ -480,13 +480,13 @@ int FCEUI_DeleteBreakPoint(uint32 w)
 
  tmp=BreakPoints;
 
- while(tmp)
+ while (tmp)
  {
-  if(w==x)
+  if (w==x)
   {
-   if(prev)      /* Not the first breakpoint. */
+   if (prev)      /* Not the first breakpoint. */
    {
-    if(tmp->next)    /* More breakpoints. */
+    if (tmp->next)    /* More breakpoints. */
      prev->next=tmp->next;
     else      /* This is the last breakpoint. */
     {
@@ -496,7 +496,7 @@ int FCEUI_DeleteBreakPoint(uint32 w)
    }
    else        /* The first breakpoint. */
    {
-    if(tmp->next)    /* More breakpoints. */
+    if (tmp->next)    /* More breakpoints. */
      BreakPoints=tmp->next;
     else
     {

@@ -79,7 +79,7 @@ static int mn_machid_dev_search_obj(IOHIDDeviceRef obj) {
 
 static int mn_machid_devid_unused() {
   if (mn_machid.devc<1) return 1;
-  
+ 
   /* Most cases: return one more than the highest used ID. */
   int i,top=0;
   for (i=0;i<mn_machid.devc;i++) {
@@ -121,14 +121,14 @@ static int mn_machid_dev_insert(int p,IOHIDDeviceRef obj,int devid) {
 
   if (mn_machid_dev_insert_validate(p,obj,devid)<0) return -1;
   if (mn_machid_devv_require()<0) return -1;
-  
+ 
   struct mn_machid_dev *dev=mn_machid.devv+p;
   memmove(dev+1,dev,sizeof(struct mn_machid_dev)*(mn_machid.devc-p));
   mn_machid.devc++;
   memset(dev,0,sizeof(struct mn_machid_dev));
   dev->obj=obj;
   dev->devid=devid;
-  
+ 
   return 0;
 }
 
@@ -163,7 +163,7 @@ static int mn_machid_dev_search_button(struct mn_machid_dev *dev,int btnid) {
 
 static int mn_machid_dev_insert_button(struct mn_machid_dev *dev,int p,int btnid,int usage,int lo,int hi,int v) {
   if (!dev||(p<0)||(p>dev->btnc)) return -1;
-  
+ 
   if (dev->btnc>=dev->btna) {
     int na=dev->btna+8;
     if (na>INT_MAX/sizeof(struct mn_machid_btn)) return -1;
@@ -223,7 +223,7 @@ static char *mn_machid_dev_get_string(struct mn_machid_dev *dev,CFStringRef key)
   while (bufc&&(buf[bufc-1]==0x20)) bufc--;
   int leadc=0; while ((leadc<bufc)&&(buf[leadc]==0x20)) leadc++;
   if (leadc==bufc) return 0;
-  
+ 
   char *dst=malloc(bufc-leadc+1);
   if (!dst) return 0;
   memcpy(dst,buf+leadc,bufc-leadc);
@@ -232,7 +232,7 @@ static char *mn_machid_dev_get_string(struct mn_machid_dev *dev,CFStringRef key)
 }
 
 static int mn_machid_dev_apply_IOHIDElement(struct mn_machid_dev *dev,IOHIDElementRef element) {
-      
+     
   IOHIDElementCookie cookie=IOHIDElementGetCookie(element);
   CFIndex lo=IOHIDElementGetLogicalMin(element);
   CFIndex hi=IOHIDElementGetLogicalMax(element);
@@ -288,7 +288,7 @@ static int mn_machid_dev_handshake(struct mn_machid_dev *dev,int vid,int pid,int
  */
 
 static void mn_machid_cb_DeviceMatching(void *context,IOReturn result,void *sender,IOHIDDeviceRef obj) {
-  
+ 
   int vid=dev_get_int(obj,CFSTR(kIOHIDVendorIDKey));
   int pid=dev_get_int(obj,CFSTR(kIOHIDProductIDKey));
   int usagepage=dev_get_int(obj,CFSTR(kIOHIDPrimaryUsagePageKey));
@@ -298,7 +298,7 @@ static void mn_machid_cb_DeviceMatching(void *context,IOReturn result,void *send
     IOHIDDeviceClose(obj,0);
     return;
   }
-        
+       
   int devid=mn_machid_devid_unused();
   int p=mn_machid_dev_search_obj(obj);
   if (p>=0) return; // PANIC! Device is already listed.
@@ -368,7 +368,7 @@ static void mn_machid_cb_InputValue(void *context,IOReturn result,void *sender,I
 
 /* Default delegate callbacks.
  */
- 
+
 static int mn_machid_delegate_test_device_default(void *hiddevice,int vid,int pid,int usagepage,int usage) {
   if (usagepage==0x0001) switch (usage) { // Usage Page 0x0001: Generic Desktop Controls
     case 0x0004: return 1; // ...0x0004: Joystick
@@ -396,7 +396,7 @@ static int mn_machid_delegate_button_default(int devid,int btnid,int value) {
 int mn_machid_init(const struct mn_machid_delegate *delegate) {
   if (mn_machid.hidmgr) return -1; // Already initialized.
   memset(&mn_machid,0,sizeof(mn_machid));
-  
+ 
   if (!(mn_machid.hidmgr=IOHIDManagerCreate(kCFAllocatorDefault,0))) return -1;
 
   if (delegate) memcpy(&mn_machid.delegate,delegate,sizeof(struct mn_machid_delegate));
@@ -412,14 +412,14 @@ int mn_machid_init(const struct mn_machid_delegate *delegate) {
   IOHIDManagerSetDeviceMatching(mn_machid.hidmgr,0); // match every HID
 
   IOHIDManagerScheduleWithRunLoop(mn_machid.hidmgr,CFRunLoopGetCurrent(),AKMACHID_RUNLOOP_MODE);
-    
+   
   if (IOHIDManagerOpen(mn_machid.hidmgr,0)<0) {
     IOHIDManagerUnscheduleFromRunLoop(mn_machid.hidmgr,CFRunLoopGetCurrent(),AKMACHID_RUNLOOP_MODE);
     IOHIDManagerClose(mn_machid.hidmgr,0);
     memset(&mn_machid,0,sizeof(mn_machid));
     return -1;
   }
-  
+ 
   return 0;
 }
 
@@ -478,7 +478,7 @@ int mn_machid_index_for_devid(int devid) {
   if (!mn_machid.devv[p].fldname) return ""; \
   return mn_machid.devv[p].fldname; \
 }
- 
+
 void *mn_machid_dev_get_IOHIDDeviceRef(int devid) GETINT(obj)
 int mn_machid_dev_get_vendor_id(int devid) GETINT(vid)
 int mn_machid_dev_get_product_id(int devid) GETINT(pid)

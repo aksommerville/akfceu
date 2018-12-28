@@ -22,7 +22,7 @@
 
 /*      I'm getting the feeling this is another "jam two different bank
         switching hardwares into one mapper".
-*/        
+*/       
 
 /* HES 4-in-1 */
 DECLFW(Mapper113_write)
@@ -32,7 +32,7 @@ DECLFW(Mapper113_write)
   //printf("$%04x:$%02x\n",A,V);
 }
 
-      
+     
 /*      Deathbots */
 DECLFW(Mapper113_writeh)
 {

@@ -25,10 +25,10 @@
 static DECLFW(Mapper57_write)
 {
  A&=0x8800;
- if(A==0x8800)
+ if (A==0x8800)
  {
   mapbyte1[0]=V;
-  if(V&0x80)
+  if (V&0x80)
    ROM_BANK32(2|(V>>6));
   else
   {

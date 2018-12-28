@@ -26,11 +26,11 @@
 static DECLFW(Mapper67_write)
 {
  A&=0xF800;
- if((A&0x800) && A<=0xb800)
+ if ((A&0x800) && A<=0xb800)
  {
   VROM_BANK2((A-0x8800)>>1,V);
  }
- else switch(A)
+ else switch (A)
  {
   case 0xc800:
   case 0xc000:if(!suntoggle)
@@ -60,10 +60,10 @@ static DECLFW(Mapper67_write)
 }
 static void FP_FASTAPASS(1) SunIRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount-=a;
-   if(IRQCount<=0)
+   if (IRQCount<=0)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;

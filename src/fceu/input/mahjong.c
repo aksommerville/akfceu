@@ -25,12 +25,12 @@ static uint32 MReal,MRet;
 
 static uint8 FP_FASTAPASS(2) MJ_Read(int w, uint8 ret)
 {
- if(w) 
+ if (w)
  {
 //  ret|=(MRet&1)<<1;
   ret|=((MRet&0x80)>>6)&2;
 //  MRet>>=1;
- if(!fceuindbg)
+ if (!fceuindbg)
   MRet<<=1;
  }
  return(ret);
@@ -47,16 +47,16 @@ static void FP_FASTAPASS(1) MJ_Write(uint8 v)
  v>>=1;
  v&=3;
 
- if(v==3)
+ if (v==3)
  {
   MRet=(MReal>>14)&0x7F;
   //MRet=((MRet&0x1F) |((MRet&0x40)>>1)|((MRet&0x20)<<1)) <<1; //(MReal>>13)&0x7F;
  }
- else if(v==2)
+ else if (v==2)
  {
   MRet=MReal&0xFF;
  }
- else if(v==1)
+ else if (v==1)
  {
   MRet=(MReal>>8)&0x3F;
  }

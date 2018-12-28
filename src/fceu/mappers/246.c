@@ -23,7 +23,7 @@
 
 DECLFW(Mapper246_write)
 {
- switch(A&0xF007)
+ switch (A&0xF007)
  {
  case 0x6000:ROM_BANK8(0x8000,V);break;
  case 0x6001:ROM_BANK8(0xA000,V);break;

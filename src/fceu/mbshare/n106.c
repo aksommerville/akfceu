@@ -72,10 +72,10 @@ static void SyncPRG(void)
 
 static void FP_FASTAPASS(1) NamcoIRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount+=a;
-   if(IRQCount>=0x7FFF) 
+   if (IRQCount>=0x7FFF)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;
@@ -91,8 +91,8 @@ static DECLFR(Namco_Read4800)
   //printf("Read: %02x, %02x\n",dopol&0x7f,IRAM[dopol&0x7f]);
 
   /* Maybe I should call NamcoSoundHack() here? */
-  if(!fceuindbg)
-   if(dopol&0x80)
+  if (!fceuindbg)
+   if (dopol&0x80)
     dopol=(dopol&0x80)|((dopol+1)&0x7f);
   return ret;
 }
@@ -115,9 +115,9 @@ static void FASTAPASS(2) DoNTARAMROM(int w, uint8 V)
 
   //printf("%d, %02x\n",w,V);
   //printf("%02x, %02x\n",((gorko>>(6+(w>>1)))&1),V);
-  if(V>=0xE0)
+  if (V>=0xE0)
    setntamem(NTARAM+((V&1)<<10), 1, w);
-  else 
+  else
   {
    V&=CHRmask1[0];
    setntamem(CHRptr[0]+(V<<10), 0, w);
@@ -128,7 +128,7 @@ static void FixNTAR(void)
 {
  int x;
 
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
   DoNTARAMROM(x,NTAPage[x]);
 }
 
@@ -136,7 +136,7 @@ static void FASTAPASS(2) DoCHRRAMROM(int x, uint8 V)
 {
          CHR[x]=V;
 
-         if(!is210 && !((gorfus>>((x>>2)+6))&1) && (V>=0xE0))
+         if (!is210 && !((gorfus>>((x>>2)+6))&1) && (V>=0xE0))
    {
     // printf("BLAHAHA: %d, %02x\n",x,V);
           //setchr1r(0x10,x<<10,V&7);
@@ -151,7 +151,7 @@ static void FASTAPASS(2) DoCHRRAMROM(int x, uint8 V)
 static void FixCRR(void)
 {
  int x;
- for(x=0;x<8;x++)
+ for (x=0;x<8;x++)
   DoCHRRAMROM(x,CHR[x]);
 }
 
@@ -167,7 +167,7 @@ static uint32 LengthCache[8];
 static void FixCache(int a,int V)
 {
                      int w=(a>>3)&0x7;
-                     switch(a&0x07)
+                     switch (a&0x07)
                      {
                       case 0x00:FreqCache[w]&=~0x000000FF;FreqCache[w]|=V;break;
                       case 0x02:FreqCache[w]&=~0x0000FF00;FreqCache[w]|=V<<8;break;
@@ -183,16 +183,16 @@ static DECLFW(Mapper19_write)
 {
   A&=0xF800;
 
-  if(A>=0x8000 && A<=0xb800)
+  if (A>=0x8000 && A<=0xb800)
    DoCHRRAMROM((A-0x8000)>>11,V);
-        else switch(A)
+        else switch (A)
   {
    case 0x4800:
        //printf("Yahaoo: %02x, %02x\n",dopol&0x7F,V);
        //puts("Hmm");
-       if(dopol&0x40)
+       if (dopol&0x40)
                    {
-                    if(FSettings.SndRate)
+                    if (FSettings.SndRate)
           {
          NamcoSoundHack();
                      GameExpSound.Fill=NamcoSound;
@@ -203,8 +203,8 @@ static DECLFW(Mapper19_write)
         FixCache(dopol,V);
                    }
        IRAM[dopol&0x7f]=V;
-       
-                   if(dopol&0x80)
+      
+                   if (dopol&0x80)
                     dopol=(dopol&0x80)|((dopol+1)&0x7f);
                    break;
 
@@ -236,14 +236,14 @@ static int dwave=0;
 static void NamcoSoundHack(void)
 {
  int32 z,a;
- if(FSettings.soundq>=1) 
+ if (FSettings.soundq>=1)
  {
   DoNamcoSoundHQ();
   return;
  }
- z=((SOUNDTS<<16)/soundtsinc)>>4;  
+ z=((SOUNDTS<<16)/soundtsinc)>>4; 
  a=z-dwave;
- if(a)
+ if (a)
   DoNamcoSound(&Wave[dwave], a);
  dwave+=a;
 }
@@ -254,7 +254,7 @@ static void NamcoSound(int Count)
 
  z=((SOUNDTS<<16)/soundtsinc)>>4;
  a=z-dwave;
- if(a)
+ if (a)
    DoNamcoSound(&Wave[dwave], a);
  dwave=0;
 }
@@ -284,7 +284,7 @@ static INLINE uint32 FetchDuff(uint32 P, uint32 envelope)
 {
     uint32 duff;
     duff=IRAM[((IRAM[0x46+(P<<3)]+(PlayIndex[P]>>TOINDEX))&0xFF)>>1];
-    if((IRAM[0x46+(P<<3)]+(PlayIndex[P]>>TOINDEX))&1)
+    if ((IRAM[0x46+(P<<3)]+(PlayIndex[P]>>TOINDEX))&1)
      duff>>=4;
     duff&=0xF;
     duff=(duff*envelope)>>16;
@@ -296,9 +296,9 @@ static void DoNamcoSoundHQ(void)
  int32 P,V;
  int32 cyclesuck=(((IRAM[0x7F]>>4)&7)+1)*15;
 
- for(P=7;P>=(7-((IRAM[0x7F]>>4)&7));P--)
+ for (P=7;P>=(7-((IRAM[0x7F]>>4)&7));P--)
  {
-  if((IRAM[0x44+(P<<3)]&0xE0) && (IRAM[0x47+(P<<3)]&0xF))
+  if ((IRAM[0x44+(P<<3)]&0xE0) && (IRAM[0x47+(P<<3)]&0xF))
   {
    uint32 freq;
    int32 vco;
@@ -310,13 +310,13 @@ static void DoNamcoSoundHQ(void)
    lengo=LengthCache[P];
 
    duff2=FetchDuff(P,envelope);
-   for(V=CVBC<<1;V<SOUNDTS<<1;V++)
+   for (V=CVBC<<1;V<SOUNDTS<<1;V++)
    {
     WaveHi[V>>1]+=duff2;
-    if(!vco)
+    if (!vco)
     {
      PlayIndex[P]+=freq;
-     while((PlayIndex[P]>>TOINDEX)>=lengo)
+     while ((PlayIndex[P]>>TOINDEX)>=lengo)
       PlayIndex[P]-=lengo<<TOINDEX;
      duff2=FetchDuff(P,envelope);
      vco=cyclesuck;
@@ -336,11 +336,11 @@ static void DoNamcoSound(int32 *Wave, int Count)
 
 
       //FCEU_DispMessage("%d",MapperExRAM[0x7F]>>4);
-      for(P=7;P>=7-((IRAM[0x7F]>>4)&7);P--)
+      for (P=7;P>=7-((IRAM[0x7F]>>4)&7);P--)
       {
-       if((IRAM[0x44+(P<<3)]&0xE0) && (IRAM[0x47+(P<<3)]&0xF))
+       if ((IRAM[0x44+(P<<3)]&0xE0) && (IRAM[0x47+(P<<3)]&0xF))
        {
-  int32 inc;   
+  int32 inc;  
   uint32 freq;
   int32 vco;
   uint32 duff,duff2,lengo,envelope;
@@ -351,7 +351,7 @@ static void DoNamcoSound(int32 *Wave, int Count)
   envelope=EnvCache[P];
   lengo=LengthCache[P];
 
-        if(!freq) {/*printf("Ack");*/  continue;}
+        if (!freq) {/*printf("Ack");*/  continue;}
 
   {
    int c=((IRAM[0x7F]>>4)&7)+1;
@@ -361,20 +361,20 @@ static void DoNamcoSound(int32 *Wave, int Count)
   }
 
   duff=IRAM[(((IRAM[0x46+(P<<3)]+PlayIndex[P])&0xFF)>>1)];
-        if((IRAM[0x46+(P<<3)]+PlayIndex[P])&1)
+        if ((IRAM[0x46+(P<<3)]+PlayIndex[P])&1)
          duff>>=4;
         duff&=0xF;
         duff2=(duff*envelope)>>19;
-        for(V=0;V<Count*16;V++)
+        for (V=0;V<Count*16;V++)
         {
-         if(vco>=inc)
+         if (vco>=inc)
          {
           PlayIndex[P]++;
-          if(PlayIndex[P]>=lengo)
+          if (PlayIndex[P]>=lengo)
            PlayIndex[P]=0;
           vco-=inc;
           duff=IRAM[(((IRAM[0x46+(P<<3)]+PlayIndex[P])&0xFF)>>1)];
-          if((IRAM[0x46+(P<<3)]+PlayIndex[P])&1)
+          if ((IRAM[0x46+(P<<3)]+PlayIndex[P])&1)
            duff>>=4;
           duff&=0xF;
           duff2=(duff*envelope)>>19;
@@ -394,13 +394,13 @@ static void Mapper19_StateRestore(int version)
  SyncPRG();
  FixNTAR();
  FixCRR();
- for(x=0x40;x<0x80;x++)
+ for (x=0x40;x<0x80;x++)
   FixCache(x,IRAM[x]);
 }
 
 static void M19SC(void)
 {
- if(FSettings.SndRate)
+ if (FSettings.SndRate)
   Mapper19_ESI();
 }
 
@@ -429,8 +429,8 @@ static void N106_Power(void)
         SetReadHandler(0x8000,0xFFFF,CartBR);
         SetWriteHandler(0x8000,0xffff,Mapper19_write);
         SetWriteHandler(0x4020,0x5fff,Mapper19_write);
-  
-  if(!is210)
+ 
+  if (!is210)
   {
          SetWriteHandler(0xc000,0xdfff,Mapper19C0D8_write);
          SetReadHandler(0x4800,0x4fff,Namco_Read4800);
@@ -448,12 +448,12 @@ static void N106_Power(void)
   SyncPRG();
   FixCRR();
 
-  if(!battery)
+  if (!battery)
   {
    FCEU_dwmemset(WRAM,0,8192);
    FCEU_dwmemset(IRAM,0,128);
   }
-  for(x=0x40;x<0x80;x++)
+  for (x=0x40;x<0x80;x++)
    FixCache(x,IRAM[x]);
 }
 
@@ -468,17 +468,17 @@ void Mapper19_Init(CartInfo *info)
         GameStateRestore=Mapper19_StateRestore;
         GameExpSound.RChange=M19SC;
 
-        if(FSettings.SndRate)
+        if (FSettings.SndRate)
          Mapper19_ESI();
 
   AddExState(WRAM, 8192, 0, "WRAM");
   AddExState(IRAM, 128, 0, "WRAM");
   AddExState(N106_StateRegs, ~0, 0, 0);
 
-  if(info->battery)
+  if (info->battery)
   {
    info->SaveGame[0]=WRAM;
-         info->SaveGameLen[0]=8192; 
+         info->SaveGameLen[0]=8192;
    info->SaveGame[1]=IRAM;
    info->SaveGameLen[1]=128;
   }

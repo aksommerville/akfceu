@@ -26,7 +26,7 @@ static uint8 HSVal,HSValR;
 
 static uint8 FP_FASTAPASS(2) HS_Read(int w, uint8 ret)
 {
- if(w) ret|=HSValR;
+ if (w) ret|=HSValR;
 
  return(ret);
 }

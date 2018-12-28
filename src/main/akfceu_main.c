@@ -17,7 +17,7 @@
 
 /* Globals.
  */
- 
+
 static uint8_t framebuffer[256*240]={0};
 static uint8_t palette[768]={0};
 static int vmrunning=0;
@@ -144,7 +144,7 @@ static int load_rom_file(const char *path) {
 
   FCEUI_SetInput(0,SI_GAMEPAD,&input_state,0);
   FCEUI_SetInput(1,SI_GAMEPAD,&input_state,0);
-  
+ 
   return 0;
 }
 
@@ -472,7 +472,7 @@ static int update() {
     } else {
       usleep(15000);
     }
-    
+   
   } else {
     // With no VM running, no one is minding the timing.
     nix_audio_output();
@@ -482,7 +482,7 @@ static int update() {
   if (akfceu_video_render(real_framebuffer+256*11,palette)<0) {
     return -1;
   }
-  
+ 
   if (mn_macwm_swap()<0) {
     return -1;
   }

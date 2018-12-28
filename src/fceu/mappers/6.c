@@ -25,10 +25,10 @@
 
 static void FP_FASTAPASS(1) FFEIRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount+=a;
-   if(IRQCount>=0x10000)
+   if (IRQCount>=0x10000)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;
@@ -39,9 +39,9 @@ static void FP_FASTAPASS(1) FFEIRQHook(int a)
 
 DECLFW(Mapper6_write)
 {
-        if(A<0x8000)
+        if (A<0x8000)
         {
-                switch(A){
+                switch (A){
                 case 0x42FF:MIRROR_SET((V>>4)&1);break;
                 case 0x42FE:onemir((V>>3)&2);break;
                 case 0x4501:IRQa=0;X6502_IRQEnd(FCEU_IQEXT);break;
@@ -56,10 +56,10 @@ DECLFW(Mapper6_write)
 void Mapper6_StateRestore(int version)
 {
  int x;
- for(x=0;x<8;x++)
-  if(PPUCHRRAM&(1<<x))
+ for (x=0;x<8;x++)
+  if (PPUCHRRAM&(1<<x))
   {
-   if(CHRBankList[x]>7)
+   if (CHRBankList[x]>7)
     VPage[x]=&MapperExRAM[(CHRBankList[x]&31)*0x400]-(x*0x400);
    else VPage[x]=&CHRRAM[(CHRBankList[x]&7)*0x400]-(x*0x400);
   }

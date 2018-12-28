@@ -10,7 +10,7 @@
 static FILE *soundlog=0;
 static long wsize;
 
-/* Checking whether the file exists before wiping it out is left up to the 
+/* Checking whether the file exists before wiping it out is left up to the
    reader..err...I mean, the driver code, if it feels so inclined(I don't feel
    so).
 */
@@ -20,12 +20,12 @@ void FCEU_WriteWaveData(int32 *Buffer, int Count)
  int16 *dest;
  int x;
 
- if(!soundlog) return;
+ if (!soundlog) return;
 
  dest=temp;
  x=Count;
 
- while(x--)
+ while (x--)
  {
   int16 tmp=*Buffer;
 
@@ -41,21 +41,21 @@ int FCEUI_EndWaveRecord(void)
 {
  long s;
 
- if(!soundlog) return 0;
+ if (!soundlog) return 0;
  s=ftell(soundlog)-8;
  fseek(soundlog,4,SEEK_SET);
  fputc(s&0xFF,soundlog);
  fputc((s>>8)&0xFF,soundlog);
  fputc((s>>16)&0xFF,soundlog);
  fputc((s>>24)&0xFF,soundlog);
- 
+
  fseek(soundlog,0x28,SEEK_SET);
  s=wsize;
  fputc(s&0xFF,soundlog);
  fputc((s>>8)&0xFF,soundlog);
  fputc((s>>16)&0xFF,soundlog);
  fputc((s>>24)&0xFF,soundlog);
- 
+
  fclose(soundlog);
  soundlog=0;
  return 1;
@@ -66,7 +66,7 @@ int FCEUI_BeginWaveRecord(char *fn)
 {
  int r;
 
- if(!(soundlog=FCEUD_UTF8fopen(fn,"wb")))
+ if (!(soundlog=FCEUD_UTF8fopen(fn,"wb")))
   return 0;
  wsize=0;
 
@@ -101,7 +101,7 @@ int FCEUI_BeginWaveRecord(char *fn)
  fputc(0,soundlog);
  fputc(16,soundlog);
  fputc(0,soundlog);
- 
+
  fputs("data",soundlog);
  fseek(soundlog,4,SEEK_CUR);
 

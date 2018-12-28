@@ -25,7 +25,7 @@
 static void DoSuper(void)
 {
  setprg8r((GameMemBlock[0]&0xC)>>2,0x6000,((GameMemBlock[0]&0x3)<<4)|0xF);
- if(GameMemBlock[0]&0x10)
+ if (GameMemBlock[0]&0x10)
  {
   setprg16r((GameMemBlock[0]&0xC)>>2,0x8000,((GameMemBlock[0]&0x3)<<3)|(GameMemBlock[1]&7));
   setprg16r((GameMemBlock[0]&0xC)>>2,0xc000,((GameMemBlock[0]&0x3)<<3)|7);
@@ -38,7 +38,7 @@ static void DoSuper(void)
 
 static DECLFW(SuperWrite)
 {
- if(!(GameMemBlock[0]&0x10))
+ if (!(GameMemBlock[0]&0x10))
  {
   GameMemBlock[0]=V;
   DoSuper();
@@ -47,7 +47,7 @@ static DECLFW(SuperWrite)
 
 static DECLFW(SuperHi)
 {
- GameMemBlock[1]=V; 
+ GameMemBlock[1]=V;
  DoSuper();
 }
 
@@ -55,7 +55,7 @@ static void SuperReset(void)
 {
   SetWriteHandler(0x6000,0x7FFF,SuperWrite);
   SetWriteHandler(0x8000,0xFFFF,SuperHi);
-  SetReadHandler(0x6000,0xFFFF,CartBR);  
+  SetReadHandler(0x6000,0xFFFF,CartBR); 
   GameMemBlock[0]=GameMemBlock[1]=0;
   setprg32r(4,0x8000,0);
   setvram8(CHRRAM);

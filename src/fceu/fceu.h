@@ -62,7 +62,7 @@ typedef struct {
      int FirstSLine;
      int LastSLine;
 
-     /* Driver code(user)-specified first and last rendered scanlines. 
+     /* Driver code(user)-specified first and last rendered scanlines.
         Usr*SLine[0] is for NTSC, Usr*SLine[1] is for PAL.
            */
      int UsrFirstSLine[2];

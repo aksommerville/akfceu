@@ -18,6 +18,6 @@ int FCEUI_GetBreakPoint(uint32 w, int *type, unsigned int *A1, unsigned int *A2,
                 void (**Handler)(X6502 *, int type, unsigned int A));
 int FCEUI_SetBreakPoint(uint32 w, int type, unsigned int A1, unsigned int A2,
                 void (*Handler)(X6502 *, int type, unsigned int A));
-int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2, 
+int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2,
                 void (*Handler)(X6502 *, int type, unsigned int A));
 #endif

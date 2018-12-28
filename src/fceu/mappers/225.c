@@ -53,15 +53,15 @@ DECLFW(Mapper225_write)
  int banks=0;
 
  MIRROR_SET((A>>13)&1);
- if(A&0x4000)
+ if (A&0x4000)
   banks=1;
  else
   banks=0;
 
   VROM_BANK8(((A&0x003f)+(banks<<6)));
- if(A&0x1000)
+ if (A&0x1000)
   {
-   if(A&0x40)
+   if (A&0x40)
     {
      ROM_BANK16(0x8000,((((((A>>7)&0x1F)+(banks<<5)))<<1)+1));
      ROM_BANK16(0xC000,((((((A>>7)&0x1F)+(banks<<5)))<<1)+1));

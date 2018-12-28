@@ -2,7 +2,7 @@
 
 static DECLFW(M241wr)
 {
- if(A<0x8000)
+ if (A<0x8000)
  {
  // printf("$%04x:$%02x, $%04x\n",A,V,X.PC);
  }

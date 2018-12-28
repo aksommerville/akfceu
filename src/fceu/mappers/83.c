@@ -22,16 +22,16 @@
 
 
 void Mapper83_init(void)
-{             
- 
-} 
+{            
+
+}
 #ifdef MOOCOW
 static void FP_FASTAPASS(1) m83IRQHook(int a)
 {
-  if(IRQa)
+  if (IRQa)
   {
    IRQCount-=a;
-   if(IRQCount<0)
+   if (IRQCount<0)
    {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQa=0;
@@ -52,21 +52,21 @@ static DECLFR(rdlow)
 
 static void m83prg(void)
 {
-  ROM_BANK16(0x8000,(mapbyte1[0]&0x3F)); 
+  ROM_BANK16(0x8000,(mapbyte1[0]&0x3F));
   ROM_BANK16(0xC000,(mapbyte1[0]&0x30)|0xF);
 }
 
 static void m83chr(void)
 {
   int x;
-  for(x=0;x<8;x++)
+  for (x=0;x<8;x++)
    VROM_BANK1(x*0x400,mapbyte2[x]|((mapbyte1[0]&0x30)<<4));
 }
 
 static DECLFW(Mapper83_write)
 {
  //printf("$%04x:$%02x\n",A,V);
- switch(A)
+ switch (A)
  {
   case 0x8000:
   case 0xB000:
@@ -79,7 +79,7 @@ static DECLFW(Mapper83_write)
        }
        break;
   case 0x8100:
-              switch(V&0x3)
+              switch (V&0x3)
               {
               case 0x00:MIRROR_SET2(1);break;
               case 0x01:MIRROR_SET2(0);break;
@@ -103,7 +103,7 @@ static DECLFW(Mapper83_write)
   case 0x8318:mapbyte1[1]=V;m83prg();break;
  }
 // printf("$%04x:$%02x, $%04x\n",A,V,X.PC.W);
- 
+
 }
 
 void Mapper83_init(void)

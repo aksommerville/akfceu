@@ -26,7 +26,7 @@
 
 DECLFW(Mapper41_write)
 {
- if(A<0x8000)
+ if (A<0x8000)
  {
   ROM_BANK32(A&7);
   MIRROR_SET((A>>5)&1);
@@ -35,7 +35,7 @@ DECLFW(Mapper41_write)
   calchr|=(A>>1)&0xC;
   VROM_BANK8(calchr);
  }
- else if(calreg&0x4)
+ else if (calreg&0x4)
  {
   calchr&=0xC;
   calchr|=A&3;

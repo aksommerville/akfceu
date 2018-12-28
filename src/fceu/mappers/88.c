@@ -26,14 +26,14 @@ static DECLFW(Mapper88_write)
  //if(A>=0x8002 || A<0x8000)
  //if(A==0xc000)
  // printf("$%04x:$%02x\n",A,V);
- switch(A&0x8001) //&0xc001)
+ switch (A&0x8001) //&0xc001)
  {
   case 0x8000:mapbyte1[0]=V;
-        if(mn)
+        if (mn)
          onemir((V>>6)&1);
         break;
   case 0x8001:
-        switch(mapbyte1[0]&7)
+        switch (mapbyte1[0]&7)
         {
          case 0:VROM_BANK2(0,V>>1);break;
          case 1:VROM_BANK2(0x800,V>>1);break;

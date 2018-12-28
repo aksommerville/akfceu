@@ -26,21 +26,21 @@ static void DoCHR(void)
 {
  int x;
 
- for(x=0;x<2;x++)
+ for (x=0;x<2;x++)
   VROM_BANK2((x<<11)|((ctrl&2)<<11),mapbyte1[x]>>1);
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
   VROM_BANK1((x<<10) | (((ctrl&2)^2)<<11),mapbyte1[2+x]);
 }
 
 static DECLFW(Mapper82_write)
 {
- if(A<=0x7EF5)
+ if (A<=0x7EF5)
  {
   mapbyte1[A&7]=V;
   DoCHR();
  }
  else
-  switch(A)
+  switch (A)
   {
    case 0x7ef6:ctrl=V&3;
          MIRROR_SET2(V&1);

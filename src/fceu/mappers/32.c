@@ -25,15 +25,15 @@
 
 static DECLFW(Mapper32_write)
 {
- switch(A>>12)
+ switch (A>>12)
  {
   case 0x8:
      mapbyte1[1]=V;
-           if(IREMCon) {ROM_BANK8(0xc000,V);ROM_BANK8(0x8000,~1);}
+           if (IREMCon) {ROM_BANK8(0xc000,V);ROM_BANK8(0x8000,~1);}
            else {ROM_BANK8(0x8000,V);ROM_BANK8(0xc000,~1);}
            break;
   case 0x9:IREMCon=(V>>1)&1;
-           if(IREMCon) {ROM_BANK8(0xc000,mapbyte1[1]);ROM_BANK8(0x8000,~1);}
+           if (IREMCon) {ROM_BANK8(0xc000,mapbyte1[1]);ROM_BANK8(0x8000,~1);}
            else {ROM_BANK8(0x8000,mapbyte1[1]); ROM_BANK8(0xc000,~1);}
            MIRROR_SET(V&1);
            break;
@@ -41,7 +41,7 @@ static DECLFW(Mapper32_write)
            break;
  }
 
- if((A&0xF000)==0xb000)
+ if ((A&0xF000)==0xb000)
   VROM_BANK1((A&0x7)<<10,V);
 }
 

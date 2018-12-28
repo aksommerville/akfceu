@@ -35,73 +35,73 @@ static ZAPPER ZD;
 
 static void FP_FASTAPASS(3) ZapperFrapper(uint8 *bg, uint8 *spr, uint32  linets, int final)
 {
- int xs,xe;   
+ int xs,xe;  
  int zx,zy;
- 
- if(!bg) // New line, so reset stuff.
+
+ if (!bg) // New line, so reset stuff.
  {
   ZD.zappo=0;
   return;
  }
- xs=ZD.zappo;  
+ xs=ZD.zappo; 
  xe=final;
 
  zx=ZD.mzx;
  zy=ZD.mzy;
- 
- if(xe>256) xe=256;
- 
- if(scanline>=(zy-4) && scanline<=(zy+4))
+
+ if (xe>256) xe=256;
+
+ if (scanline>=(zy-4) && scanline<=(zy+4))
  {
-  while(xs<xe)
+  while (xs<xe)
   {
     uint8 a1,a2;
     uint32 sum;
-    if(xs<=(zx+4) && xs>=(zx-4))
+    if (xs<=(zx+4) && xs>=(zx-4))
     {
      a1=bg[xs];
-     if(spr)
+     if (spr)
      {
-      a2=spr[xs];  
- 
-      if(!(a2&0x80))
-       if(!(a2&0x40) || (a1&64))
-        a1=a2; 
+      a2=spr[xs]; 
+
+      if (!(a2&0x80))
+       if (!(a2&0x40) || (a1&64))
+        a1=a2;
      }
      a1&=63;
- 
+
      sum=palo[a1].r+palo[a1].g+palo[a1].b;
-     if(sum>=100*3)
+     if (sum>=100*3)
      {
       ZD.zaphit=((uint64)linets+(xs+16)*(PAL?15:16))/48+timestampbase;
       goto endo;
      }
     }
    xs++;
-  }  
+  } 
  }
  endo:
  ZD.zappo=final;
 }
 
 static INLINE int CheckColor(void)
-{ 
+{
  FCEUPPU_LineUpdate();
- 
- if((ZD.zaphit+10)>=(timestampbase+timestamp)) return(0);
- 
- return(1);   
+
+ if ((ZD.zaphit+10)>=(timestampbase+timestamp)) return(0);
+
+ return(1);  
 }
 
 
 static uint8 FP_FASTAPASS(2) ReadZapper(int w, uint8 ret)
 {
-    if(w)
+    if (w)
     {
      ret&=~0x18;
-                 if(ZD.bogo)
+                 if (ZD.bogo)
                   ret|=0x10;
-                 if(CheckColor())
+                 if (CheckColor())
                   ret|=0x8;
     }
     else
@@ -117,7 +117,7 @@ static uint8 FP_FASTAPASS(2) ReadZapper(int w, uint8 ret)
 
 static void FP_FASTAPASS(2) DrawZapper(uint8 *buf, int arg)
 {
- if(arg)
+ if (arg)
   FCEU_DrawCursor(buf, ZD.mzx, ZD.mzy);
 }
 
@@ -125,9 +125,9 @@ static void FP_FASTAPASS(2) UpdateZapper(void *data, int arg)
 {
   uint32 *ptr=(uint32*)data;
 
-  if(ZD.bogo)
+  if (ZD.bogo)
    ZD.bogo--;
-  if(ptr[2]&1 && (!(ZD.mzb&1)))
+  if (ptr[2]&1 && (!(ZD.mzb&1)))
    ZD.bogo=5;
 
   ZD.mzx=ptr[0];

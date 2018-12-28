@@ -22,7 +22,7 @@
 
 static void Fixerit(void)
 {
- switch(mapbyte2[0]&3)
+ switch (mapbyte2[0]&3)
  {
   case 0:vnapage[0]=vnapage[2]=CHRptr[0]+(((mapbyte1[0]|128)&CHRmask1[0])<<10);
    vnapage[1]=vnapage[3]=CHRptr[0]+(((mapbyte1[1]|128)&CHRmask1[0])<<10);
@@ -41,26 +41,26 @@ DECLFW(Mapper68_write)
 {
  A&=0xF000;
 
- if(A>=0x8000 && A<=0xB000)
+ if (A>=0x8000 && A<=0xB000)
  {
   VROM_BANK2((A-0x8000)>>1,V);
  }
- else switch(A)
+ else switch (A)
  {
   case 0xc000:mapbyte1[0]=V;
-              if(VROM_size && mapbyte2[0]&0x10)
+              if (VROM_size && mapbyte2[0]&0x10)
          Fixerit();
               break;
 
   case 0xd000:mapbyte1[1]=V;
-        if(VROM_size && mapbyte2[0]&0x10)
+        if (VROM_size && mapbyte2[0]&0x10)
          Fixerit();
               break;
 
   case 0xe000: mapbyte2[0]=V;
-               if(!(V&0x10))
+               if (!(V&0x10))
                {
-                switch(V&3)
+                switch (V&3)
                 {
                  case 0:MIRROR_SET2(1);break;
                  case 1:MIRROR_SET2(0);break;
@@ -68,7 +68,7 @@ DECLFW(Mapper68_write)
                  case 3:onemir(1);break;
                 }
                }
-               else if(VROM_size)
+               else if (VROM_size)
          {
           Fixerit();
           PPUNTARAM=0;
@@ -80,9 +80,9 @@ DECLFW(Mapper68_write)
 
 static void Mapper68_StateRestore(int version)
 {
-              if(!(mapbyte2[0]&0x10))
+              if (!(mapbyte2[0]&0x10))
               {
-               switch(mapbyte2[0]&3)
+               switch (mapbyte2[0]&3)
                {
                 case 0:MIRROR_SET(0);break;
                 case 1:MIRROR_SET(1);break;
@@ -90,7 +90,7 @@ static void Mapper68_StateRestore(int version)
                 case 3:onemir(1);break;
                }
               }
-              else if(VROM_size)
+              else if (VROM_size)
               {
     Fixerit();
                 PPUNTARAM=0;

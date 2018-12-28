@@ -27,7 +27,7 @@ typedef struct {
 /* slot */
 typedef struct {
 
-  OPLL_PATCH patch;  
+  OPLL_PATCH patch; 
 
   e_int32 type ;          /* 0 : modulator 1 : carrier */
 

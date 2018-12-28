@@ -35,7 +35,7 @@ static OSStatus mn_macaudio_cb(
 
 /* Init.
  */
- 
+
 int mn_macaudio_init(
   int rate,int chanc,
   void (*cb)(int16_t *dst,int dstc)
@@ -115,7 +115,7 @@ void mn_macaudio_quit() {
 
 /* Callback lock.
  */
- 
+
 int mn_macaudio_lock() {
   if (pthread_mutex_lock(&mn_macaudio.cbmtx)) return -1;
   return 0;

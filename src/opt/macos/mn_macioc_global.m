@@ -27,7 +27,7 @@ static void mn_macioc_surelog(const char *fmt,...) {
 
 /* Reopen TTY.
  */
- 
+
 int mn_macioc_reopen_tty(const char *path) {
   int fd=open(path,O_RDWR);
   if (fd<0) return -1;
@@ -54,7 +54,7 @@ static int mn_macioc_argv_prerun(int argc,char **argv) {
         continue;
       }
     }
-    
+   
     if ((k[0]!='-')||(k[1]!='-')||!k[2]) continue;
     k+=2;
     int kc=0;
@@ -91,7 +91,7 @@ int mn_macioc_main(int argc,char **argv,const struct mn_ioc_delegate *delegate) 
   if (mn_macioc_argv_prerun(argc,argv)<0) {
     return -1;
   }
-  
+ 
   if (delegate) memcpy(&mn_macioc.delegate,delegate,sizeof(struct mn_ioc_delegate));
 
   return NSApplicationMain(argc,(const char**)argv);
@@ -99,7 +99,7 @@ int mn_macioc_main(int argc,char **argv,const struct mn_ioc_delegate *delegate) 
 
 /* Simple termination.
  */
- 
+
 void mn_macioc_quit() {
   [NSApplication.sharedApplication terminate:nil];
   fprintf(stderr,"!!! [NSApplication.sharedApplication terminate:nil] did not terminate execution. Using exit() instead !!!\n");
@@ -108,7 +108,7 @@ void mn_macioc_quit() {
 
 /* Abort.
  */
- 
+
 void mn_macioc_abort(const char *fmt,...) {
   if (fmt&&fmt[0]) {
     va_list vargs;
@@ -123,7 +123,7 @@ void mn_macioc_abort(const char *fmt,...) {
 
 /* Callback triggers.
  */
- 
+
 int mn_macioc_call_init() {
   int result=(mn_macioc.delegate.init?mn_macioc.delegate.init(mn_macioc.rompath):0);
   mn_macioc.delegate.init=0; // Guarantee only one call.
@@ -150,7 +150,7 @@ void mn_macioc_call_quit() {
   if (mn_clockassist_setup(&clockassist,MN_FRAME_RATE)<0) {
     mn_macioc_abort("Failed to initialize clock.");
   }
-  
+ 
   while (1) {
 
     if (mn_macioc.terminate) break;
@@ -177,7 +177,7 @@ void mn_macioc_call_quit() {
      *   Resize seems OK with '1' and OS 10.13.
      */
     [self performSelectorOnMainThread:@selector(updateMain:) withObject:nil waitUntilDone:1];
-  
+ 
   }
 }
 
@@ -201,14 +201,14 @@ void mn_macioc_call_quit() {
  */
 
 -(void)applicationDidFinishLaunching:(NSNotification*)notification {
-  
+ 
   int err=mn_macioc_call_init();
   if (err<0) {
     mn_macioc_abort("Initialization failed (%d). Aborting.",err);
   }
 
   [NSThread detachNewThreadSelector:@selector(mainLoop:) toTarget:self withObject:nil];
-  
+ 
 }
 
 /* Termination.
@@ -260,8 +260,8 @@ void mn_macioc_call_quit() {
 
 /* Open with file.
  * BEWARE: """
- * If the user started up the application by double-clicking a file, 
- * the delegate receives the application:openFile: message before receiving applicationDidFinishLaunching:. 
+ * If the user started up the application by double-clicking a file,
+ * the delegate receives the application:openFile: message before receiving applicationDidFinishLaunching:.
  * """
  */
 
@@ -284,7 +284,7 @@ void mn_macioc_call_quit() {
     }
     return 1;
   }
-  
+ 
   return 0;
 }
 
@@ -292,7 +292,7 @@ void mn_macioc_call_quit() {
 
 /* Get user language.
  */
- 
+
 const char *mn_macioc_get_user_language(int index) {
   if (index<0) return 0;
   NSArray *languages=[NSLocale preferredLanguages];

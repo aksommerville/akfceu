@@ -29,20 +29,20 @@ static uint32 last=0;
 static int safe=0;
 static uint8 poofish;
 
-static void Sync(void)   
+static void Sync(void)  
 {
  int x;
  uint32 base=0;
 
- if(cmd&0x80) base=0x1000;  
+ if (cmd&0x80) base=0x1000; 
  setchr2(0x0000^base,(0x100|DRegs[0])>>1);
  setchr2(0x0800^base,(0x100|DRegs[1])>>1);
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
   setchr1((0x1000^base)+x*0x400,DRegs[2+x]);
 
- if(ExtMode&0x80)
+ if (ExtMode&0x80)
  {
-  if(ExtMode&0x20)
+  if (ExtMode&0x20)
    setprg32(0x8000,(ExtMode&0x1F)>>1);
   else
   {
@@ -62,7 +62,7 @@ static void Sync(void)
 static DECLFW(M187Write)
 {
  LastWr=V;
- if(A==0x5000)
+ if (A==0x5000)
   ExtMode=V;
  Sync();
 }
@@ -73,14 +73,14 @@ static DECLFW(M187HWrite)
  //printf("$%04x:$%02x, %04x\n",A,V,X.PC);
  LastWr=V;
 
- if(A==0x8003) 
+ if (A==0x8003)
  {
-  if(V==0x28 || V==0x2A)
+  if (V==0x28 || V==0x2A)
    poofish=V;
  }
- else if(A==0x8000) poofish=0;
+ else if (A==0x8000) poofish=0;
 
- switch(A)
+ switch (A)
  {
   case 0xc000:IRQLatch=IRQCount=V;break;
   case 0xc001:IRQCount=IRQLatch;last=count=0;break;
@@ -90,14 +90,14 @@ static DECLFW(M187HWrite)
 
   case 0x8000:cmd=V;safe=1;break;
   case 0x8001:
-        if(safe)
+        if (safe)
         {
          //printf("Cmd: %d, %02x, %04x\n",cmd&0x7,V,X.PC);
          DRegs[cmd&7]=V;
          Sync();
                safe=0;
               }
-    if(poofish==0x28) setprg8(0xc000,0x17);
+    if (poofish==0x28) setprg8(0xc000,0x17);
         break;
 
  }
@@ -105,7 +105,7 @@ static DECLFW(M187HWrite)
 
 static DECLFR(ProtRead)
 {
- switch(LastWr&0x3)
+ switch (LastWr&0x3)
  {
   case 0x1:
   case 0x0: return(0x80);
@@ -117,7 +117,7 @@ static DECLFR(ProtRead)
 static void M187Power(void)
 {
  SetWriteHandler(0x5000,0x5fff,M187Write);
- SetWriteHandler(0x8000,0xFFFF,M187HWrite); 
+ SetWriteHandler(0x8000,0xFFFF,M187HWrite);
  SetReadHandler(0x5000,0x5FFF,ProtRead);
  SetWriteHandler(0x6000,0x7FFF,M187Write);
  SetReadHandler(0x8000,0xffff,CartBR);
@@ -126,12 +126,12 @@ static void M187Power(void)
 
 static void sl(void)
 {
- if(IRQa)
+ if (IRQa)
  {
-  if(IRQCount>=0) 
+  if (IRQCount>=0)
   {
    IRQCount--;
-   if(IRQCount<0)
+   if (IRQCount<0)
    {
     X6502_IRQBegin(FCEU_IQEXT);
    }
@@ -141,11 +141,11 @@ static void sl(void)
 
 static void FP_FASTAPASS(1) foo(uint32 A)
 {
- if((A&0x2000) && !(last&0x2000))
+ if ((A&0x2000) && !(last&0x2000))
  {
   count++;
-  if(count==42)
-  { 
+  if (count==42)
+  {
    sl();
    count=0;
   }

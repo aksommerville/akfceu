@@ -24,7 +24,7 @@
 static void DoPRG(void)
 {
   int32 b=((rg[0]>>1)&0xF) | ((rg[0]>>3)&0x10) | ((rg[1]&1)<<5);
-  if(rg[0]&0x20)        // 16 KB
+  if (rg[0]&0x20)        // 16 KB
   {
    ROM_BANK16(0x8000,(b<<1)|(rg[0]&1));
    ROM_BANK16(0xC000,(b<<1)|(rg[0]&1));
@@ -37,9 +37,9 @@ static DECLFW(Mapper226_write)
 {
  rg[A&1]=V;
  DoPRG();
- if(A&1)
+ if (A&1)
  {
-  if(rg[1]&2)
+  if (rg[1]&2)
    PPUCHRRAM=0;  // Write protected.
   else
    PPUCHRRAM=0xFF; // Not write protected.
@@ -59,7 +59,7 @@ static void M26Reset(void)
 static void M26Restore(int version)
 {
  DoPRG();
- if(rg[1]&2)
+ if (rg[1]&2)
   PPUCHRRAM=0;  // Write protected.
  else
   PPUCHRRAM=0xFF; // Not write protected.
@@ -79,9 +79,9 @@ DECLFW(Mapper226_write)
 {
  MIRROR_SET((A>>13)&1);
  VROM_BANK8(A&0x7F);
- if(A&0x1000)
+ if (A&0x1000)
   {
-   if(A&0x40)
+   if (A&0x40)
     {
      ROM_BANK16(0x8000,(((A>>7))<<1)+1);
      ROM_BANK16(0xC000,(((A>>7))<<1)+1);

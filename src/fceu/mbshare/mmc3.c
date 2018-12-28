@@ -67,7 +67,7 @@ static void FixMMC3CHR(int V);
 
 static void FixMMC3PRG(int V)
 {
-          if(V&0x40)
+          if (V&0x40)
           {
            pwrap(0xC000,DRegBuf[6]);
            pwrap(0x8000,~1);
@@ -114,12 +114,12 @@ static void MMC3RegReset(void)
 
 static DECLFW(Mapper4_write)
 {
-        switch(A&0xE001)
+        switch (A&0xE001)
   {
          case 0x8000:
-          if((V&0x40) != (MMC3_cmd&0x40))
+          if ((V&0x40) != (MMC3_cmd&0x40))
      FixMMC3PRG(V);
-          if((V&0x80) != (MMC3_cmd&0x80))
+          if ((V&0x80) != (MMC3_cmd&0x80))
            FixMMC3CHR(V);
           MMC3_cmd = V;
           break;
@@ -128,7 +128,7 @@ static DECLFW(Mapper4_write)
                 {
                  int cbase=(MMC3_cmd&0x80)<<5;
                  DRegBuf[MMC3_cmd&0x7]=V;
-                 switch(MMC3_cmd&0x07)
+                 switch (MMC3_cmd&0x07)
                  {
                   case 0: cwrap((cbase^0x000),V&(~1));
         cwrap((cbase^0x400),V|1);
@@ -150,7 +150,7 @@ static DECLFW(Mapper4_write)
                 break;
 
         case 0xA000:
-          if(mwrap) mwrap(V&1);
+          if (mwrap) mwrap(V&1);
                 break;
   case 0xA001:
     A001B=V;
@@ -160,7 +160,7 @@ static DECLFW(Mapper4_write)
 
 static DECLFW(MMC3_IRQWrite)
 {
-        switch(A&0xE001)
+        switch (A&0xE001)
         {
          case 0xc000:IRQLatch=V;break;
          case 0xc001:IRQReload = 1;break;
@@ -174,15 +174,15 @@ static DECLFW(MMC3_IRQWrite)
 static void ClockMMC3Counter(void)
 {
   int count = IRQCount;
-  if(!count || IRQReload)
+  if (!count || IRQReload)
   {
    IRQCount = IRQLatch;
    IRQReload = 0;
   }
   else IRQCount--;
-  if(count && !IRQCount)
+  if (count && !IRQCount)
   {
-   if(IRQa)
+   if (IRQa)
    {
     X6502_IRQBegin(FCEU_IQEXT);
    }
@@ -196,14 +196,14 @@ static void MMC3_hb(void)
 
 static void MMC3_hb_KickMasterHack(void)
 {
-  if(scanline==238)
+  if (scanline==238)
    ClockMMC3Counter();
   ClockMMC3Counter();
 }
 
 static void MMC3_hb_PALStarWarsHack(void)
 {
-        if(scanline==240)
+        if (scanline==240)
          ClockMMC3Counter();
         ClockMMC3Counter();
 }
@@ -212,15 +212,15 @@ static void ClockMMC6Counter(void)
 {
   unsigned int count = IRQCount;
 
-  if(!count || IRQReload)
+  if (!count || IRQReload)
   {
    IRQCount = IRQLatch;
    IRQReload = 0;
   }
   else IRQCount--;
-  if(!IRQCount)
+  if (!IRQCount)
   {
-   if(IRQa)
+   if (IRQa)
     X6502_IRQBegin(FCEU_IQEXT);
   }
 }
@@ -230,8 +230,8 @@ static void ClockMMC6Counter(void)
 static uint32 lasta;
 static void FP_FASTAPASS(1) MMC3_PPUIRQ(uint32 A)
 {
- if(A&0x2000) return;
- if((A&0x1000) && !(lasta&0x1000))
+ if (A&0x2000) return;
+ if ((A&0x1000) && !(lasta&0x1000))
   ClockMMC3Counter();
  lasta = A;
 }
@@ -282,7 +282,7 @@ static void M12_Power(void)
 {
  EXPREGS[0]=EXPREGS[1]=0;
  GenMMC3Power();
- SetWriteHandler(0x4100,0x5FFF,M12Write);   
+ SetWriteHandler(0x4100,0x5FFF,M12Write);  
 }
 
 void Mapper12_Init(CartInfo *info)
@@ -312,7 +312,7 @@ static DECLFW(M47Write)
 {
  EXPREGS[0]=V&1;
  FixMMC3PRG(MMC3_cmd);
- FixMMC3CHR(MMC3_cmd); 
+ FixMMC3CHR(MMC3_cmd);
 }
 
 static void M47_Power(void)
@@ -335,7 +335,7 @@ void Mapper47_Init(CartInfo *info)
 static void M44PW(uint32 A, uint8 V)
 {
  uint32 NV=V;
- if(EXPREGS[0]>=6) NV&=0x1F;
+ if (EXPREGS[0]>=6) NV&=0x1F;
  else NV&=0x0F;
  NV|=EXPREGS[0]<<4;
  setprg8(A,NV);
@@ -344,14 +344,14 @@ static void M44PW(uint32 A, uint8 V)
 static void M44CW(uint32 A, uint8 V)
 {
  uint32 NV=V;
- if(EXPREGS[0]<6) NV&=0x7F;
+ if (EXPREGS[0]<6) NV&=0x7F;
  NV|=EXPREGS[0]<<7;
  setchr1(A,NV);
 }
 
 static DECLFW(Mapper44_write)
 {
- if(A&1)
+ if (A&1)
  {
   EXPREGS[0]=V&7;
   FixMMC3PRG(MMC3_cmd);
@@ -395,7 +395,7 @@ static void M52CW(uint32 A, uint8 V)
 
 static DECLFW(Mapper52_write)
 {
- if(EXPREGS[1]) 
+ if (EXPREGS[1])
  {
   WRAM[A-0x6000]=V;
   return;
@@ -409,7 +409,7 @@ static DECLFW(Mapper52_write)
 static void M52Reset(void)
 {
  EXPREGS[0]=EXPREGS[1]=0;
- MMC3RegReset(); 
+ MMC3RegReset();
 }
 
 static void M52Power(void)
@@ -432,7 +432,7 @@ void Mapper52_Init(CartInfo *info)
 static void M45CW(uint32 A, uint8 V)
 {
  uint32 NV=V;
- if(EXPREGS[2]&8)
+ if (EXPREGS[2]&8)
   NV&=(1<<( (EXPREGS[2]&7)+1 ))-1;
  else
   NV&=0;
@@ -454,9 +454,9 @@ static void M45PW(uint32 A, uint8 V)
 static DECLFW(Mapper45_write)
 {
  //printf("$%02x, %d\n",V,EXPREGS[4]);
- if(EXPREGS[3]&0x40) 
+ if (EXPREGS[3]&0x40)
  {
-  WRAM[A-0x6000]=V;   
+  WRAM[A-0x6000]=V;  
   return;
  }
  EXPREGS[EXPREGS[4]]=V;
@@ -493,7 +493,7 @@ void Mapper45_Init(CartInfo *info)
 
 static void M49PW(uint32 A, uint8 V)
 {
- if(EXPREGS[0]&1)
+ if (EXPREGS[0]&1)
  {
   V&=0xF;
   V|=(EXPREGS[0]&0xC0)>>2;
@@ -514,7 +514,7 @@ static void M49CW(uint32 A, uint8 V)
 static DECLFW(M49Write)
 {
  //printf("$%04x:$%02x\n",A,V);
- if(A001B&0x80)
+ if (A001B&0x80)
  {
   EXPREGS[0]=V;
   FixMMC3PRG(MMC3_cmd);
@@ -550,7 +550,7 @@ void Mapper49_Init(CartInfo *info)
 static void M115PW(uint32 A, uint8 V)
 {
  setprg8(A,V);
- if(EXPREGS[0]&0x80)
+ if (EXPREGS[0]&0x80)
  {
   setprg16(0x8000,EXPREGS[0]&7);
  }
@@ -563,9 +563,9 @@ static void M115CW(uint32 A, uint8 V)
 
 static DECLFW(M115Write)
 {
- if(A==0x6000)
+ if (A==0x6000)
   EXPREGS[0]=V;
- else if(A==0x6001)
+ else if (A==0x6001)
   EXPREGS[1]=V;
  FixMMC3PRG(MMC3_cmd);
 }
@@ -591,7 +591,7 @@ static void M116PW(uint32 A, uint8 V)
  // setprg8(A,(V&0xF)|((EXPREGS[1]&0x2)<<3));
  // setprg8(A,(V&7)|(<<3));
  setprg8(A,V);
- if(!(EXPREGS[1]&2))
+ if (!(EXPREGS[1]&2))
  {
   setprg16(0x8000,1); //EXPREGS[2]);
  }
@@ -609,10 +609,10 @@ static void M116CW(uint32 A, uint8 V)
 
 static DECLFW(M116Write)
 {
- if(A==0x4100) {EXPREGS[0]=V;setmirror(V&1);}
- else if(A==0x4141) EXPREGS[1]=V;
- else if(A==0xa000) EXPREGS[2]=V;
- else if(A==0x4106) EXPREGS[3]=V;
+ if (A==0x4100) {EXPREGS[0]=V;setmirror(V&1);}
+ else if (A==0x4141) EXPREGS[1]=V;
+ else if (A==0xa000) EXPREGS[2]=V;
+ else if (A==0x4106) EXPREGS[3]=V;
  FixMMC3PRG(MMC3_cmd);
  FixMMC3CHR(MMC3_cmd);
 // MIRROR_SET(0);
@@ -624,7 +624,7 @@ static DECLFW(M116Write2)
 }
 static void M116Power(void)
 {
- 
+
  EXPREGS[0]=0;
  EXPREGS[1]=2;
  EXPREGS[2]=0;
@@ -648,7 +648,7 @@ void Mapper116_Init(CartInfo *info)
 static void M165CW(uint32 A, uint8 V)
 {
  //printf("%04x:%02x\n",A,V);
- if(V < 0x4)
+ if (V < 0x4)
   setchr1r(0x10, A, V);
  else
   setchr1(A,V);
@@ -689,9 +689,9 @@ void Mapper250_Init(CartInfo *info)
 
 static void M249PW(uint32 A, uint8 V)
 {
- if(EXPREGS[0]&0x2)
+ if (EXPREGS[0]&0x2)
  {
-  if(V<0x20)
+  if (V<0x20)
    V=(V&1)|((V>>3)&2)|((V>>1)&4)|((V<<2)&8)|((V<<2)&0x10);
   else
   {
@@ -704,7 +704,7 @@ static void M249PW(uint32 A, uint8 V)
 
 static void M249CW(uint32 A, uint8 V)
 {
- if(EXPREGS[0]&0x2)
+ if (EXPREGS[0]&0x2)
   V=(V&3)|((V>>1)&4)|((V>>4)&8)|((V>>2)&0x10)|((V<<3)&0x20)|((V<<2)&0xC0);
  setchr1(A,V);
 }
@@ -736,7 +736,7 @@ static void M245CW(uint32 A, uint8 V)
 {
  //printf("$%04x:$%02x\n",A,V);
  //setchr1(A,V);
- //  
+ // 
  EXPREGS[0]=V;
  FixMMC3PRG(MMC3_cmd);
 }
@@ -769,7 +769,7 @@ void m74p(uint32 a, uint8 v)
 
 static void m74kie(uint32 a, uint8 v)
 {
- if(v==((PRGsize[0]>>16)&0x08) || v==1+((PRGsize[0]>>16)&0x08))
+ if (v==((PRGsize[0]>>16)&0x08) || v==1+((PRGsize[0]>>16)&0x08))
   setchr1r(0x10,a,v);
  else
   setchr1r(0x0,a,v);
@@ -788,7 +788,7 @@ void Mapper74_Init(CartInfo *info)
 
 static void m148kie(uint32 a, uint8 v)
 {
- if(v==128 || v==129)
+ if (v==128 || v==129)
   setchr1r(0x10,a,v);
  else
   setchr1r(0x0,a,v);
@@ -813,8 +813,8 @@ static void FP_FASTAPASS(1) TKSPPU(uint32 A)
  A&=0x1FFF;
  //if(scanline>=140 && scanline<=200) {setmirror(MI_1);return;}
  //if(scanline>=140 && scanline<=200)
- // if(scanline>=190 && scanline<=200) {setmirror(MI_1);return;}
- // setmirror(MI_1); 
+ // if (scanline>=190 && scanline<=200) {setmirror(MI_1);return;}
+ // setmirror(MI_1);
  //printf("$%04x\n",A);
 
  A>>=10;
@@ -826,7 +826,7 @@ static void TKSWRAP(uint32 A, uint8 V)
 {
  TKSMIR[A>>10]=V>>7;
  setchr1(A,V&0x7F);
- if(PPUCHRBus==(A>>10))
+ if (PPUCHRBus==(A>>10))
   setmirror(MI_0+(V>>7));
 }
 
@@ -865,9 +865,9 @@ static void GenMMC3Power(void)
  SetWriteHandler(0xC000,0xFFFF,MMC3_IRQWrite);
  A001B=A000B=0;
  setmirror((A000B&1)^1);
- if(mmc3opts&1)
+ if (mmc3opts&1)
  {
-  if(wrams==1024)
+  if (wrams==1024)
   {
    FCEU_CheatAddRAM(1,0x7000,WRAM);
    SetReadHandler(0x7000,0x7FFF,MAWRAMMMC6);
@@ -879,19 +879,19 @@ static void GenMMC3Power(void)
    SetReadHandler(0x6000,0x6000+wrams-1,MAWRAM);
    SetWriteHandler(0x6000,0x6000+wrams-1,MBWRAM);
   }
-  if(!(mmc3opts&2))
+  if (!(mmc3opts&2))
    FCEU_dwmemset(WRAM,0,wrams);
  }
  MMC3RegReset();
- if(CHRRAM)
+ if (CHRRAM)
   FCEU_dwmemset(CHRRAM,0,CHRRAMSize);
 }
 
 static void GenMMC3Close(void)
 {
- if(CHRRAM)
+ if (CHRRAM)
   FCEU_gfree(CHRRAM);
- if(WRAM)
+ if (WRAM)
   FCEU_gfree(WRAM);
  CHRRAM=WRAM=NULL;
 }
@@ -908,14 +908,14 @@ void GenMMC3_Init(CartInfo *info, int prg, int chr, int wram, int battery)
  CHRmask1[0]&=(chr>>10)-1;
  CHRmask2[0]&=(chr>>11)-1;
 
- if(wram)
+ if (wram)
  {
   mmc3opts|=1;
   WRAM=(uint8*)FCEU_gmalloc(wram*1024);
   AddExState(WRAM, wram*1024, 0, "WRAM");
  }
 
- if(battery)
+ if (battery)
  {
   mmc3opts|=2;
 
@@ -923,7 +923,7 @@ void GenMMC3_Init(CartInfo *info, int prg, int chr, int wram, int battery)
   info->SaveGameLen[0]=wram*1024;
  }
 
- if(!chr)
+ if (!chr)
  {
   CHRRAM=(uint8*)FCEU_gmalloc(8192);
   CHRRAMSize=8192;
@@ -938,13 +938,13 @@ void GenMMC3_Init(CartInfo *info, int prg, int chr, int wram, int battery)
 
  //PPU_hook=MMC3_PPUIRQ;
 
- if(info->CRC32 == 0x5104833e)    // Kick Master
+ if (info->CRC32 == 0x5104833e)    // Kick Master
   GameHBIRQHook = MMC3_hb_KickMasterHack;
- else if(info->CRC32 == 0x5a6860f1 || info->CRC32 == 0xae280e20) // Shougi Meikan '92/'93
+ else if (info->CRC32 == 0x5a6860f1 || info->CRC32 == 0xae280e20) // Shougi Meikan '92/'93
   GameHBIRQHook = MMC3_hb_KickMasterHack;
- else if(info->CRC32 == 0xfcd772eb)  // PAL Star Wars, similar problem as Kick Master.
+ else if (info->CRC32 == 0xfcd772eb)  // PAL Star Wars, similar problem as Kick Master.
   GameHBIRQHook = MMC3_hb_PALStarWarsHack;
- else 
+ else
   GameHBIRQHook=MMC3_hb;
  GameStateRestore=genmmc3restore;
 }
@@ -962,7 +962,7 @@ void Mapper4_Init(CartInfo *info)
 {
  int ws=8;
 
- if((info->CRC32==0x93991433 || info->CRC32==0xaf65aa84))
+ if ((info->CRC32==0x93991433 || info->CRC32==0xaf65aa84))
  {
   FCEU_printf("Low-G-Man can not work normally in the iNES format.\nThis game has been recognized by its CRC32 value, and the appropriate changes will be made so it will run.\nIf you wish to hack this game, you should use the UNIF format for your hack.\n\n");
   ws=0;
@@ -975,7 +975,7 @@ void Mapper4_Init(CartInfo *info)
 void Mapper118_Init(CartInfo *info)
 {
  GenMMC3_Init(info, 512, 256, 8, info->battery);
- cwrap=TKSWRAP;   
+ cwrap=TKSWRAP;  
  mwrap=GENNOMWRAP;
  PPU_hook=TKSPPU;
  AddExState(&PPUCHRBus, 1, 0, "PPUC");

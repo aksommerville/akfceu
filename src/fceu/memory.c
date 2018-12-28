@@ -29,7 +29,7 @@ void *FCEU_gmalloc(uint32 size)
 {
  void *ret;
  ret=malloc(size);
- if(!ret)  
+ if (!ret) 
  {
   FCEU_PrintError("Error allocating memory!  Doing a hard exit.");
   exit(1);
@@ -41,7 +41,7 @@ void *FCEU_malloc(uint32 size)
 {
  void *ret;
  ret=malloc(size);
- if(!ret)
+ if (!ret)
  {
   FCEU_PrintError("Error allocating memory!");
   return(0);
@@ -69,14 +69,14 @@ void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32 l)
  t|=(int)s;
  t|=(int)l;
 
- if(t&3)          // Not 4-byte aligned and/or length is not a multiple of 4.
+ if (t&3)          // Not 4-byte aligned and/or length is not a multiple of 4.
  {
-  uint8 *tmpd, *tmps;  
+  uint8 *tmpd, *tmps; 
 
   tmpd = d;
   tmps = s;
 
-  for(x=l;x;x--)        // This could be optimized further, though(more tests could be performed).
+  for (x=l;x;x--)        // This could be optimized further, though(more tests could be performed).
   {
    *tmpd=*tmps;
    tmpd++;
@@ -90,7 +90,7 @@ void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32 l)
   tmpd = d;
   tmps = s;
 
-  for(x=l>>2;x;x--)
+  for (x=l>>2;x;x--)
   {
    *tmpd=*tmps;
    tmpd++;

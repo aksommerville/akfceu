@@ -38,34 +38,34 @@ static int is155;
 
 static DECLFW(MBWRAM)
 {
- if(!(DRegs[3]&0x10) || is155)
+ if (!(DRegs[3]&0x10) || is155)
   Page[A>>11][A]=V;     // WRAM is enabled.
 }
 
 static DECLFR(MAWRAM)
 {
- if((DRegs[3]&0x10) && !is155)
+ if ((DRegs[3]&0x10) && !is155)
   return X.DB;          // WRAM is disabled
  return(Page[A>>11][A]);
 }
 
 static void MMC1CHR(void)
 {
-    if(mmc1opts&4)
+    if (mmc1opts&4)
     {
-     if(DRegs[0]&0x10)
+     if (DRegs[0]&0x10)
       setprg8r(0x10,0x6000,(DRegs[1]>>4)&1);
      else
       setprg8r(0x10,0x6000,(DRegs[1]>>3)&1);
     }
 
-    if(MMC1CHRHook4)
+    if (MMC1CHRHook4)
     {
-     if(DRegs[0]&0x10)
+     if (DRegs[0]&0x10)
      {
       MMC1CHRHook4(0x0000,DRegs[1]);
       MMC1CHRHook4(0x1000,DRegs[2]);
-     }   
+     }  
      else
      {
       MMC1CHRHook4(0x0000,(DRegs[1]&0xFE));
@@ -74,7 +74,7 @@ static void MMC1CHR(void)
     }
     else
     {
-     if(DRegs[0]&0x10)
+     if (DRegs[0]&0x10)
      {
       setchr4(0x0000,DRegs[1]);
       setchr4(0x1000,DRegs[2]);
@@ -89,9 +89,9 @@ static void MMC1PRG(void)
         uint8 offs;
 
         offs=DRegs[1]&0x10;
-  if(MMC1PRGHook16)
+  if (MMC1PRGHook16)
   {
-         switch(DRegs[0]&0xC)
+         switch (DRegs[0]&0xC)
          {
           case 0xC: MMC1PRGHook16(0x8000,(DRegs[3]+offs));
                     MMC1PRGHook16(0xC000,0xF+offs);
@@ -107,7 +107,7 @@ static void MMC1PRG(void)
          }
   }
   else
-         switch(DRegs[0]&0xC)
+         switch (DRegs[0]&0xC)
          {
           case 0xC: setprg16(0x8000,(DRegs[3]+offs));
                     setprg16(0xC000,0xF+offs);
@@ -125,7 +125,7 @@ static void MMC1PRG(void)
 
 static void MMC1MIRROR(void)
 {
-                switch(DRegs[0]&3)
+                switch (DRegs[0]&3)
                 {
                  case 2: setmirror(MI_V);break;
                  case 3: setmirror(MI_H);break;
@@ -148,7 +148,7 @@ static DECLFW(MMC1_write)
      precision isn't that great), but this should still work to
      deal with 2 writes in a row from a single RMW instruction.
   */
-  if( (timestampbase+timestamp)<(lreset+2))
+  if ( (timestampbase+timestamp)<(lreset+2))
    return;
         if (V&0x80)
         {
@@ -165,7 +165,7 @@ static DECLFW(MMC1_write)
         DRegs[n] = Buffer;
         BufferShift = Buffer = 0;
 
-        switch(n){
+        switch (n){
         case 0:
     MMC1MIRROR();
                 MMC1CHR();
@@ -197,7 +197,7 @@ static void MMC1CMReset(void)
 {
         int i;
 
-        for(i=0;i<4;i++)
+        for (i=0;i<4;i++)
          DRegs[i]=0;
         Buffer = BufferShift = 0;
         DRegs[0]=0x1F;
@@ -213,7 +213,7 @@ static void MMC1CMReset(void)
 
 static int DetectMMC1WRAMSize(uint32 crc32)
 {
-        switch(crc32)
+        switch (crc32)
         {
          default:return(8);
    case 0xc6182024:  /* Romance of the 3 Kingdoms */
@@ -229,30 +229,30 @@ static int DetectMMC1WRAMSize(uint32 crc32)
 static uint32 NWCIRQCount;
 static uint8 NWCRec;
 #define NWCDIP 0xE
- 
+
 static void FP_FASTAPASS(1) NWCIRQHook(int a)
-{ 
-        if(!(NWCRec&0x10))
+{
+        if (!(NWCRec&0x10))
         {
          NWCIRQCount+=a;
-         if((NWCIRQCount|(NWCDIP<<25))>=0x3e000000)
+         if ((NWCIRQCount|(NWCDIP<<25))>=0x3e000000)
           {
            NWCIRQCount=0;
            X6502_IRQBegin(FCEU_IQEXT);
           }
         }
-} 
+}
 
 static void NWCCHRHook(uint32 A, uint8 V)
 {
- if((V&0x10)) // && !(NWCRec&0x10))
+ if ((V&0x10)) // && !(NWCRec&0x10))
  {
   NWCIRQCount=0;
   X6502_IRQEnd(FCEU_IQEXT);
  }
 
  NWCRec=V;
- if(V&0x08)
+ if (V&0x08)
   MMC1PRG();
  else
   setprg32(0x8000,(V>>1)&3);
@@ -260,7 +260,7 @@ static void NWCCHRHook(uint32 A, uint8 V)
 
 static void NWCPRGHook(uint32 A, uint8 V)
 {
- if(NWCRec&0x8)
+ if (NWCRec&0x8)
   setprg16(A,8|(V&0x7));
  else
   setprg32(0x8000,(NWCRec>>1)&3);
@@ -284,18 +284,18 @@ void Mapper105_Init(CartInfo *info)
 static void GenMMC1Power(void)
 {
  lreset=0;
- if(mmc1opts&1)
+ if (mmc1opts&1)
  {
   FCEU_CheatAddRAM(8,0x6000,WRAM);
-  if(mmc1opts&4)
+  if (mmc1opts&4)
    FCEU_dwmemset(WRAM,0,8192)
-  else if(!(mmc1opts&2))
+  else if (!(mmc1opts&2))
    FCEU_dwmemset(WRAM,0,8192);
  }
  SetWriteHandler(0x8000,0xFFFF,MMC1_write);
  SetReadHandler(0x8000,0xFFFF,CartBR);
 
- if(mmc1opts&1)
+ if (mmc1opts&1)
  {
   SetReadHandler(0x6000,0x7FFF,MAWRAM);
   SetWriteHandler(0x6000,0x7FFF,MBWRAM);
@@ -307,12 +307,12 @@ static void GenMMC1Power(void)
 
 static void GenMMC1Close(void)
 {
- if(CHRRAM)
+ if (CHRRAM)
   FCEU_gfree(CHRRAM);
- if(WRAM)
+ if (WRAM)
   FCEU_gfree(WRAM);
  CHRRAM=WRAM=NULL;
-} 
+}
 
 static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
 {
@@ -325,15 +325,15 @@ static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
  CHRmask4[0]&=(chr>>12)-1;
  CHRmask8[0]&=(chr>>13)-1;
 
- if(wram) 
- { 
+ if (wram)
+ {
   WRAM=(uint8*)FCEU_gmalloc(wram*1024);
   mmc1opts|=1;
-  if(wram>8) mmc1opts|=4;
+  if (wram>8) mmc1opts|=4;
   SetupCartPRGMapping(0x10,WRAM,wram*1024,1);
   AddExState(WRAM, wram*1024, 0, "WRAM");
 
-  if(battery)
+  if (battery)
   {
    mmc1opts|=2;
 
@@ -341,7 +341,7 @@ static void GenMMC1Init(CartInfo *info, int prg, int chr, int wram, int battery)
    info->SaveGameLen[0]=8192;
   }
  }
- if(!chr)
+ if (!chr)
  {
   CHRRAM=(uint8*)FCEU_gmalloc(8192);
   SetupCartCHRMapping(0, CHRRAM, 8192, 1);
@@ -370,7 +370,7 @@ void Mapper155_Init(CartInfo *info)
 //static void GenMMC1Init(int prg, int chr, int wram, int battery)
 void SAROM_Init(CartInfo *info)
 {
- GenMMC1Init(info, 128, 64, 8, info->battery); 
+ GenMMC1Init(info, 128, 64, 8, info->battery);
 }
 
 void SBROM_Init(CartInfo *info)
@@ -378,7 +378,7 @@ void SBROM_Init(CartInfo *info)
  GenMMC1Init(info, 128, 64, 0, 0);
 }
 
-void SCROM_Init(CartInfo *info)  
+void SCROM_Init(CartInfo *info) 
 {
  GenMMC1Init(info, 128, 128, 0, 0);
 }

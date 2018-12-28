@@ -31,19 +31,19 @@ static void FP_FASTAPASS(1) latchcheck(uint32 VAddr)
 
      h=VAddr>>8;
 
-     if(h>=0x20 || ((h&0xF)!=0xF)) 
+     if (h>=0x20 || ((h&0xF)!=0xF))
       return;
 
      l=VAddr&0xF0;
 
-     if(h<0x10)
+     if (h<0x10)
      {
-      if(l==0xD0)
+      if (l==0xD0)
       {
        VROM_BANK4(0x0000,MMC4reg[0]);
        latcha1=0xFD;
       }
-      else if(l==0xE0)
+      else if (l==0xE0)
       {
        VROM_BANK4(0x0000,MMC4reg[1]);
        latcha1=0xFE;
@@ -51,12 +51,12 @@ static void FP_FASTAPASS(1) latchcheck(uint32 VAddr)
      }
      else
      {
-      if(l==0xD0)
+      if (l==0xD0)
       {
        VROM_BANK4(0x1000,MMC4reg[2]);
        latcha2=0xFD;
       }
-      else if(l==0xE0)
+      else if (l==0xE0)
       {
        VROM_BANK4(0x1000,MMC4reg[3]);
        latcha2=0xFE;
@@ -76,7 +76,7 @@ DECLFW(Mapper10_write)
 
 DECLFW(Mapper9and10_write)
 {
-       switch(A&0xF000)
+       switch (A&0xF000)
        {
         case 0xB000:
                 if (latcha1==0xFD) { VROM_BANK4(0x0000,V);}

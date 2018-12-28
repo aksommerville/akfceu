@@ -26,20 +26,20 @@
 static int acount=0;
 static DECLFW(Mapper23_write)
 {
- if((A&0xF000)==0x8000)
+ if ((A&0xF000)==0x8000)
  {
-  if(K4sel&2)
+  if (K4sel&2)
    ROM_BANK8(0xC000,V);
   else
    ROM_BANK8(0x8000,V);
-  } 
-  else if((A&0xF000)==0xA000) 
+  }
+  else if ((A&0xF000)==0xA000)
    ROM_BANK8(0xA000,V);
   else
   {
    A|=((A>>2)&0x3)|((A>>4)&0x3)|((A>>6)&0x3);
    A&=0xF003;
-   if(A>=0xb000 && A<=0xe003)
+   if (A>=0xb000 && A<=0xe003)
    {
     int x=((A>>1)&1)|((A-0xB000)>>11);
 
@@ -47,8 +47,8 @@ static DECLFW(Mapper23_write)
     K4buf[x]|=(V&0xF)<<((A&1)<<2);
     VROM_BANK1(x<<10,K4buf[x]);
    }
-   else 
-    switch(A)
+   else
+    switch (A)
     {
      case 0xf000:X6502_IRQEnd(FCEU_IQEXT);IRQLatch&=0xF0;IRQLatch|=V&0xF;break;
      case 0xf001:X6502_IRQEnd(FCEU_IQEXT);IRQLatch&=0x0F;IRQLatch|=V<<4;break;
@@ -57,7 +57,7 @@ static DECLFW(Mapper23_write)
      case 0x9001:
      case 0x9002:
      case 0x9003:
-                 if((K4sel&2)!=(V&2))
+                 if ((K4sel&2)!=(V&2))
                  {
                   uint8 swa;
                   swa=PRGBankList[0];
@@ -67,7 +67,7 @@ static DECLFW(Mapper23_write)
                  K4sel=V;
                  break;
      case 0x9000:
-         switch(V&0x3)
+         switch (V&0x3)
           {
                  case 0:MIRROR_SET(0);break;
            case 1:MIRROR_SET(1);break;
@@ -82,14 +82,14 @@ static DECLFW(Mapper23_write)
 void FP_FASTAPASS(1) KonamiIRQHook2(int a)
 {
   #define LCYCS 341
-  if(IRQa)
+  if (IRQa)
   {
    acount+=a*3;
-    if(acount>=LCYCS)
+    if (acount>=LCYCS)
     {
      doagainbub:acount-=LCYCS;IRQCount++;
-     if(IRQCount&0x100) {X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;}
-     if(acount>=LCYCS) goto doagainbub;
+     if (IRQCount&0x100) {X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;}
+     if (acount>=LCYCS) goto doagainbub;
     }
  }
 }

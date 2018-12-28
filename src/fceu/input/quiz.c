@@ -26,7 +26,7 @@ static uint8 FunkyMode;
 
 static uint8 FP_FASTAPASS(2) QZ_Read(int w, uint8 ret)
 {
- if(w) 
+ if (w)
  {
   //if(X.PC==0xdc7d) return(0xFF);
   //printf("Blah: %04x\n",X.PC);
@@ -35,7 +35,7 @@ static uint8 FP_FASTAPASS(2) QZ_Read(int w, uint8 ret)
   ret|=(QZValR&0x7)<<2;
   QZValR=QZValR>>3;
 
-  if(FunkyMode)
+  if (FunkyMode)
   {
    //ret=0x14;
    //puts("Funky");

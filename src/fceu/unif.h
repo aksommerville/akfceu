@@ -76,5 +76,5 @@ void TQROM_Init(CartInfo *info);
 
 #define UNIFMemBlock (GameMemBlock+32768)
 
-extern uint8 *UNIFchrrama;  // Meh.  So I can stop CHR RAM 
+extern uint8 *UNIFchrrama;  // Meh.  So I can stop CHR RAM
          // bank switcherooing with certain boards...

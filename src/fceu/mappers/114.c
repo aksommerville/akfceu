@@ -27,15 +27,15 @@ static void dochr(void)
 {
   VROM_BANK2(0x0000,(mapbyte2[0]>>1));
   VROM_BANK2(0x0800,(mapbyte2[2]>>1));
-  VROM_BANK1(0x1000,mapbyte2[6]); 
-  VROM_BANK1(0x1400,mapbyte2[1]); 
+  VROM_BANK1(0x1000,mapbyte2[6]);
+  VROM_BANK1(0x1400,mapbyte2[1]);
   VROM_BANK1(0x1800,mapbyte2[7]);
   VROM_BANK1(0x1c00,mapbyte2[3]);
 }
 
 void doprg()
 {
- if(master&0x80)
+ if (master&0x80)
  {
   ROM_BANK16(0x8000,master&0x1F);
  }
@@ -49,23 +49,23 @@ void doprg()
 
 static DECLFW(Mapper114_write)
 {
- if(A<=0x7FFF)
+ if (A<=0x7FFF)
  {
   master=V;
   doprg();
  }
- else if(A==0xe003) IRQCount=V;
- else if(A==0xe002) X6502_IRQEnd(FCEU_IQEXT);
- else switch(A&0xE000)
+ else if (A==0xe003) IRQCount=V;
+ else if (A==0xe002) X6502_IRQEnd(FCEU_IQEXT);
+ else switch (A&0xE000)
  {
   case 0x8000:MIRROR_SET(V&1);break;
   case 0xa000:mapbyte1[0]=V;incmd=1;break;
   case 0xc000:
-        if(!incmd) break;
+        if (!incmd) break;
         mapbyte2[mapbyte1[0]&0x7]=V;
-        switch(mapbyte1[0]&0x7)
+        switch (mapbyte1[0]&0x7)
         {
-         case 0x0: case 1: case 2: case 3: case 6: case 7: 
+         case 0x0: case 1: case 2: case 3: case 6: case 7:
     dochr();break;
          case 0x4:
          case 0x5:doprg();break;
@@ -78,10 +78,10 @@ static DECLFW(Mapper114_write)
 
 static void Mapper114_hb(void)
 {
- if(IRQCount)
+ if (IRQCount)
  {
   IRQCount--;
-  if(!IRQCount)
+  if (!IRQCount)
   {
    X6502_IRQBegin(FCEU_IQEXT);
    //printf("IRQ: %d\n",scanline);

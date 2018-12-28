@@ -28,9 +28,9 @@ static DECLFW(Mapper228_write)
 
  page=(A>>7)&0x3F;
  //printf("%04x\n",A);
- if((page&0x30)==0x30)
+ if ((page&0x30)==0x30)
   page-=0x10;
- 
+
  pagel=pageh=(page<<1) + (((A>>6)&1)&((A>>5)&1));
  pageh+=((A>>5)&1)^1;
 

@@ -26,7 +26,7 @@
 
 static void PRGSynco(void)
 {
- if(lpa&0x80)
+ if (lpa&0x80)
  {
   ROM_BANK16(0x8000,lpa&0xF);
  }
@@ -45,7 +45,7 @@ static DECLFW(Mapper248_writelow)
 
 static DECLFW(Mapper248_write)
 {
- switch(A&0xF001)
+ switch (A&0xF001)
  {
   case 0xa000:MIRROR_SET(V&1);break; // Not sure if this is right.  Mirroring may be hard wired...
   case 0xc000:IRQLatch=V;break;
@@ -70,10 +70,10 @@ static DECLFW(Mapper248_write)
 
 static void Mapper248_hb(void)
 {
- if(IRQa)
+ if (IRQa)
  {
          IRQCount--;
-         if(IRQCount<0)
+         if (IRQCount<0)
          {
     X6502_IRQBegin(FCEU_IQEXT);
     IRQCount=IRQLatch;

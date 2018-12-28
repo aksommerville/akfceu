@@ -45,7 +45,7 @@ static int akfceu_input_map_global_insert(int p,struct akfceu_input_map *map) {
 
 /* Find or create map, public.
  */
- 
+
 struct akfceu_input_map *akfceu_input_map_find(int vid,int pid) {
   int p=akfceu_input_map_global_search(vid,pid);
   if (p<0) return 0;
@@ -110,7 +110,7 @@ static int akfceu_input_map_consider_addition(struct akfceu_input_map *map,int p
 
 /* Add button to map.
  */
- 
+
 int akfceu_input_map_add_button(struct akfceu_input_map *map,int p,int srcbtnid,int srclo,int srchi,int dstbtnid) {
   if ((p=akfceu_input_map_consider_addition(map,p,srcbtnid))<0) return -1;
   struct akfceu_button_map *button=map->buttonv+p;
@@ -140,7 +140,7 @@ int akfceu_input_map_add_hat(struct akfceu_input_map *map,int p,int srcbtnid,int
 
 /* Process event.
  */
- 
+
 int akfceu_input_map_update(
   const struct akfceu_input_map *map,
   int srcbtnid,int srcvalue,
@@ -239,6 +239,6 @@ int akfceu_define_andys_devices() {
   if (akfceu_input_map_add_button(map,-1,11,1,1,JOY_START)<0) return -1;
   if (akfceu_input_map_add_button(map,-1,15,1,1,JOY_SELECT)<0) return -1;
   if (akfceu_input_map_add_button(map,-1,10,1,1,JOY_SELECT)<0) return -1;
-  
+ 
   return 0;
 }

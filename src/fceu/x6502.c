@@ -68,19 +68,19 @@ static INLINE void WrMemNorm(unsigned int A, uint8 V)
 #ifdef FCEUDEF_DEBUGGER
 X6502 XSave;     /* This is getting ugly. */
 //#define RdMemHook(A)  ( X.ReadHook?(_DB=X.ReadHook(&X,A)):(_DB=ARead[A](A)) )
-//#define WrMemHook(A,V)  { if(X.WriteHook) X.WriteHook(&X,A,V); else BWrite[A](A,V); }
+//#define WrMemHook(A,V)  { if (X.WriteHook) X.WriteHook(&X,A,V); else BWrite[A](A,V); }
 
 static INLINE uint8 RdMemHook(unsigned int A)
 {
- if(X.ReadHook)
+ if (X.ReadHook)
   return(_DB = X.ReadHook(&X,A) );
  else
   return(_DB=ARead[A](A));
 }
- 
+
 static INLINE void WrMemHook(unsigned int A, uint8 V)
 {
- if(X.WriteHook)
+ if (X.WriteHook)
   X.WriteHook(&X,A,V);
  else
   BWrite[A](A,V);
@@ -117,7 +117,7 @@ void FASTAPASS(2) X6502_DMW(uint32 A, uint8 V)
  uint8 VTMP=V;  \
  WrRAM(0x100+_S,VTMP);  \
  _S--;  \
-}       
+}      
 
 #define POP() RdRAM(0x100+(++_S))
 
@@ -130,7 +130,7 @@ static uint8 ZNTable[256];
 
 #define JR(cond);  \
 {    \
- if(cond)  \
+ if (cond)  \
  {  \
   uint32 tmp;  \
   int32 disp;  \
@@ -139,7 +139,7 @@ static uint8 ZNTable[256];
   ADDCYC(1);  \
   tmp=_PC;  \
   _PC+=disp;  \
-  if((tmp^_PC)&0x100)   \
+  if ((tmp^_PC)&0x100)   \
   ADDCYC(1);    \
  }  \
  else _PC++;  \
@@ -220,7 +220,7 @@ static uint8 ZNTable[256];
      _P|=l;  \
      X_ZNT(x);  \
     }
-     
+    
 /* Icky icky thing for some undocumented instructions.  Can easily be
    broken if names of local variables are changed.
 */
@@ -241,7 +241,7 @@ static uint8 ZNTable[256];
  GetAB(tmp);  \
  target=tmp;  \
  target+=i;  \
- if((target^tmp)&0x100)  \
+ if ((target^tmp)&0x100)  \
  {  \
   target&=0xFFFF;  \
   RdMem(target^0x100);  \
@@ -298,7 +298,7 @@ static uint8 ZNTable[256];
  rt|=RdRAM(tmp)<<8;  \
  target=rt;  \
  target+=_Y;  \
- if((target^rt)&0x100)  \
+ if ((target^rt)&0x100)  \
  {  \
   target&=0xFFFF;  \
   RdMem(target^0x100);  \
@@ -359,7 +359,7 @@ static uint8 ZNTable[256];
 #define ST_IY(r)  {unsigned int A; GetIYWR(A); WrMem(A,r); break; }
 
 static uint8 CycTable[256] =
-{                             
+{                            
 /*0x00*/ 7,6,2,8,3,3,5,5,3,2,2,2,4,4,6,6,
 /*0x10*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
 /*0x20*/ 6,6,2,8,3,3,5,5,4,2,2,2,4,4,6,6,
@@ -394,7 +394,7 @@ void TriggerNMI(void)
 }
 
 void TriggerNMI2(void)
-{ 
+{
  _IRQlow|=FCEU_IQNMI2;
 }
 
@@ -429,14 +429,14 @@ void X6502_Reset(void)
 {
  _IRQlow=FCEU_IQRESET;
 }
-  
+ 
 void X6502_Init(void)
 {
   int x;
 
   memset((void *)&X,0,sizeof(X));
-  for(x=0;x<256;x++)
-   if(!x) ZNTable[x]=Z_FLAG;
+  for (x=0;x<256;x++)
+   if (!x) ZNTable[x]=Z_FLAG;
    else if (x&0x80) ZNTable[x]=N_FLAG;
    else ZNTable[x]=0;
   #ifdef FCEUDEF_DEBUGGER
@@ -459,21 +459,21 @@ static void X6502_RunDebug(int32 cycles)
   #define RdMem RdMemHook
   #define WrMem WrMemHook
 
-        if(PAL)
+        if (PAL)
          cycles*=15;          // 15*4=60
         else
          cycles*=16;          // 16*4=64
- 
+
         _count+=cycles;
- 
-        while(_count>0)
+
+        while (_count>0)
         {
-         int32 temp;   
+         int32 temp;  
          uint8 b1;
 
-         if(_IRQlow)
-         { 
-          if(_IRQlow&FCEU_IQRESET)
+         if (_IRQlow)
+         {
+          if (_IRQlow&FCEU_IQRESET)
           {
            _PC=RdMem(0xFFFC);
            _PC|=RdMem(0xFFFD)<<8;
@@ -481,28 +481,28 @@ static void X6502_RunDebug(int32 cycles)
            _PI=_P=I_FLAG;
            _IRQlow&=~FCEU_IQRESET;
           }
-          else if(_IRQlow&FCEU_IQNMI2)
+          else if (_IRQlow&FCEU_IQNMI2)
           {
-           _IRQlow&=~FCEU_IQNMI2; 
+           _IRQlow&=~FCEU_IQNMI2;
            _IRQlow|=FCEU_IQNMI;
           }
-          else if(_IRQlow&FCEU_IQNMI)
+          else if (_IRQlow&FCEU_IQNMI)
           {
-           if(!_jammed)
+           if (!_jammed)
            {
             ADDCYC(7);
             PUSH(_PC>>8);
             PUSH(_PC);
             PUSH((_P&~B_FLAG)|(U_FLAG));
-            _P|=I_FLAG; 
-            _PC=RdMem(0xFFFA); 
+            _P|=I_FLAG;
+            _PC=RdMem(0xFFFA);
             _PC|=RdMem(0xFFFB)<<8;
             _IRQlow&=~FCEU_IQNMI;
            }
           }
-          else 
-          { 
-           if(!(_PI&I_FLAG) && !_jammed)
+          else
+          {
+           if (!(_PI&I_FLAG) && !_jammed)
            {
             ADDCYC(7);
             PUSH(_PC>>8);
@@ -514,7 +514,7 @@ static void X6502_RunDebug(int32 cycles)
            }
           }
           _IRQlow&=~(FCEU_IQTEMP);
-          if(_count<=0) 
+          if (_count<=0)
           {
            _PI=_P;
            return;
@@ -522,10 +522,10 @@ static void X6502_RunDebug(int32 cycles)
              /* major speed hit. */
          }
 
-         if(X.CPUHook) X.CPUHook(&X);
+         if (X.CPUHook) X.CPUHook(&X);
    /* Ok, now the real fun starts. */
    /* Do the pre-exec voodoo. */
-         if(X.ReadHook || X.WriteHook)
+         if (X.ReadHook || X.WriteHook)
    {
     uint32 tsave=timestamp;
           XSave=X;
@@ -534,10 +534,10 @@ static void X6502_RunDebug(int32 cycles)
     X.preexec=1;
           b1=RdMem(_PC);
           _PC++;
-          switch(b1)
-          {   
+          switch (b1)
+          {  
            #include "ops.h"
-          }  
+          } 
 
     timestamp=tsave;
 
@@ -557,15 +557,15 @@ static void X6502_RunDebug(int32 cycles)
 
          temp=_tcount;
          _tcount=0;
-         if(MapIRQHook) MapIRQHook(temp);
+         if (MapIRQHook) MapIRQHook(temp);
 
    FCEU_SoundCPUHook(temp);
 
          _PC++;
-         switch(b1)
+         switch (b1)
          {
           #include "ops.h"
-         } 
+         }
         }
   #undef RdRAM
   #undef WrRAM
@@ -596,22 +596,22 @@ void X6502_Run(int32 cycles)
   #undef _PC
   #define _PC pbackus
 
-  if(PAL)
+  if (PAL)
    cycles*=15;          // 15*4=60
   else
    cycles*=16;          // 16*4=64
 
   _count+=cycles;
-  
-  while(_count>0)
+ 
+  while (_count>0)
   {
    int32 temp;
    uint8 b1;
 
 //   XI.PC=pbackus;
-   if(_IRQlow)
+   if (_IRQlow)
    {
-    if(_IRQlow&FCEU_IQRESET)
+    if (_IRQlow&FCEU_IQRESET)
     {
      _PC=RdMem(0xFFFC);
      _PC|=RdMem(0xFFFD)<<8;
@@ -619,28 +619,28 @@ void X6502_Run(int32 cycles)
      _PI=_P=I_FLAG;
      _IRQlow&=~FCEU_IQRESET;
     }
-    else if(_IRQlow&FCEU_IQNMI2)
+    else if (_IRQlow&FCEU_IQNMI2)
      {
-     _IRQlow&=~FCEU_IQNMI2; 
+     _IRQlow&=~FCEU_IQNMI2;
      _IRQlow|=FCEU_IQNMI;
     }
-    else if(_IRQlow&FCEU_IQNMI)
+    else if (_IRQlow&FCEU_IQNMI)
     {
-     if(!_jammed)
+     if (!_jammed)
      {
       ADDCYC(7);
       PUSH(_PC>>8);
       PUSH(_PC);
       PUSH((_P&~B_FLAG)|(U_FLAG));
-      _P|=I_FLAG;    
-      _PC=RdMem(0xFFFA); 
+      _P|=I_FLAG;   
+      _PC=RdMem(0xFFFA);
       _PC|=RdMem(0xFFFB)<<8;
       _IRQlow&=~FCEU_IQNMI;
      }
     }
     else
-    { 
-     if(!(_PI&I_FLAG) && !_jammed)
+    {
+     if (!(_PI&I_FLAG) && !_jammed)
      {
       ADDCYC(7);
       PUSH(_PC>>8);
@@ -652,7 +652,7 @@ void X6502_Run(int32 cycles)
      }
     }
     _IRQlow&=~(FCEU_IQTEMP);
-    if(_count<=0) 
+    if (_count<=0)
     {
      _PI=_P;
      X.PC=pbackus;
@@ -668,15 +668,15 @@ void X6502_Run(int32 cycles)
 
    temp=_tcount;
    _tcount=0;
-   if(MapIRQHook) MapIRQHook(temp);
+   if (MapIRQHook) MapIRQHook(temp);
          FCEU_SoundCPUHook(temp);
    //printf("%04x\n",X.PC);
    X.PC=pbackus;
    _PC++;
-         switch(b1)
+         switch (b1)
          {
           #include "ops.h"
-         } 
+         }
   }
 
   #undef _PC
@@ -696,7 +696,7 @@ void X6502_Debug(void (*CPUHook)(X6502 *),
  X.WriteHook=WriteHook;
  X.CPUHook=CPUHook;
 
- if(!debugmode)
+ if (!debugmode)
   X6502_Run=X6502_RunNormal;
  else
   X6502_Run=X6502_RunDebug;

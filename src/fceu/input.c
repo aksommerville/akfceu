@@ -1,7 +1,7 @@
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
- *  Copyright (C) 1998 BERO 
+ *  Copyright (C) 1998 BERO
  *  Copyright (C) 2002 Xodnizel
  *
  * This program is free software; you can redistribute it and/or modify
@@ -82,13 +82,13 @@ static INPUTCFC *FCExp=0;
 static uint8 FP_FASTAPASS(1) ReadGPVS(int w)
 {
                 uint8 ret=0;
-  
-                if(joy_readbit[w]>=8)
+ 
+                if (joy_readbit[w]>=8)
                  ret=1;
                 else
                 {
                  ret = ((joy[w]>>(joy_readbit[w]))&1);
-                 if(!fceuindbg)
+                 if (!fceuindbg)
                   joy_readbit[w]++;
                 }
                 return ret;
@@ -98,20 +98,20 @@ static uint8 FP_FASTAPASS(1) ReadGP(int w)
 {
                 uint8 ret;
 
-                if(joy_readbit[w]>=8)
+                if (joy_readbit[w]>=8)
                  ret = ((joy[2+w]>>(joy_readbit[w]&7))&1);
                 else
                  ret = ((joy[w]>>(joy_readbit[w]))&1);
-                if(joy_readbit[w]>=16) ret=0;
-                if(FSDisable)
+                if (joy_readbit[w]>=16) ret=0;
+                if (FSDisable)
     {
-       if(joy_readbit[w]>=8) ret|=1;
+       if (joy_readbit[w]>=8) ret|=1;
     }
     else
     {
-                 if(joy_readbit[w]==19-w) ret|=1;
+                 if (joy_readbit[w]==19-w) ret|=1;
     }
-    if(!fceuindbg)
+    if (!fceuindbg)
      joy_readbit[w]++;
                 return ret;
 }
@@ -120,11 +120,11 @@ static DECLFR(JPRead)
 {
   uint8 ret=0;
 
-  if(JPorts[A&1]->Read)
+  if (JPorts[A&1]->Read)
    ret|=JPorts[A&1]->Read(A&1);
-  
-  if(FCExp)
-   if(FCExp->Read)
+ 
+  if (FCExp)
+   if (FCExp->Read)
     ret=FCExp->Read(A&1,ret);
 
   ret|=X.DB&0xC0;
@@ -133,28 +133,28 @@ static DECLFR(JPRead)
 
 static DECLFW(B4016)
 {
-  if(FCExp)
-   if(FCExp->Write)
+  if (FCExp)
+   if (FCExp->Write)
     FCExp->Write(V&7);
 
-  if(JPorts[0]->Write)
+  if (JPorts[0]->Write)
    JPorts[0]->Write(V&1);
-        if(JPorts[1]->Write)
+        if (JPorts[1]->Write)
          JPorts[1]->Write(V&1);
 
-        if((LastStrobe&1) && (!(V&1)))
+        if ((LastStrobe&1) && (!(V&1)))
         {
    /* This strobe code is just for convenience.  If it were
       with the code in input / *.c, it would more accurately represent
       what's really going on.  But who wants accuracy? ;)
       Seriously, though, this shouldn't be a problem.
    */
-   if(JPorts[0]->Strobe)
+   if (JPorts[0]->Strobe)
     JPorts[0]->Strobe(0);
-         if(JPorts[1]->Strobe)
+         if (JPorts[1]->Strobe)
           JPorts[1]->Strobe(1);
-   if(FCExp)
-    if(FCExp->Strobe)
+   if (FCExp)
+    if (FCExp->Strobe)
      FCExp->Strobe();
    }
          LastStrobe=V&0x1;
@@ -172,11 +172,11 @@ void FCEU_DrawInput(uint8 *buf)
 {
  int x;
 
- for(x=0;x<2;x++)
-  if(JPorts[x]->Draw)
+ for (x=0;x<2;x++)
+  if (JPorts[x]->Draw)
    JPorts[x]->Draw(x,buf,JPAttrib[x]);
- if(FCExp)
-  if(FCExp->Draw)
+ if (FCExp)
+  if (FCExp->Draw)
    FCExp->Draw(buf,JPAttribFC);
 }
 
@@ -184,12 +184,12 @@ void FCEU_UpdateInput(void)
 {
   int x;
 
-  for(x=0;x<2;x++)
+  for (x=0;x<2;x++)
   {
-   switch(JPType[x])
+   switch (JPType[x])
    {
     case SI_GAMEPAD:
-                if(!x)
+                if (!x)
                 {
                  joy[0]=*(uint32 *)InputDataPtr[0];
                  joy[2]=*(uint32 *)InputDataPtr[0] >> 16;
@@ -201,76 +201,76 @@ void FCEU_UpdateInput(void)
                 }
     break;
     default:
-    if(JPorts[x]->Update)
+    if (JPorts[x]->Update)
      JPorts[x]->Update(x,InputDataPtr[x],JPAttrib[x]);
     break;
    }
   }
-  if(FCExp)
-   if(FCExp->Update)
+  if (FCExp)
+   if (FCExp->Update)
     FCExp->Update(InputDataPtrFC,JPAttribFC);
 
-        if(FCEUGameInfo->type==GIT_VSUNI)
-   if(coinon) coinon--;
+        if (FCEUGameInfo->type==GIT_VSUNI)
+   if (coinon) coinon--;
 
-        if(FCEUnetplay) NetplayUpdate(joy);
+        if (FCEUnetplay) NetplayUpdate(joy);
   FCEUMOV_AddJoy(joy);
 
-        if(FCEUGameInfo->type==GIT_VSUNI)
+        if (FCEUGameInfo->type==GIT_VSUNI)
    FCEU_VSUniSwap(&joy[0],&joy[1]);
 }
 
 static DECLFR(VSUNIRead0)
-{ 
-        uint8 ret=0; 
-  
-        if(JPorts[0]->Read)   
-         ret|=(JPorts[0]->Read(0))&1;
- 
-        ret|=(vsdip&3)<<3;
-        if(coinon)
-         ret|=0x4;
-        return ret;
-}
- 
-static DECLFR(VSUNIRead1)
 {
         uint8 ret=0;
  
-        if(JPorts[1]->Read)
-         ret|=(JPorts[1]->Read(1))&1;
-        ret|=vsdip&0xFC;   
+        if (JPorts[0]->Read)  
+         ret|=(JPorts[0]->Read(0))&1;
+
+        ret|=(vsdip&3)<<3;
+        if (coinon)
+         ret|=0x4;
         return ret;
-} 
+}
+
+static DECLFR(VSUNIRead1)
+{
+        uint8 ret=0;
+
+        if (JPorts[1]->Read)
+         ret|=(JPorts[1]->Read(1))&1;
+        ret|=vsdip&0xFC;  
+        return ret;
+}
 
 static void SLHLHook(uint8 *bg, uint8 *spr, uint32 linets, int final)
 {
  int x;
 
- for(x=0;x<2;x++)
-  if(JPorts[x]->SLHook)
+ for (x=0;x<2;x++)
+  if (JPorts[x]->SLHook)
    JPorts[x]->SLHook(x,bg,spr,linets,final);
- if(FCExp) 
-  if(FCExp->SLHook)
+ if (FCExp)
+  if (FCExp->SLHook)
    FCExp->SLHook(bg,spr,linets,final);
 }
 
 static void CheckSLHook(void)
 {
         InputScanlineHook=0;
-        if(JPorts[0]->SLHook || JPorts[1]->SLHook)
+        if (JPorts[0]->SLHook || JPorts[1]->SLHook)
          InputScanlineHook=SLHLHook;
-        if(FCExp)
-         if(FCExp->SLHook)
+        if (FCExp)
+         if (FCExp->SLHook)
           InputScanlineHook=SLHLHook;
 }
 
 static void FASTAPASS(1) SetInputStuff(int x)
 {
-    switch(JPType[x])
+    switch (JPType[x])
    {
     case SI_GAMEPAD:
-           if(FCEUGameInfo->type==GIT_VSUNI)
+           if (FCEUGameInfo->type==GIT_VSUNI)
       JPorts[x] = &GPCVS;
      else
       JPorts[x]=&GPC;
@@ -296,7 +296,7 @@ static uint8 FP_FASTAPASS(2) ReadFami4(int w, uint8 ret)
  ret&=1;
 
  ret |= ((joy[2+w]>>(F4ReadBit[w]))&1)<<1;
- if(F4ReadBit[w]>=8) ret|=2;
+ if (F4ReadBit[w]>=8) ret|=2;
  else F4ReadBit[w]++;
 
  return(ret);
@@ -305,7 +305,7 @@ static uint8 FP_FASTAPASS(2) ReadFami4(int w, uint8 ret)
 static INPUTCFC FAMI4C={ReadFami4,0,StrobeFami4,0,0,0};
 static void SetInputStuffFC(void)
 {
-        switch(JPTypeFC)
+        switch (JPTypeFC)
         {
          case SIFC_NONE:FCExp=0;break;
          case SIFC_ARKANOID:FCExp=FCEU_InitArkanoidFC();break;
@@ -325,16 +325,16 @@ static void SetInputStuffFC(void)
 }
 
 void InitializeInput(void)
-{ 
+{
   memset(joy_readbit,0,sizeof(joy_readbit));
         memset(joy,0,sizeof(joy));
   LastStrobe = 0;
 
-        if(FCEUGameInfo->type==GIT_VSUNI)
+        if (FCEUGameInfo->type==GIT_VSUNI)
         {
          SetReadHandler(0x4016,0x4016,VSUNIRead0);
          SetReadHandler(0x4017,0x4017,VSUNIRead1);
-        } 
+        }
         else
          SetReadHandler(0x4016,0x4017,JPRead);
 
@@ -376,7 +376,7 @@ SFORMAT FCEUCTRL_STATEINFO[]={
 
 void FCEU_DoSimpleCommand(int cmd)
 {
- switch(cmd)
+ switch (cmd)
  {
    case FCEUNPCMD_FDSINSERT: FCEU_FDSInsert(-1);break;
    case FCEUNPCMD_FDSSELECT: FCEU_FDSSelect();break;
@@ -390,11 +390,11 @@ void FCEU_DoSimpleCommand(int cmd)
 
 void FCEU_QSimpleCommand(int cmd)
 {
- if(FCEUnetplay)
+ if (FCEUnetplay)
   FCEUNET_SendCommand(cmd, 0);
  else
  {
-  if(!FCEUMOV_IsPlaying())
+  if (!FCEUMOV_IsPlaying())
    FCEU_DoSimpleCommand(cmd);
   else
    FCEUMOV_AddCommand(cmd);
@@ -402,12 +402,12 @@ void FCEU_QSimpleCommand(int cmd)
 }
 
 void FCEUI_FDSSelect(void)
-{ 
+{
  FCEU_QSimpleCommand(FCEUNPCMD_FDSSELECT);
-} 
+}
 
 int FCEUI_FDSInsert(int oride)
-{ 
+{
  FCEU_QSimpleCommand(FCEUNPCMD_FDSINSERT);
  return(1);
 }
@@ -433,7 +433,7 @@ void FCEUI_ResetNES(void)
 {
   FCEU_QSimpleCommand(FCEUNPCMD_RESET);
 }
-  
+ 
 void FCEUI_PowerNES(void)
 {
         FCEU_QSimpleCommand(FCEUNPCMD_POWER);

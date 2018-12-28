@@ -9,7 +9,7 @@
 #define GIV_NTSC  0  /* NTSC emulation. */
 #define GIV_PAL    1  /* PAL emulation. */
 #define GIV_USER  2  /* What was set by FCEUI_SetVidSys(). */
-  
+ 
 typedef struct {
   uint8 *name;  /* Game name, UTF8 encoding */
 

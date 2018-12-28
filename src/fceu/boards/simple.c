@@ -124,7 +124,7 @@ static void MHROMRestore(int version)
 }
 
 void MHROM_Init(CartInfo *info)
-{ 
+{
  info->Power=MHROMReset;
  AddExState(&latche, 1, 0,"LATC");
  PRGmask32[0]&=1;
@@ -182,7 +182,7 @@ static void GNROMStateRestore(int version)
 static void GNROMReset(void)
 {
  latche=0;
- GNROMSync(); 
+ GNROMSync();
  SetWriteHandler(0x8000,0xffff,GNROMWrite);
  SetReadHandler(0x8000,0xFFFF,CartBR);
 }

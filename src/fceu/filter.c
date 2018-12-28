@@ -27,7 +27,7 @@ void SexyFilter2(int32 *in, int32 count)
  #endif
  static int64 acc=0;
 
- while(count--)
+ while (count--)
  {
   int64 dropcurrent;
   dropcurrent=((*in<<16)-acc)>>3;
@@ -50,30 +50,30 @@ void SexyFilter(int32 *in, int32 *out, int32 count)
  mul2=(24<<16)/FSettings.SndRate;
  vmul=(FSettings.SoundVolume<<16)*3/4/100;
 
- if(FSettings.soundq) vmul/=4;
+ if (FSettings.soundq) vmul/=4;
  else vmul*=2;      /* TODO:  Increase volume in low quality sound rendering code itself */
 
- while(count)
- {    
+ while (count)
+ {   
   int64 ino=(int64)*in*vmul;
   acc1+=((ino-acc1)*mul1)>>16;
   acc2+=((ino-acc1-acc2)*mul2)>>16;
-  *in=0;  
+  *in=0; 
   {
    int32 t=(acc1-ino+acc2)>>16;
    //if(t>32767 || t<-32768) printf("Flow: %d\n",t);
-   if(t>32767) t=32767;
-   if(t<-32768) t=-32768;   
+   if (t>32767) t=32767;
+   if (t<-32768) t=-32768;  
    *out=t;
-  }  
-  in++;  
-  out++;  
-  count--; 
+  } 
+  in++; 
+  out++; 
+  count--;
  }
 }
 
 /* Returns number of samples written to out. */
-/* leftover is set to the number of samples that need to be copied 
+/* leftover is set to the number of samples that need to be copied
    from the end of in to the beginning of in.
 */
 
@@ -91,20 +91,20 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
   int32 *outsave=out;
   int32 count=0;
 
-//  for(x=0;x<inlen;x++)
+//  for (x=0;x<inlen;x++)
 //  {
-//   if(in[x]>mva){ mva=in[x]; printf("%ld\n",in[x]);}
+//   if (in[x]>mva){ mva=in[x]; printf("%ld\n",in[x]);}
 //  }
         max=(inlen-1)<<16;
 
-  if(FSettings.soundq==2)
-         for(x=mrindex;x<max;x+=mrratio)
+  if (FSettings.soundq==2)
+         for (x=mrindex;x<max;x+=mrratio)
          {
           int32 acc=0,acc2=0;
           unsigned int c;
           int32 *S,*D;
-         
-          for(c=SQ2NCOEFFS,S=&in[(x>>16)-SQ2NCOEFFS],D=sq2coeffs;c;c--,D++)
+        
+          for (c=SQ2NCOEFFS,S=&in[(x>>16)-SQ2NCOEFFS],D=sq2coeffs;c;c--,D++)
           {
            acc+=(S[c]**D)>>6;
            acc2+=(S[1+c]**D)>>6;
@@ -112,23 +112,23 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 
           acc=((int64)acc*(65536-(x&65535))+(int64)acc2*(x&65535))>>(16+11);
           *out=acc;
-          out++;   
-          count++; 
+          out++;  
+          count++;
          }
   else
-         for(x=mrindex;x<max;x+=mrratio)
+         for (x=mrindex;x<max;x+=mrratio)
          {
           int32 acc=0,acc2=0;
           unsigned int c;
           int32 *S,*D;
- 
-          for(c=NCOEFFS,S=&in[(x>>16)-NCOEFFS],D=coeffs;c;c--,D++)
+
+          for (c=NCOEFFS,S=&in[(x>>16)-NCOEFFS],D=coeffs;c;c--,D++)
      {
       acc+=(S[c]**D)>>6;
       acc2+=(S[1+c]**D)>>6;
      }
 
-          acc=((int64)acc*(65536-(x&65535))+(int64)acc2*(x&65535))>>(16+11);  
+          acc=((int64)acc*(65536-(x&65535))+(int64)acc2*(x&65535))>>(16+11); 
           *out=acc;
           out++;
           count++;
@@ -136,7 +136,7 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
 
         mrindex=x-max;
 
-  if(FSettings.soundq==2)
+  if (FSettings.soundq==2)
   {
          mrindex+=SQ2NCOEFFS*65536;
          *leftover=SQ2NCOEFFS+1;
@@ -147,11 +147,11 @@ int32 NeoFilterSound(int32 *in, int32 *out, uint32 inlen, int32 *leftover)
          *leftover=NCOEFFS+1;
   }
 
-  if(GameExpSound.NeoFill)
+  if (GameExpSound.NeoFill)
    GameExpSound.NeoFill(outsave,count);
 
   SexyFilter(outsave,outsave,count);
-  if(FSettings.lowpass)
+  if (FSettings.lowpass)
    SexyFilter2(outsave,count);
   return(count);
 }
@@ -167,7 +167,7 @@ void MakeFilters(int32 rate)
  int32 x;
  uint32 nco;
 
- if(FSettings.soundq==2)
+ if (FSettings.soundq==2)
   nco=SQ2NCOEFFS;
  else
   nco=NCOEFFS;
@@ -175,16 +175,16 @@ void MakeFilters(int32 rate)
  mrindex=(nco+1)<<16;
  mrratio=(PAL?(int64)(PAL_CPU*65536):(int64)(NTSC_CPU*65536))/rate;
 
- if(FSettings.soundq==2)
+ if (FSettings.soundq==2)
   tmp=sq2tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
  else
   tmp=tabs[(PAL?1:0)|(rate==48000?2:0)|(rate==96000?4:0)];
 
- if(FSettings.soundq==2)
-  for(x=0;x<SQ2NCOEFFS>>1;x++)
+ if (FSettings.soundq==2)
+  for (x=0;x<SQ2NCOEFFS>>1;x++)
    sq2coeffs[x]=sq2coeffs[SQ2NCOEFFS-1-x]=tmp[x];
  else
-  for(x=0;x<NCOEFFS>>1;x++)
+  for (x=0;x<NCOEFFS>>1;x++)
    coeffs[x]=coeffs[NCOEFFS-1-x]=tmp[x];
 
  #ifdef MOO
@@ -192,7 +192,7 @@ void MakeFilters(int32 rate)
  {
   static int64 acc=0;
   int x;
-  for(x=0;x<SQ2NCOEFFS;x++)
+  for (x=0;x<SQ2NCOEFFS;x++)
    acc+=(int64)32767*sq2coeffs[x];
   printf("Foo: %lld\n",acc);
  }

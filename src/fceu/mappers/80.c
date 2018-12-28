@@ -28,14 +28,14 @@ static void FP_FASTAPASS(1) Fudou_PPU(uint32 A)
 {
  static int last=-1;
  static uint8 z;
-  
- if(A>=0x2000) return;
+ 
+ if (A>=0x2000) return;
 
  A>>=10;
  lastA=A;
 
  z=CCache[A];
- if(z!=last)
+ if (z!=last)
  {
   onemir(z);
   last=z;
@@ -44,13 +44,13 @@ static void FP_FASTAPASS(1) Fudou_PPU(uint32 A)
 
 static void mira()
 {
- if(isfu)
+ if (isfu)
  {
   int x;
   CCache[0]=CCache[1]=mapbyte2[0]>>7;
   CCache[2]=CCache[3]=mapbyte2[1]>>7;
 
-  for(x=0;x<4;x++)
+  for (x=0;x<4;x++)
    CCache[4+x]=mapbyte2[2+x]>>7;
 
   onemir(CCache[lastA]);
@@ -61,7 +61,7 @@ static void mira()
 
 static DECLFW(Mapper80_write)
 {
- switch(A)
+ switch (A)
  {
   case 0x7ef0: mapbyte2[0]=V;VROM_BANK2(0x0000,(V>>1)&0x3F);mira();break;
   case 0x7ef1: mapbyte2[1]=V;VROM_BANK2(0x0800,(V>>1)&0x3f);mira();break;

@@ -30,16 +30,16 @@ DECLFW(Mapper21_write)
 {
   A|=((A>>5)&0xF);
 
-  if((A&0xF000)==0xA000)
+  if ((A&0xF000)==0xA000)
     ROM_BANK8(0xA000,V);
-  else if((A&0xF000)==0x8000)
+  else if ((A&0xF000)==0x8000)
   {
-         if(K4sel&2)
+         if (K4sel&2)
           ROM_BANK8(0xC000,V);
          else
           ROM_BANK8(0x8000,V);
    }
-  else if(A>=0xb000 && A<=0xefff)
+  else if (A>=0xb000 && A<=0xefff)
   {
     A&=0xF006;
           {
@@ -49,12 +49,12 @@ DECLFW(Mapper21_write)
            K4buf[x]|=(V&0xF)<<((A&2)<<1);
            VROM_BANK1(x<<10,K4buf[x]);
           }
- 
+
   }
-  else switch(A&0xF006)
+  else switch (A&0xF006)
         {
    case 0x9000:
-               switch(V&0x3)
+               switch (V&0x3)
                {
                 case 0:MIRROR_SET(0);break;
                 case 1:MIRROR_SET(1);break;
@@ -86,15 +86,15 @@ static void FP_FASTAPASS(1) KonamiIRQHook(int a)
 {
   #define LCYCS ((227*2)+1)
   //#define LCYCS 341
-  if(IRQa)
+  if (IRQa)
   {
 //    acount+=a*3;
     acount+=a*4;
-    if(acount>=LCYCS)
+    if (acount>=LCYCS)
     {
      doagainbub:acount-=LCYCS;IRQCount++;
-     if(IRQCount&0x100) {X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;}
-     if(acount>=LCYCS) goto doagainbub;
+     if (IRQCount&0x100) {X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;}
+     if (acount>=LCYCS) goto doagainbub;
     }
  }
 }

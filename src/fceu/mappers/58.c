@@ -23,7 +23,7 @@
 static DECLFW(M58Write)
 {
  //printf("$%04x:$%02x\n",A,V);
- if(A&0x40)
+ if (A&0x40)
  {
   ROM_BANK16(0x8000,(A&0x07));
   ROM_BANK16(0xc000,(A&0x07));

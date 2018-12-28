@@ -37,7 +37,7 @@ void mn_macwm_quit() {
 
 /* Abort.
  */
- 
+
 void mn_macwm_abort(const char *fmt,...) {
   if (fmt&&fmt[0]) {
     va_list vargs;
@@ -108,7 +108,7 @@ int mn_macwm_swap() {
  * odds are very strong that they will release that key during the transition.
  * We record every key currently held, and forcibly release them after a fullscreen transition.
  */
- 
+
 int mn_macwm_record_key_down(int key) {
   int p=-1;
   int i=MN_MACWM_KEYS_DOWN_LIMIT; while (i-->0) {

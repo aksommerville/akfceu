@@ -24,7 +24,7 @@
 
 DECLFW(Mapper240_write)
 {
- if(A<0x8000)
+ if (A<0x8000)
  {
   ROM_BANK32(V>>4);
   VROM_BANK8(V&0xF);

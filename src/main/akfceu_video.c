@@ -22,11 +22,11 @@ static struct {
 
 /* Initialize.
  */
- 
+
 int akfceu_video_init() {
   if (akfceu_video.init) return -1;
   memset(&akfceu_video,0,sizeof(akfceu_video));
-  
+ 
   akfceu_video.init=1;
   akfceu_video.fuzz_tolerance=0.95;
   akfceu_video.aspect_correction=1.10;
@@ -38,13 +38,13 @@ int akfceu_video_init() {
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); // TODO Let user select LINEAR or NEAREST
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-  
+ 
   return 0;
 }
 
 /* Quit.
  */
- 
+
 void akfceu_video_quit() {
   if (akfceu_video.inrgba) free(akfceu_video.inrgba);
   glDeleteTextures(1,&akfceu_video.texid);
@@ -108,17 +108,17 @@ static void akfceu_video_recalculate_output_area() {
 
 /* Set output size.
  */
- 
+
 int akfceu_video_set_output_size(int w,int h) {
   if (!akfceu_video.init) return -1;
   if ((w<1)||(h<1)) return -1;
   if ((w==akfceu_video.outw)&&(h==akfceu_video.outh)) return 0;
-  
+ 
   akfceu_video.outw=w;
   akfceu_video.outh=h;
 
   akfceu_video_recalculate_output_area();
-  
+ 
   return 0;
 }
 
@@ -134,12 +134,12 @@ int akfceu_video_set_input_size(int w,int h) {
   if (!nv) return -1;
   if (akfceu_video.inrgba) free(akfceu_video.inrgba);
   akfceu_video.inrgba=nv;
-  
+ 
   akfceu_video.inw=w;
   akfceu_video.inh=h;
 
   akfceu_video_recalculate_output_area();
-  
+ 
   return 0;
 }
 
@@ -194,6 +194,6 @@ int akfceu_video_render(const void *framebuffer,const void *palette) {
     glTexCoord2f(1.0f,1.0f);
     glVertex2i(akfceu_video.dstx+akfceu_video.dstw,akfceu_video.dsty+akfceu_video.dsth);
   glEnd();
-  
+ 
   return 0;
 }

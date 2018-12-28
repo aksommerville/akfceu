@@ -23,7 +23,7 @@
 
 static DECLFW(Mapper40_write)
 {
- switch(A&0xe000)
+ switch (A&0xe000)
  {
   case 0x8000:IRQa=0;IRQCount=0;X6502_IRQEnd(FCEU_IQEXT);break;
   case 0xa000:IRQa=1;break;
@@ -33,9 +33,9 @@ static DECLFW(Mapper40_write)
 
 static void FP_FASTAPASS(1) Mapper40IRQ(int a)
 {
- if(IRQa)
+ if (IRQa)
  {
-        if(IRQCount<4096) 
+        if (IRQCount<4096)
    IRQCount+=a;
   else
         {

@@ -33,31 +33,31 @@ static int dwave=0;
 void DoVRC7Sound(void)
 {
  int32 z,a;
- 
- if(FSettings.soundq>=1) return;
+
+ if (FSettings.soundq>=1) return;
  z=((SOUNDTS<<16)/soundtsinc)>>4;
  a=z-dwave;
-        
+       
  moocow(VRC7Sound, &Wave[dwave], a, 1);
-      
+     
  dwave+=a;
 }
 
 void UpdateOPLNEO(int32 *Wave, int Count)
-{ 
+{
  moocow(VRC7Sound, Wave, Count, 4);
-}  
+} 
 
-void UpdateOPL(int Count)  
+void UpdateOPL(int Count) 
 {
  int32 z,a;
- 
+
   z=((SOUNDTS<<16)/soundtsinc)>>4;
  a=z-dwave;
-        
- if(VRC7Sound && a)
+       
+ if (VRC7Sound && a)
   moocow(VRC7Sound, &Wave[dwave], a, 1);
-         
+        
  dwave=0;
 }
 
@@ -71,7 +71,7 @@ DECLFW(Mapper85_write)
 {
   A|=(A&8)<<1;
 
-  if(A>=0xa000 && A<=0xDFFF)
+  if (A>=0xa000 && A<=0xDFFF)
   {
   // printf("$%04x, $%04x\n",X.PC,A);
    A&=0xF010;
@@ -81,16 +81,16 @@ DECLFW(Mapper85_write)
     setchr1(x<<10,V);
    }
   }
-  else if(A==0x9030)
+  else if (A==0x9030)
   {
-   if(FSettings.SndRate)
+   if (FSettings.SndRate)
    {
     OPLL_writeReg(VRC7Sound, indox, V);
           GameExpSound.Fill=UpdateOPL;
     GameExpSound.NeoFill=UpdateOPLNEO;
    }
   }
-  else switch(A&0xF010)
+  else switch (A&0xF010)
         {
          case 0x8000:mapbyte2[0]=V;setprg8(0x8000,V);break;
          case 0x8010:mapbyte2[1]=V;setprg8(0xa000,V);break;
@@ -102,7 +102,7 @@ DECLFW(Mapper85_write)
                      break;
          case 0xF000:IRQa=V&2;
                      vrctemp=V&1;
-                     if(V&2) {IRQCount=IRQLatch;}
+                     if (V&2) {IRQCount=IRQLatch;}
          acount=0;
          X6502_IRQEnd(FCEU_IQEXT);
                      break;
@@ -117,16 +117,16 @@ static void FP_FASTAPASS(1) KonamiIRQHook(int a)
 {
   #define ACBOO 341
 //  #define ACBOO ((227*2)+1)
-  if(IRQa)
+  if (IRQa)
    {
     acount+=a*3;
-    
-    if(acount>=ACBOO)
+   
+    if (acount>=ACBOO)
     {
      doagainbub:acount-=ACBOO;
      IRQCount++;
-     if(IRQCount&0x100) {X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;}
-     if(acount>=ACBOO) goto doagainbub;
+     if (IRQCount&0x100) {X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;}
+     if (acount>=ACBOO) goto doagainbub;
     }
  }
 }
@@ -135,18 +135,18 @@ void Mapper85_StateRestore(int version)
 {
  int x;
 
- if(version<7200)
+ if (version<7200)
  {
-  for(x=0;x<8;x++)
+  for (x=0;x<8;x++)
    mapbyte3[x]=CHRBankList[x];
-  for(x=0;x<3;x++)
+  for (x=0;x<3;x++)
    mapbyte2[x]=PRGBankList[x];
   mapbyte2[3]=(Mirroring<0x10)?Mirroring:Mirroring-0xE;
  }
 
- for(x=0;x<8;x++)
+ for (x=0;x<8;x++)
   setchr1(x*0x400,mapbyte3[x]);
- for(x=0;x<3;x++)
+ for (x=0;x<3;x++)
   setprg8(0x8000+x*8192,mapbyte2[x]);
  DaMirror(mapbyte2[3]);
  //LoadOPL();
@@ -154,13 +154,13 @@ void Mapper85_StateRestore(int version)
 
 static void M85SC(void)
 {
- if(VRC7Sound)
+ if (VRC7Sound)
   OPLL_set_rate(VRC7Sound, FSettings.SndRate);
 }
 
 static void M85SKill(void)
 {
- if(VRC7Sound)
+ if (VRC7Sound)
   OPLL_delete(VRC7Sound);
  VRC7Sound=NULL;
 }
@@ -169,7 +169,7 @@ static void VRC7SI(void)
 {
   GameExpSound.RChange=M85SC;
   GameExpSound.Kill=M85SKill;
- 
+
   VRC7Sound=OPLL_new(3579545, FSettings.SndRate?FSettings.SndRate:44100);
   OPLL_reset(VRC7Sound);
   OPLL_reset(VRC7Sound);
@@ -187,7 +187,7 @@ void Mapper85_init(void)
   MapIRQHook=KonamiIRQHook;
   SetWriteHandler(0x8000,0xffff,Mapper85_write);
   GameStateRestore=Mapper85_StateRestore;
-  if(!VROM_size)
+  if (!VROM_size)
    SetupCartCHRMapping(0, CHRRAM, 8192, 1);
   //AddExState(VRC7Instrument, 16, 0, "VC7I");
   //AddExState(VRC7Chan, sizeof(VRC7Chan), 0, "V7CH");

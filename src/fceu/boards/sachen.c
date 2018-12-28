@@ -36,11 +36,11 @@ static DECLFW(S74LS374NWrite)
 {
  //printf("$%04x:$%02x\n",A,V);
  A&=0x4101;
- if(A==0x4100)
+ if (A==0x4100)
   cmd=V&7;
- else 
+ else
  {
-  switch(cmd)
+  switch (cmd)
   {
    case 0:latch[0]=0;latch[1]=3;break;
    case 4:latch[1]&=3;latch[1]|=(V<<2);break;
@@ -81,20 +81,20 @@ static void S8259Synco(void)
 
  setprg32(0x8000,latch[5]&7);
 
- if(!UNIFchrrama)  // No CHR RAM?  Then BS'ing is ok.
+ if (!UNIFchrrama)  // No CHR RAM?  Then BS'ing is ok.
  {
-  if(!type)
+  if (!type)
   {
-   for(x=0;x<4;x++)
+   for (x=0;x<4;x++)
     setchr2(0x800*x,(x&1)|((latch[x]&7)<<1)|((latch[4]&7)<<4));
   }
   else
   {
-   for(x=0;x<4;x++)
+   for (x=0;x<4;x++)
     setchr2(0x800*x,(latch[x]&0x7)|((latch[4]&7)<<3));
   }
  }
- switch((latch[7]>>1)&3)
+ switch ((latch[7]>>1)&3)
  {
   case 0:setmirrorw(0,0,0,1);break;
   case 1:setmirror(MI_H);break;
@@ -106,8 +106,8 @@ static void S8259Synco(void)
 static DECLFW(S8259Write)
 {
  A&=0x4101;
- if(A==0x4100) cmd=V;
- else 
+ if (A==0x4100) cmd=V;
+ else
  {
   latch[cmd&7]=V;
   S8259Synco();
@@ -119,8 +119,8 @@ static void S8259Reset(void)
  int x;
  cmd=0;
 
- for(x=0;x<8;x++) latch[x]=0;
- if(UNIFchrrama) setchr8(0);
+ for (x=0;x<8;x++) latch[x]=0;
+ if (UNIFchrrama) setchr8(0);
 
  S8259Synco();
  SetReadHandler(0x8000,0xFFFF,CartBR);
@@ -160,13 +160,13 @@ static void(*WSync)(void);
 
 static void SA0161MSynco()
 {
- setprg32(0x8000,(latch[0]>>3)&1); 
+ setprg32(0x8000,(latch[0]>>3)&1);
  setchr8(latch[0]&7);
 }
 
 static DECLFW(SAWrite)
 {
- if(A&0x100)
+ if (A&0x100)
  {
   latch[0]=V;
   WSync();
@@ -292,7 +292,7 @@ static void TCU01Synco()
 
 static DECLFW(TCWrite)
 {
- if((A&0x103)==0x102)
+ if ((A&0x103)==0x102)
   latch[0]=V;
  TCU01Synco();
 }

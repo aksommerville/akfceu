@@ -27,7 +27,7 @@ static uint8 regs[8];
 
 static void DoPRG(void)
 {
- if(cmd&0x40)
+ if (cmd&0x40)
  {
   setprg8(0xC000,regs[4]);
   setprg8(0xA000,regs[5]);
@@ -66,13 +66,13 @@ static DECLFW(H2288Write)
  //printf("$%04x:$%02x, $%04x\n",A,V,X.PC);
  //FCEUI_DumpMem("dmp",0xc000,0xffff);
 
- switch(A&0xE001)
+ switch (A&0xE001)
  {
   case 0xa000:setmirror((V&1)^1);break;
   case 0x8000:
         cmd=V;DoPRG();DoCHR();break;
   case 0x8001:regs[cmd&7]=V;
-        if((cmd&7)==4 || (cmd&7)==5)
+        if ((cmd&7)==4 || (cmd&7)==5)
          DoPRG();
         else
          DoCHR();
@@ -99,7 +99,7 @@ static void H2288Reset(void)
   SetReadHandler(0x8000,0xFFFF,CartBR);
   SetWriteHandler(0x5000,0x5FFF,PWrite);
   SetWriteHandler(0x8000,0xFFFF,H2288Write);
-  for(x=0;x<8;x++) regs[x]=0;
+  for (x=0;x<8;x++) regs[x]=0;
   regs[4]=0;
   regs[5]=1;
   cmd=0;

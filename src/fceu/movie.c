@@ -21,7 +21,7 @@ static int nextd;
 
 
 static int CurrentMovie = 0;
-static int MovieShow = 0;  
+static int MovieShow = 0; 
 
 static int MovieStatus[10];
 
@@ -29,7 +29,7 @@ static void DoEncode(int joy, int button, int);
 
 int FCEUMOV_IsPlaying(void)
 {
- if(current < 0) return(1);
+ if (current < 0) return(1);
  else return(0);
 }
 
@@ -38,10 +38,10 @@ void FCEUI_SaveMovie(char *fname)
  FILE *fp;
  char *fn;
 
- if(current < 0)  /* Can't interrupt playback.*/
+ if (current < 0)  /* Can't interrupt playback.*/
   return;
 
- if(current > 0)  /* Stop saving. */
+ if (current > 0)  /* Stop saving. */
  {
   DoEncode(0,0,1);  /* Write a dummy timestamp value so that the movie will keep
          "playing" after user input has stopped.
@@ -50,12 +50,12 @@ void FCEUI_SaveMovie(char *fname)
   MovieStatus[current - 1] = 1;
   current=0;
   FCEU_DispMessage("Movie recording stopped.");
-  return;  
+  return; 
  }
 
  current=CurrentMovie;
 
- if(fname)
+ if (fname)
   fp = FCEUD_UTF8fopen(fname, "wb");
  else
  {
@@ -63,7 +63,7 @@ void FCEUI_SaveMovie(char *fname)
   free(fn);
  }
 
- if(!fp) return;
+ if (!fp) return;
 
  FCEUSS_SaveFP(fp);
  fseek(fp, 0, SEEK_END);
@@ -83,7 +83,7 @@ static void StopPlayback(void)
 
 void FCEUMOV_Stop(void)
 {
- if(current < 0) StopPlayback();
+ if (current < 0) StopPlayback();
 }
 
 void FCEUI_LoadMovie(char *fname)
@@ -91,25 +91,25 @@ void FCEUI_LoadMovie(char *fname)
  FILE *fp;
  char *fn;
 
- if(current > 0)        /* Can't interrupt recording.*/
+ if (current > 0)        /* Can't interrupt recording.*/
   return;
 
- if(current < 0)        /* Stop playback. */
+ if (current < 0)        /* Stop playback. */
  {
   StopPlayback();
   return;
  }
 
- if(fname)
+ if (fname)
   fp = FCEUD_UTF8fopen(fname, "rb");
  else
  {
   fp=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_MOVIE,CurrentMovie,0),"rb");
   free(fn);
  }
- if(!fp) return;
+ if (!fp) return;
 
- if(!FCEUSS_LoadFP(fp)) return;
+ if (!FCEUSS_LoadFP(fp)) return;
 
  current = CurrentMovie;
  slots[current] = fp;
@@ -130,21 +130,21 @@ static void DoEncode(int joy, int button, int dummy)
 
  d = 0;
 
- if(framets >= 65536)
+ if (framets >= 65536)
   d = 3 << 5;
- else if(framets >= 256)
+ else if (framets >= 256)
   d = 2 << 5;
- else if(framets > 0)
+ else if (framets > 0)
   d = 1 << 5;
 
- if(dummy) d|=0x80;
+ if (dummy) d|=0x80;
 
  d |= joy << 3;
  d |= button;
 
  fputc(d, slots[current - 1]);
  //printf("Wr: %02x, %d\n",d,slots[current-1]);
- while(framets)
+ while (framets)
  {
   fputc(framets & 0xff, slots[current - 1]);
   //printf("Wrts: %02x\n",framets & 0xff);
@@ -156,18 +156,18 @@ void FCEUMOV_AddJoy(uint8 *js)
 {
  int x,y;
 
- if(!current) return;  /* Not playback nor recording. */
+ if (!current) return;  /* Not playback nor recording. */
 
- if(current < 0)  /* Playback */
+ if (current < 0)  /* Playback */
  {
-  while(nextts == framets)
+  while (nextts == framets)
   {
    int tmp,ti;
    uint8 d;
 
-   if(nextd != -1)
+   if (nextd != -1)
    {
-    if(nextd&0x80)
+    if (nextd&0x80)
     {
   //puts("Egads");
      FCEU_DoSimpleCommand(nextd&0x1F);
@@ -180,7 +180,7 @@ void FCEUMOV_AddJoy(uint8 *js)
    tmp = fgetc(slots[-1 - current]);
    d = tmp;
 
-   if(tmp < 0)
+   if (tmp < 0)
    {
     StopPlayback();
     return;
@@ -193,14 +193,14 @@ void FCEUMOV_AddJoy(uint8 *js)
 
    {
     int tmpfix = tmp;
-    while(tmp--) { nextts |= fgetc(slots[-1 - current]) << (ti * 8); ti++; }
+    while (tmp--) { nextts |= fgetc(slots[-1 - current]) << (ti * 8); ti++; }
 
     // This fixes a bug in movies recorded before version 0.98.11
     // It's probably not necessary, but it may keep away CRAZY PEOPLE who recorded
     // movies on <= 0.98.10 and don't work on playback.
-    if(tmpfix == 1 && !nextts) 
+    if (tmpfix == 1 && !nextts)
     {nextts |= fgetc(slots[-1 - current])<<8; }
-    else if(tmpfix == 2 && !nextts) {nextts |= fgetc(slots[-1 - current])<<16; }
+    else if (tmpfix == 2 && !nextts) {nextts |= fgetc(slots[-1 - current])<<16; }
 
     framets = 0;
     nextd = d;
@@ -211,16 +211,16 @@ void FCEUMOV_AddJoy(uint8 *js)
  }
  else      /* Recording */
  {
-  for(x=0;x<4;x++)
+  for (x=0;x<4;x++)
   {
-   if(js[x] != joop[x])
+   if (js[x] != joop[x])
    {
-    for(y=0;y<8;y++)
-     if((js[x] ^ joop[x]) & (1 << y))
+    for (y=0;y<8;y++)
+     if ((js[x] ^ joop[x]) & (1 << y))
       DoEncode(x, y, 0);
     joop[x] = js[x];
    }
-   else if(framets == ((1<<24)-1)) DoEncode(0,0,1);  /* Overflow will happen, so do dummy update. */
+   else if (framets == ((1<<24)-1)) DoEncode(0,0,1);  /* Overflow will happen, so do dummy update. */
   }
  }
  framets++;
@@ -228,7 +228,7 @@ void FCEUMOV_AddJoy(uint8 *js)
 
 void FCEUMOV_AddCommand(int cmd)
 {
- if(current <= 0) return;  /* Return if not recording a movie */
+ if (current <= 0) return;  /* Return if not recording a movie */
  //printf("%d\n",cmd);
  DoEncode((cmd>>3)&0x3,cmd&0x7,1);
 }
@@ -238,16 +238,16 @@ void FCEUMOV_CheckMovies(void)
         FILE *st=NULL;
         char *fn;
         int ssel;
-        
-        for(ssel=0;ssel<10;ssel++)
+       
+        for (ssel=0;ssel<10;ssel++)
         {
          st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_MOVIE,ssel,0),"rb");
          free(fn);
-         if(st)
+         if (st)
          {
           MovieStatus[ssel]=1;
           fclose(st);
-         }   
+         }  
          else
           MovieStatus[ssel]=0;
         }
@@ -256,13 +256,13 @@ void FCEUMOV_CheckMovies(void)
 
 void FCEUI_SelectMovie(int w)
 {
- if(w == -1) { MovieShow = 0; return; }
+ if (w == -1) { MovieShow = 0; return; }
  FCEUI_SelectState(-1);
 
  CurrentMovie=w;
  MovieShow=180;
 
- if(current > 0)
+ if (current > 0)
   FCEU_DispMessage("-recording movie %d-",current-1);
  else if (current < 0)
   FCEU_DispMessage("-playing movie %d-",-1 - current);
@@ -272,8 +272,8 @@ void FCEUI_SelectMovie(int w)
 
 void FCEU_DrawMovies(uint8 *XBuf)
 {
- if(!MovieShow) return;
- 
+ if (!MovieShow) return;
+
  FCEU_DrawNumberRow(XBuf,MovieStatus, CurrentMovie);
  MovieShow--;
 }

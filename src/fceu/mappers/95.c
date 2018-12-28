@@ -33,18 +33,18 @@ static SFORMAT DB_StateRegs[]={
 };
 
 static void FP_FASTAPASS(1) dragonbust_ppu(uint32 A)
-{ 
+{
  static int last=-1;
  static uint8 z;
 
- if(A>=0x2000) return;
+ if (A>=0x2000) return;
 
  A>>=10;
 
- lastA=A;  
+ lastA=A; 
 
  z=MirCache[A];
- if(z!=last)
+ if (z!=last)
  {
   onemir(z);
   last=z;
@@ -58,14 +58,14 @@ static void toot(void)
  MirCache[0]=MirCache[1]=(DRegs[0]>>4)&1;
  MirCache[2]=MirCache[3]=(DRegs[1]>>4)&1;
 
- for(x=0;x<4;x++)
+ for (x=0;x<4;x++)
   MirCache[4+x]=(DRegs[2+x]>>5)&1;
  onemir(MirCache[lastA]);
 }
 
 static DECLFW(Mapper95_write)
 {
-        switch(A&0xF001)
+        switch (A&0xF001)
   {
 
          case 0x8000:
@@ -73,7 +73,7 @@ static DECLFW(Mapper95_write)
          break;
 
          case 0x8001:
-                switch(cmd&0x07)
+                switch (cmd&0x07)
     {
                  case 0: DRegs[0]=(V&0x3F)>>1;toot();V>>=1;setchr2(0x0000,V&0x1F);break;
                  case 1: DRegs[1]=(V&0x3F)>>1;toot();V>>=1;setchr2(0x0800,V&0x1F);break;
@@ -99,7 +99,7 @@ static void DBSync()
  setchr2(0x0000,DRegs[0]);
  setchr2(0x0800,DRegs[1]);
 
- for(x=0;x<4;x++) 
+ for (x=0;x<4;x++)
   setchr1(0x1000+x*0x400,DRegs[2+x]);
 
  setprg8(0x8000,DRegs[6]);

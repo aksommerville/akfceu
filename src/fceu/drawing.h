@@ -3,26 +3,26 @@ void DrawTextLineBG(uint8 *dest)
  int x,y;
  static int otable[7]={81,49,30,17,8,3,0};
         //100,40,15,10,7,5,2};
- for(y=0;y<14;y++)
+ for (y=0;y<14;y++)
  {
   int offs;
 
-  if(y>=7) offs=otable[13-y];
-  else offs=otable[y];   
-          
-  for(x=offs;x<(256-offs);x++)
+  if (y>=7) offs=otable[13-y];
+  else offs=otable[y];  
+         
+  for (x=offs;x<(256-offs);x++)
    dest[y*256+x]=(dest[y*256+x]&0x0f)|0xC0;//&=0xe0; //0x80;
  }
-}       
+}      
 
 static void DrawMessage(void)
 {
- if(howlong)
+ if (howlong)
   {
    uint8 *t;
    howlong--;
    t=XBuf+(FSettings.LastSLine-16)*256;
-   if(t>=XBuf)
+   if (t>=XBuf)
    {
     DrawTextLineBG(t);
     DrawTextTrans(t+256*3+(128-strlen(errmsg)*4),256,(uint8 *)errmsg,4);
@@ -49,10 +49,10 @@ void DrawTextTrans(uint8 *dest, uint32 width, uint8 *textmsg, uint8 fgcolor)
   uint8 y;
   uint8 z;
 
-  for(x=0;x<length;x++)    
-         for(y=0;y<8;y++)       
-          for(z=0;z<8;z++) 
-           if((fontdata2[(textmsg[x]<<3)+y]>>z)&1) dest[y*width+(x<<3)+z]=fgcolor;
+  for (x=0;x<length;x++)   
+         for (y=0;y<8;y++)      
+          for (z=0;z<8;z++)
+           if ((fontdata2[(textmsg[x]<<3)+y]>>z)&1) dest[y*width+(x<<3)+z]=fgcolor;
 }
 
 static uint8 sstat[2541] =
@@ -78,37 +78,37 @@ void FCEU_DrawNumberRow(uint8 *XBuf, int *nstatus, int cur)
 {
  uint8 *XBaf;
  int z,x,y;
-            
+           
  XBaf=XBuf - 4 + (FSettings.LastSLine-34)*256;
- if(XBaf>=XBuf)
- for(z=1;z<11;z++)
- {  
-  if(nstatus[z%10])
+ if (XBaf>=XBuf)
+ for (z=1;z<11;z++)
+ { 
+  if (nstatus[z%10])
    {
-          for(y=0;y<13;y++)
-           for(x=0;x<21;x++)
+          for (y=0;y<13;y++)
+           for (x=0;x<21;x++)
             XBaf[y*256+x+z*21+z]=sstat[y*21+x+(z-1)*21*12]^0x80;
    } else {
-          for(y=0;y<13;y++)
-           for(x=0;x<21;x++)
-            if(sstat[y*21+x+(z-1)*21*12]!=0x83)
+          for (y=0;y<13;y++)
+           for (x=0;x<21;x++)
+            if (sstat[y*21+x+(z-1)*21*12]!=0x83)
              XBaf[y*256+x+z*21+z]=sstat[y*21+x+(z-1)*21*12]^0x80;
 
             else
              XBaf[y*256+x+z*21+z]=(XBaf[y*256+x+z*21+z]&0xF)|0xC0;
    }
-  if(cur==z%10) 
+  if (cur==z%10)
    {
-    for(x=0;x<21;x++)
+    for (x=0;x<21;x++)
      XBaf[x+z*21+z*1]=4;
-    for(x=1;x<12;x++)
+    for (x=1;x<12;x++)
      {
      XBaf[256*x+z*21+z*1]=
      XBaf[256*x+z*21+z*1+20]=4;
      }
-    for(x=0;x<21;x++)
+    for (x=0;x<21;x++)
      XBaf[12*256+x+z*21+z*1]=4;
    }
   }
-}   
+}  
 

@@ -43,25 +43,25 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 {
  uint8 header[5];
  uint32 count=0;
- 
+
  FCEU_printf(" Applying IPS...\n");
- if(fread(header,1,5,ips)!=5)
+ if (fread(header,1,5,ips)!=5)
  {
   fclose(ips);
   return;
  }
- if(memcmp(header,"PATCH",5))
+ if (memcmp(header,"PATCH",5))
  {
   fclose(ips);
   return;
  }
 
- while(fread(header,1,3,ips)==3)
+ while (fread(header,1,3,ips)==3)
  {
   uint32 offset=(header[0]<<16)|(header[1]<<8)|header[2];
   uint16 size;
 
-  if(!memcmp(header,"EOF",3))
+  if (!memcmp(header,"EOF",3))
   {
    FCEU_printf(" IPS EOF:  Did %d patches\n\n",count);
    fclose(ips);
@@ -70,7 +70,7 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 
   size=fgetc(ips)<<8;
   size|=fgetc(ips);
-  if(!size)  /* RLE */
+  if (!size)  /* RLE */
   {
    uint8 *start;
    uint8 b;
@@ -79,13 +79,13 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
 
    //FCEU_printf("  Offset: %8d  Size: %5d RLE\n",offset,size);
 
-   if((offset+size)>dest->size)
+   if ((offset+size)>dest->size)
    {
     uint8 *tmp;
 
     // Probably a little slow.
     tmp=(uint8 *)realloc(dest->data,offset+size);
-    if(!tmp)
+    if (!tmp)
     {
      FCEU_printf("  Oops.  IPS patch %d(type RLE) goes beyond end of file.  Could not allocate memory.\n",count);
      fclose(ips);
@@ -101,18 +101,18 @@ void ApplyIPS(FILE *ips, MEMWRAP *dest)
    {
     *start=b;
     start++;
-   } while(--size);
+   } while (--size);
   }
   else    /* Normal patch */
   {
    //FCEU_printf("  Offset: %8d  Size: %5d\n",offset,size);
-   if((offset+size)>dest->size)
+   if ((offset+size)>dest->size)
    {
     uint8 *tmp;
-    
+   
     // Probably a little slow.
     tmp=(uint8 *)realloc(dest->data,offset+size);
-    if(!tmp)
+    if (!tmp)
     {
      FCEU_printf("  Oops.  IPS patch %d(type normal) goes beyond end of file.  Could not allocate memory.\n",count);
      fclose(ips);
@@ -133,16 +133,16 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
 {
  MEMWRAP *tmp;
 
- if(!(tmp=(MEMWRAP *)FCEU_malloc(sizeof(MEMWRAP))))
+ if (!(tmp=(MEMWRAP *)FCEU_malloc(sizeof(MEMWRAP))))
   goto doret;
  tmp->location=0;
 
- if(type==0)
+ if (type==0)
  {
   fseek((FILE *)tz,0,SEEK_END);
   tmp->size=ftell((FILE *)tz);
   fseek((FILE *)tz,0,SEEK_SET);
-  if(!(tmp->data=(uint8*)FCEU_malloc(tmp->size)))
+  if (!(tmp->data=(uint8*)FCEU_malloc(tmp->size)))
   {
    free(tmp);
    tmp=0;
@@ -150,15 +150,15 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   }
   fread(tmp->data,1,tmp->size,(FILE *)tz);
  }
- else if(type==1)
+ else if (type==1)
  {
   /* Bleck.  The gzip file format has the size of the uncompressed data,
      but I can't get to the info with the zlib interface(?). */
   gzFile gztz=tz;
   #define tz gztz
-  for(tmp->size=0; gzgetc(tz) != EOF; tmp->size++);
+  for (tmp->size=0; gzgetc(tz) != EOF; tmp->size++);
   gzseek(tz,0,SEEK_SET);
-  if(!(tmp->data=(uint8 *)FCEU_malloc(tmp->size)))
+  if (!(tmp->data=(uint8 *)FCEU_malloc(tmp->size)))
   {
    free(tmp);
    tmp=0;
@@ -167,13 +167,13 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
   gzread(tz,tmp->data,tmp->size);
   #undef tz
  }
- else if(type==2)
+ else if (type==2)
  {
-  unz_file_info ufo; 
-  unzGetCurrentFileInfo(tz,&ufo,0,0,0,0,0,0);  
+  unz_file_info ufo;
+  unzGetCurrentFileInfo(tz,&ufo,0,0,0,0,0,0); 
 
   tmp->size=ufo.uncompressed_size;
-  if(!(tmp->data=(uint8 *)FCEU_malloc(ufo.uncompressed_size)))
+  if (!(tmp->data=(uint8 *)FCEU_malloc(ufo.uncompressed_size)))
   {
    free(tmp);
    tmp=0;
@@ -183,15 +183,15 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
  }
 
  doret:
- if(type==0)
+ if (type==0)
  {
   fclose((FILE *)tz);
  }
- else if(type==1)
+ else if (type==1)
  {
   gzclose(tz);
  }
- else if(type==2)
+ else if (type==2)
  {
   unzCloseCurrentFile(tz);
   unzClose(tz);
@@ -210,52 +210,52 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
  FCEUFILE *fceufp;
  void *t;
 
- if(strchr(mode,'r'))
+ if (strchr(mode,'r'))
   ipsfile=FCEUD_UTF8fopen(ipsfn,"rb");
 
  fceufp=(FCEUFILE *)malloc(sizeof(FCEUFILE));
 
  {
   unzFile tz;
-  if((tz=unzOpen(path)))  // If it's not a zip file, use regular file handlers.
+  if ((tz=unzOpen(path)))  // If it's not a zip file, use regular file handlers.
         // Assuming file type by extension usually works,
         // but I don't like it. :)
   {
-   if(unzGoToFirstFile(tz)==UNZ_OK)
+   if (unzGoToFirstFile(tz)==UNZ_OK)
    {
-    for(;;)
+    for (;;)
     {
      char tempu[512];  // Longer filenames might be possible, but I don't
        // think people would name files that long in zip files...
      unzGetCurrentFileInfo(tz,0,tempu,512,0,0,0,0);
      tempu[511]=0;
-     if(strlen(tempu)>=4)
+     if (strlen(tempu)>=4)
      {
       char *za=tempu+strlen(tempu)-4;
 
-      if(!ext)
+      if (!ext)
       {
-       if(!strcasecmp(za,".nes") || !strcasecmp(za,".fds") ||
+       if (!strcasecmp(za,".nes") || !strcasecmp(za,".fds") ||
           !strcasecmp(za,".nsf") || !strcasecmp(za,".unf") ||
           !strcasecmp(za,".nez"))
         break;
       }
-      else if(!strcasecmp(za,ext)) 
+      else if (!strcasecmp(za,ext))
        break;
      }
-     if(strlen(tempu)>=5)
+     if (strlen(tempu)>=5)
      {
-      if(!strcasecmp(tempu+strlen(tempu)-5,".unif"))
+      if (!strcasecmp(tempu+strlen(tempu)-5,".unif"))
        break;
      }
-     if(unzGoToNextFile(tz)!=UNZ_OK)
-     { 
-      if(unzGoToFirstFile(tz)!=UNZ_OK) goto zpfail;
-      break;     
+     if (unzGoToNextFile(tz)!=UNZ_OK)
+     {
+      if (unzGoToFirstFile(tz)!=UNZ_OK) goto zpfail;
+      break;    
      }
     }
-    if(unzOpenCurrentFile(tz)!=UNZ_OK)
-     goto zpfail;       
+    if (unzOpenCurrentFile(tz)!=UNZ_OK)
+     goto zpfail;      
    }
    else
    {
@@ -264,19 +264,19 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
     unzClose(tz);
     return 0;
    }
-   if(!(fceufp->fp=MakeMemWrap(tz,2)))
+   if (!(fceufp->fp=MakeMemWrap(tz,2)))
    {
     free(fceufp);
     return(0);
    }
    fceufp->type=2;
-   if(ipsfile)
+   if (ipsfile)
     ApplyIPS(ipsfile,(MEMWRAP *)fceufp->fp);
    return(fceufp);
   }
  }
 
- if((t=FCEUD_UTF8fopen(path,"rb")))
+ if ((t=FCEUD_UTF8fopen(path,"rb")))
  {
   uint32 magic;
 
@@ -284,7 +284,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
   magic|=fgetc((FILE *)t)<<8;
   magic|=fgetc((FILE *)t)<<16;
 
-  if(magic!=0x088b1f)   /* Not gzip... */
+  if (magic!=0x088b1f)   /* Not gzip... */
    fclose((FILE *)t);
   else                  /* Probably gzip */
   {
@@ -296,16 +296,16 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
 
    lseek(fd, 0, SEEK_SET);
 
-   if((t=gzdopen(fd,mode)))
+   if ((t=gzdopen(fd,mode)))
    {
     fceufp->type=1;
     fceufp->fp=t;
-    if(ipsfile)
+    if (ipsfile)
     {
      fceufp->fp=MakeMemWrap(t,1);
      gzclose(t);
 
-     if(fceufp->fp)
+     if (fceufp->fp)
      {
       free(fceufp);
       return(0);
@@ -321,14 +321,14 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
 
  }
 
-  if((t=FCEUD_UTF8fopen(path,mode)))
+  if ((t=FCEUD_UTF8fopen(path,mode)))
   {
    fseek((FILE *)t,0,SEEK_SET);
    fceufp->type=0;
    fceufp->fp=t;
-   if(ipsfile)
+   if (ipsfile)
    {
-    if(!(fceufp->fp=MakeMemWrap(t,0)))
+    if (!(fceufp->fp=MakeMemWrap(t,0)))
     {
      free(fceufp);
      return(0);
@@ -345,11 +345,11 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
 
 int FCEU_fclose(FCEUFILE *fp)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   gzclose(fp->fp);
  }
- else if(fp->type>=2)
+ else if (fp->type>=2)
  {
   free(((MEMWRAP*)(fp->fp))->data);
   free(fp->fp);
@@ -364,19 +364,19 @@ int FCEU_fclose(FCEUFILE *fp)
 
 uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   return gzread(fp->fp,ptr,size*nmemb);
  }
- else if(fp->type>=2)
- { 
+ else if (fp->type>=2)
+ {
   MEMWRAP *wz;
   uint32 total=size*nmemb;
 
   wz=(MEMWRAP*)fp->fp;
-  if(wz->location>=wz->size) return 0;
+  if (wz->location>=wz->size) return 0;
 
-  if((wz->location+total)>wz->size)
+  if ((wz->location+total)>wz->size)
   {
    int ak=wz->size-wz->location;
    memcpy((uint8*)ptr,wz->data+wz->location,ak);
@@ -398,12 +398,12 @@ uint64 FCEU_fread(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 
 uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   return gzwrite(fp->fp,ptr,size*nmemb);
  }
- else if(fp->type>=2)
- { 
+ else if (fp->type>=2)
+ {
   return 0;
  }
  else
@@ -412,16 +412,16 @@ uint64 FCEU_fwrite(void *ptr, size_t size, size_t nmemb, FCEUFILE *fp)
 
 int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   return( (gzseek(fp->fp,offset,whence)>0)?0:-1);
- } 
- else if(fp->type>=2)
+ }
+ else if (fp->type>=2)
  {
   MEMWRAP *wz;
   wz=(MEMWRAP*)fp->fp;
 
-  switch(whence)
+  switch (whence)
   {
    case SEEK_SET:if(offset>=wz->size)
                   return(-1);
@@ -430,7 +430,7 @@ int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
                   return (-1);
                  wz->location+=offset;
                  break;
-  }    
+  }   
   return 0;
  }
  else
@@ -439,13 +439,13 @@ int FCEU_fseek(FCEUFILE *fp, long offset, int whence)
 
 uint64 FCEU_ftell(FCEUFILE *fp)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   return gztell(fp->fp);
  }
- else if(fp->type>=2)
- { 
-  return (((MEMWRAP *)(fp->fp))->location);  
+ else if (fp->type>=2)
+ {
+  return (((MEMWRAP *)(fp->fp))->location); 
  }
  else
   return ftell((FILE *)fp->fp);
@@ -453,11 +453,11 @@ uint64 FCEU_ftell(FCEUFILE *fp)
 
 void FCEU_rewind(FCEUFILE *fp)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   gzrewind(fp->fp);
  }
- else if(fp->type>=2)
+ else if (fp->type>=2)
  {
   ((MEMWRAP *)(fp->fp))->location=0;
  }
@@ -470,24 +470,24 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
 {
  uint8 t[2];
 
- if(fp->type>=1)
+ if (fp->type>=1)
  {
-  if(fp->type>=2)
+  if (fp->type>=2)
   {
    MEMWRAP *wz;
    wz=(MEMWRAP *)fp->fp;
-   if(wz->location+2>wz->size)
+   if (wz->location+2>wz->size)
     {return 0;}
    *(uint32 *)t=*(uint32 *)(wz->data+wz->location);
    wz->location+=2;
   }
-  else if(fp->type==1)
-   if(gzread(fp->fp,&t,2)!=2) return(0);
+  else if (fp->type==1)
+   if (gzread(fp->fp,&t,2)!=2) return(0);
   return(1);
  }
  else
  {
-  if(fread(t,1,2,(FILE *)fp->fp)!=2) return(0);
+  if (fread(t,1,2,(FILE *)fp->fp)!=2) return(0);
  }
  *val=t[0]|(t[1]<<8);
  return(1);
@@ -495,22 +495,22 @@ int FCEU_read16le(uint16 *val, FCEUFILE *fp)
 
 int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
 {
- if(fp->type>=1)
- { 
+ if (fp->type>=1)
+ {
   uint8 t[4];
   #ifndef LSB_FIRST
   uint8 x[4];
   #endif
-  if(fp->type>=2)
-  { 
+  if (fp->type>=2)
+  {
    MEMWRAP *wz;
    wz=(MEMWRAP *)fp->fp;
-   if(wz->location+4>wz->size)
+   if (wz->location+4>wz->size)
     {return 0;}
    *(uint32 *)t=*(uint32 *)(wz->data+wz->location);
    wz->location+=4;
   }
-  else if(fp->type==1)
+  else if (fp->type==1)
    gzread(fp->fp,&t,4);
   #ifndef LSB_FIRST
   x[0]=t[3];
@@ -531,13 +531,13 @@ int FCEU_read32le(uint32 *Bufo, FCEUFILE *fp)
 
 int FCEU_fgetc(FCEUFILE *fp)
 {
- if(fp->type==1)
-  return gzgetc((gzFile)(fp->fp)); 
- else if(fp->type>=2)
+ if (fp->type==1)
+  return gzgetc((gzFile)(fp->fp));
+ else if (fp->type>=2)
  {
   MEMWRAP *wz;
   wz=(MEMWRAP *)fp->fp;
-  if(wz->location<wz->size)
+  if (wz->location<wz->size)
    return wz->data[wz->location++];
   return EOF;
  }
@@ -547,17 +547,17 @@ int FCEU_fgetc(FCEUFILE *fp)
 
 uint64 FCEU_fgetsize(FCEUFILE *fp)
 {
- if(fp->type==1)
+ if (fp->type==1)
  {
   gzFile gzf=fp->fp;
   int x,t;
   t=gztell(gzf);
   gzrewind(gzf);
-  for(x=0; gzgetc(gzf) != EOF; x++);
+  for (x=0; gzgetc(gzf) != EOF; x++);
   gzseek(gzf,t,SEEK_SET);
   return(x);
  }
- else if(fp->type>=2)
+ else if (fp->type>=2)
   return ((MEMWRAP*)(fp->fp))->size;
  else
  {
@@ -572,7 +572,7 @@ uint64 FCEU_fgetsize(FCEUFILE *fp)
 
 int FCEU_fisarchive(FCEUFILE *fp)
 {
- if(fp->type==2)
+ if (fp->type==2)
   return 1;
  return 0;
 }
