@@ -1,4 +1,17 @@
 #ifndef _FCEUH
+
+#include "driver.h"
+#include "git.h"
+
+#define JOY_A      0x01
+#define JOY_B      0x02
+#define JOY_SELECT 0x04
+#define JOY_START  0x08
+#define JOY_UP     0x10
+#define JOY_DOWN   0x20
+#define JOY_LEFT   0x40
+#define JOY_RIGHT  0x80
+
 extern int fceuindbg;
 void ResetGameLoaded(void);
 
@@ -19,7 +32,6 @@ void FCEU_ResetVidSys(void);
 void ResetMapping(void);
 void ResetNES(void);
 void PowerNES(void);
-
 
 extern uint64 timestampbase;
 extern uint32 MMC5HackVROMMask;
@@ -44,33 +56,30 @@ extern void (*GameStateRestore)(int version);
 #define GI_POWER  2
 #define GI_CLOSE  3
 
-#include "git.h"
 extern FCEUGI *FCEUGameInfo;
 extern int GameAttributes;
 
 extern uint8 PAL;
 
-#include "driver.h"
-
 typedef struct {
-           int PAL;
-           int NetworkPlay;
-     int SoundVolume;
-           int GameGenie;
+  int PAL;
+  int NetworkPlay;
+  int SoundVolume;
+  int GameGenie;
 
-     /* Current first and last rendered scanlines. */
-     int FirstSLine;
-     int LastSLine;
+  /* Current first and last rendered scanlines. */
+  int FirstSLine;
+  int LastSLine;
 
-     /* Driver code(user)-specified first and last rendered scanlines.
-        Usr*SLine[0] is for NTSC, Usr*SLine[1] is for PAL.
-           */
-     int UsrFirstSLine[2];
-     int UsrLastSLine[2];
-     int SnapName;
-     uint32 SndRate;
-     int soundq;
-     int lowpass;
+  /* Driver code(user)-specified first and last rendered scanlines.
+     Usr*SLine[0] is for NTSC, Usr*SLine[1] is for PAL.
+   */
+  int UsrFirstSLine[2];
+  int UsrLastSLine[2];
+  int SnapName;
+  uint32 SndRate;
+  int soundq;
+  int lowpass;
 } FCEUS;
 
 extern FCEUS FSettings;
@@ -90,14 +99,5 @@ extern uint8 Exit;
 extern uint8 pale;
 extern uint8 vsdip;
 
-#define JOY_A   1
-#define JOY_B   2
-#define JOY_SELECT      4
-#define JOY_START       8
-#define JOY_UP  0x10
-#define JOY_DOWN        0x20
-#define JOY_LEFT        0x40
-#define JOY_RIGHT       0x80
-#else
 #define _FCEUH
 #endif

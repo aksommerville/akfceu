@@ -1,24 +1,27 @@
-typedef struct {
-        /* Set by mapper/board code: */
-        void (*Power)(void);
-        void (*Reset)(void);
-        void (*Close)(void);
-        uint8 *SaveGame[4];     /* Pointers to memory to save/load. */
-        uint32 SaveGameLen[4];  /* How much memory to save/load. */
+#ifndef FCEU_CART_H
+#define FCEU_CART_H
 
-        /* Set by iNES/UNIF loading code. */
+typedef struct {
+  /* Set by mapper/board code: */
+  void (*Power)(void);
+  void (*Reset)(void);
+  void (*Close)(void);
+  uint8 *SaveGame[4];     /* Pointers to memory to save/load. */
+  uint32 SaveGameLen[4];  /* How much memory to save/load. */
+
+  /* Set by iNES/UNIF loading code. */
   int mirror;    /* As set in the header or chunk.
-           iNES/UNIF specific.  Intended
-           to help support games like "Karnov"
-           that are not really MMC3 but are
-           set to mapper 4.
-        */
-        int battery;            /* Presence of an actual battery. */
+                    iNES/UNIF specific.  Intended
+                    to help support games like "Karnov"
+                    that are not really MMC3 but are
+                    set to mapper 4.
+                 */
+  int battery; /* Presence of an actual battery. */
   uint8 MD5[16];
-        uint32 CRC32;           /* Should be set by the iNES/UNIF loading
-                                   code, used by mapper/board code, maybe
-                                   other code in the future.
-                                */
+  uint32 CRC32; /* Should be set by the iNES/UNIF loading
+                   code, used by mapper/board code, maybe
+                   other code in the future.
+                */
 } CartInfo;
 
 void FCEU_SaveGameSave(CartInfo *LocalHWInfo);
@@ -98,3 +101,5 @@ void GeniePower(void);
 void OpenGenie(void);
 void CloseGenie(void);
 void FCEU_KillGenie(void);
+
+#endif

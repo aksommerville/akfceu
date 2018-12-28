@@ -1,8 +1,7 @@
-#include <stdio.h>
+#ifndef FCEU_DRIVER_H
+#define FCEU_DRIVER_H
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
+#include <stdio.h>
 
 #include "types.h"
 #include "git.h"
@@ -234,7 +233,4 @@ void FCEUI_FDSSelect(void);
 
 int FCEUI_DatachSet(const uint8 *rcode);
 
-#ifdef  __cplusplus
-}
 #endif
-

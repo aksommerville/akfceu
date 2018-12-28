@@ -27,8 +27,6 @@
 #include "fceu.h"
 #include "debug.h"
 
-
-
 void FCEUI_DumpMem(const char *fname, uint32 start, uint32 end)
 {
  FILE *fp=FCEUD_UTF8fopen(fname,"wb");

@@ -1,3 +1,7 @@
+/* This file belongs exclusively to video.c.
+ * TODO Copy inline to video.c or rename this to something that isn't '.h'
+ */
+
 void DrawTextLineBG(uint8 *dest)
 {
  int x,y;
