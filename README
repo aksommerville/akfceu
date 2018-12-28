@@ -144,3 +144,9 @@ src/fceu/mappers/69.c:246: SetWriteHandler(0xe000,0xffff,Mapper69_SWH); <-- this
     um.
     Looks like this is already known. Just call FCEUI_DisableSpriteLimitation(1) during init.
 [X] Finder: "akfceu can not open files of this type". Can we? Hell yeah we can.
+
+21:31: A few hours of play have confirmed that this works really good.
+Mmmmmm, might need a few hours more.
+But first I'll start reviewing FCEU code for things we don't need.
+
+

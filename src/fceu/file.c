@@ -154,8 +154,8 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
  {
   /* Bleck.  The gzip file format has the size of the uncompressed data,
      but I can't get to the info with the zlib interface(?). */
-  gzFile gztz=tz;//aks
-  #define tz gztz /*aks*/
+  gzFile gztz=tz;
+  #define tz gztz
   for(tmp->size=0; gzgetc(tz) != EOF; tmp->size++);
   gzseek(tz,0,SEEK_SET);
   if(!(tmp->data=(uint8 *)FCEU_malloc(tmp->size)))
@@ -165,7 +165,7 @@ static MEMWRAP *MakeMemWrap(void *tz, int type)
    goto doret;
   }
   gzread(tz,tmp->data,tmp->size);
-  #undef tz/*aks*/
+  #undef tz
  }
  else if(type==2)
  {

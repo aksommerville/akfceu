@@ -21,8 +21,7 @@
 
 #include "mapinc.h"
 
-//aks: Unclear where this should come from:
-#define FCEU_VERSION_NUMERIC 0
+#define FCEU_VERSION_NUMERIC 53
 
 static uint8 latche;
 

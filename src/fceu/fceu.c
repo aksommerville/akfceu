@@ -48,7 +48,6 @@
 #include	"crc32.h"
 #include	"vsuni.h"
 
-/* aks: Add declarations. */
 void FCEUD_NetworkClose();
 
 uint64 timestampbase;

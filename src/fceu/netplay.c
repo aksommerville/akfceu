@@ -36,7 +36,6 @@
 #include "input.h"
 #include "endian.h"
 
-//aks: add externs
 void FCEUD_NetworkClose();
 int FCEUD_SendData(void *data, uint32 len);
 int FCEUD_RecvData(void *data, uint32 len);

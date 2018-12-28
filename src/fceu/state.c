@@ -40,8 +40,8 @@
 #include "netplay.h"
 #include "video.h"
 
-//aks: Unclear where this should come from:
-#define FCEU_VERSION_NUMERIC 0
+//aks: Taking a guess that this is supposed to be 53, from "fcs.txt" in the original documentation.
+#define FCEU_VERSION_NUMERIC 53
 
 static void (*SPreSave)(void);
 static void (*SPostSave)(void);
