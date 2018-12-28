@@ -89,8 +89,8 @@ static void MMC1PRG(void)
         uint8 offs;
 
         offs=DRegs[1]&0x10;
-	if(MMC1PRGHook16)
-	{
+  if(MMC1PRGHook16)
+  {
          switch(DRegs[0]&0xC)
          {
           case 0xC: MMC1PRGHook16(0x8000,(DRegs[3]+offs));
@@ -105,8 +105,8 @@ static void MMC1PRG(void)
                     MMC1PRGHook16(0xc000,((DRegs[3]&~1)+offs+1));
                     break;
          }
-	}
-	else
+  }
+  else
          switch(DRegs[0]&0xC)
          {
           case 0xC: setprg16(0x8000,(DRegs[3]+offs));
@@ -138,24 +138,24 @@ static uint64 lreset;
 static DECLFW(MMC1_write)
 {
         int n=(A>>13)-4;
-	//FCEU_DispMessage("%016x",timestampbase+timestamp);
-	//printf("$%04x:$%02x, $%04x\n",A,V,X.PC);
-	//DumpMem("out",0xe000,0xffff);
+  //FCEU_DispMessage("%016x",timestampbase+timestamp);
+  //printf("$%04x:$%02x, $%04x\n",A,V,X.PC);
+  //DumpMem("out",0xe000,0xffff);
 
-	/* The MMC1 is busy so ignore the write. */
-	/* As of version FCE Ultra 0.81, the timestamp is only
-	   increased before each instruction is executed(in other words
-	   precision isn't that great), but this should still work to
-	   deal with 2 writes in a row from a single RMW instruction.
-	*/
-	if( (timestampbase+timestamp)<(lreset+2))
-	 return;
+  /* The MMC1 is busy so ignore the write. */
+  /* As of version FCE Ultra 0.81, the timestamp is only
+     increased before each instruction is executed(in other words
+     precision isn't that great), but this should still work to
+     deal with 2 writes in a row from a single RMW instruction.
+  */
+  if( (timestampbase+timestamp)<(lreset+2))
+   return;
         if (V&0x80)
         {
-	 DRegs[0]|=0xC;
+   DRegs[0]|=0xC;
          BufferShift=Buffer=0;
-	 MMC1PRG();
-	 lreset=timestampbase+timestamp;
+   MMC1PRG();
+   lreset=timestampbase+timestamp;
          return;
         }
 
@@ -167,7 +167,7 @@ static DECLFW(MMC1_write)
 
         switch(n){
         case 0:
-		MMC1MIRROR();
+    MMC1MIRROR();
                 MMC1CHR();
                 MMC1PRG();
                 break;
@@ -190,7 +190,7 @@ static void MMC1_Restore(int version)
  MMC1MIRROR();
  MMC1CHR();
  MMC1PRG();
- lreset=0;	/* timestamp(base) is not stored in save states. */
+ lreset=0;  /* timestamp(base) is not stored in save states. */
 }
 
 static void MMC1CMReset(void)
@@ -216,13 +216,13 @@ static int DetectMMC1WRAMSize(uint32 crc32)
         switch(crc32)
         {
          default:return(8);
-	 case 0xc6182024:	/* Romance of the 3 Kingdoms */
+   case 0xc6182024:  /* Romance of the 3 Kingdoms */
          case 0x2225c20f:       /* Genghis Khan */
          case 0x4642dda6:       /* Nobunaga's Ambition */
-	 case 0x29449ba9:	/* ""	"" (J) */
-	 case 0x2b11e0b0:	/* ""	"" (J) */
-		FCEU_printf(" >8KB external WRAM present.  Use UNIF if you hack the ROM image.\n");
-		return(16);
+   case 0x29449ba9:  /* ""  "" (J) */
+   case 0x2b11e0b0:  /* ""  "" (J) */
+    FCEU_printf(" >8KB external WRAM present.  Use UNIF if you hack the ROM image.\n");
+    return(16);
         }
 }
 
@@ -378,7 +378,7 @@ void SBROM_Init(CartInfo *info)
  GenMMC1Init(info, 128, 64, 0, 0);
 }
 
-void SCROM_Init(CartInfo *info)	
+void SCROM_Init(CartInfo *info)  
 {
  GenMMC1Init(info, 128, 128, 0, 0);
 }

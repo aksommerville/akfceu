@@ -82,35 +82,35 @@ static void PRGO(void)
 
 static DECLFW(Mapper153_write)
 {
-	A&=0xF;
+  A&=0xF;
         if(A<=0x7) 
-	{
-	 mapbyte1[A&7]=V;
-	 PRGO();
-	}
+  {
+   mapbyte1[A&7]=V;
+   PRGO();
+  }
         else if(A==0x8) 
-	{
-	 mapbyte2[0]=V;
-	 PRGO();
-	}
-	else switch(A) {
-	 case 0x9: switch(V&3) {
-       	            case 0x00:MIRROR_SET2(1);break;
+  {
+   mapbyte2[0]=V;
+   PRGO();
+  }
+  else switch(A) {
+   case 0x9: switch(V&3) {
+                     case 0x00:MIRROR_SET2(1);break;
                     case 0x01:MIRROR_SET2(0);break;
                     case 0x02:onemir(0);break;
                     case 0x03:onemir(1);break;
                    }
                    break;
          case 0xA:X6502_IRQEnd(FCEU_IQEXT);
-  		  IRQa=V&1;
-		  IRQCount=IRQLatch;
-		  break;
+        IRQa=V&1;
+      IRQCount=IRQLatch;
+      break;
          case 0xB:IRQLatch&=0xFF00;
-		  IRQLatch|=V;
- 		  break;
+      IRQLatch|=V;
+       break;
          case 0xC:IRQLatch&=0xFF;
- 		  IRQLatch|=V<<8;
-		  break;
+       IRQLatch|=V<<8;
+      break;
         }
 }
 
@@ -156,74 +156,74 @@ int FCEUI_DatachSet(const uint8 *rcode)
                 {1,0,1,1,1,0,0}, {1,0,0,1,1,1,0}, {1,0,1,0,0,0,0}, {1,0,0,0,1,0,0},
                 {1,0,0,1,0,0,0}, {1,1,1,0,1,0,0}
         };
-	uint8 code[13+1];
-	uint32 tmp_p=0;
-	int i, j;
-	int len;
+  uint8 code[13+1];
+  uint32 tmp_p=0;
+  int i, j;
+  int len;
 
-	for(i=len=0;i<13;i++)
-	{
-	 if(!rcode[i]) break;
+  for(i=len=0;i<13;i++)
+  {
+   if(!rcode[i]) break;
 
-	 if((code[i]=rcode[i]-'0') > 9)
-	  return(0);
-	 len++;
-	}
-	if(len!=13 && len!=12 && len!=8 && len!=7) return(0);
+   if((code[i]=rcode[i]-'0') > 9)
+    return(0);
+   len++;
+  }
+  if(len!=13 && len!=12 && len!=8 && len!=7) return(0);
 
-	#define BS(x) BarcodeData[tmp_p]=x;tmp_p++
+  #define BS(x) BarcodeData[tmp_p]=x;tmp_p++
 
         for(j=0;j<32;j++) 
-	{
-	 BS(0x00);
-	}
+  {
+   BS(0x00);
+  }
 
-	/* Left guard bars */
-	BS(1);	BS(0); BS(1);
+  /* Left guard bars */
+  BS(1);  BS(0); BS(1);
 
-	if(len==13 || len==12)
-	{
-	 uint32 csum;
+  if(len==13 || len==12)
+  {
+   uint32 csum;
 
- 	 for(i=0;i<6;i++)
-	  if(prefix_parity_type[code[0]][i])
-	  {
-	   for(j=0;j<7;j++)
-	   { 
-	    BS(data_left_even[code[i+1]][j]);
-	   }
-	  }
-	  else
-	   for(j=0;j<7;j++)
-	   {
-	    BS(data_left_odd[code[i+1]][j]);
-	   }
-	  
-	 /* Center guard bars */
-	 BS(0); BS(1); BS(0); BS(1); BS(0);
+    for(i=0;i<6;i++)
+    if(prefix_parity_type[code[0]][i])
+    {
+     for(j=0;j<7;j++)
+     { 
+      BS(data_left_even[code[i+1]][j]);
+     }
+    }
+    else
+     for(j=0;j<7;j++)
+     {
+      BS(data_left_odd[code[i+1]][j]);
+     }
+    
+   /* Center guard bars */
+   BS(0); BS(1); BS(0); BS(1); BS(0);
 
-	 for(i=7;i<12;i++)
-	  for(j=0;j<7;j++)
-	  {
-	   BS(data_right[code[i]][j]);
-	  }
-	 csum=0;
-	 for(i=0;i<12;i++) csum+=code[i]*((i&1)?3:1);
-	 csum=(10-(csum%10))%10;
-	 //printf("%d\n",csum);
-	 for(j=0;j<7;j++)
+   for(i=7;i<12;i++)
+    for(j=0;j<7;j++)
+    {
+     BS(data_right[code[i]][j]);
+    }
+   csum=0;
+   for(i=0;i<12;i++) csum+=code[i]*((i&1)?3:1);
+   csum=(10-(csum%10))%10;
+   //printf("%d\n",csum);
+   for(j=0;j<7;j++)
          {
           BS(data_right[csum][j]);
          }
 
-	}
-	else if(len==8 || len==7)
-	{
-	 uint32 csum=0;
-	
-	 for(i=0;i<7;i++) csum+=(i&1)?code[i]:(code[i]*3);
+  }
+  else if(len==8 || len==7)
+  {
+   uint32 csum=0;
+  
+   for(i=0;i<7;i++) csum+=(i&1)?code[i]:(code[i]*3);
 
-	 csum=(10-(csum%10))%10;
+   csum=(10-(csum%10))%10;
 
          for(i=0;i<4;i++)
           for(j=0;j<7;j++)
@@ -241,25 +241,25 @@ int FCEUI_DatachSet(const uint8 *rcode)
            BS(data_right[code[i]][j]);
           }
 
-	 for(j=0;j<7;j++)
- 	 { BS(data_right[csum][j]);}
+   for(j=0;j<7;j++)
+    { BS(data_right[csum][j]);}
 
-	}
+  }
 
-	/* Right guard bars */
-	BS(1); BS(0); BS(1);
+  /* Right guard bars */
+  BS(1); BS(0); BS(1);
 
-	for(j=0;j<32;j++) 
-	{
-	 BS(0x00);
-	}
+  for(j=0;j<32;j++) 
+  {
+   BS(0x00);
+  }
 
-	BS(0xFF);
-	#undef BS
-	BarcodeReadPos=0;
-	BarcodeOut=0x8;
-	BarcodeCycleCount=0;
-	return(1);
+  BS(0xFF);
+  #undef BS
+  BarcodeReadPos=0;
+  BarcodeOut=0x8;
+  BarcodeCycleCount=0;
+  return(1);
 }
 
 static void FP_FASTAPASS(1) BarcodeIRQHook(int a)

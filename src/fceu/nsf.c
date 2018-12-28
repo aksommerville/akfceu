@@ -65,13 +65,13 @@ static uint8 NSFROM[0x30+6]=
 0xAA,
 0xA8,
 0x20,0x00,0x00,                         /* JSR to play routine  */
-0x8D,0xF5,0x3F,				/* Start play routine NMIs. */
+0x8D,0xF5,0x3F,        /* Start play routine NMIs. */
 0x90,0xFE,                               /* Loopie time. */
 
 /* 0x20 */
-0x8D,0xF3,0x3F,				/* Init init NMIs */
+0x8D,0xF3,0x3F,        /* Init init NMIs */
 0x18,
-0x90,0xFE				/* Loopie time. */
+0x90,0xFE        /* Loopie time. */
 };
 
 static DECLFR(NSFROMRead)
@@ -207,7 +207,7 @@ int NSFLoad(FCEUFILE *fp)
    if(NSFHeader.SoundChip&(1<<x))
    {
     FCEU_printf(" Expansion hardware:  %s\n",tab[x]);
-    NSFHeader.SoundChip=1<<x;	/* Prevent confusing weirdness if more than one bit is set. */
+    NSFHeader.SoundChip=1<<x;  /* Prevent confusing weirdness if more than one bit is set. */
     break;
    }
  }
@@ -337,7 +337,7 @@ static DECLFW(NSF_write)
   case 0x5FFF:if(!BSon) return;
               A&=0xF;
               BANKSET((A*4096),V);
-  	      break;
+          break;
  } 
 }
 
@@ -348,12 +348,12 @@ static DECLFR(NSF_read)
  switch(A)
  {
  case 0x3ff0:x=SongReload;
-	     if(!fceuindbg)
-	      SongReload=0;
-	     return x;
+       if(!fceuindbg)
+        SongReload=0;
+       return x;
  case 0x3ff1:
-	    if(!fceuindbg)
-	    {
+      if(!fceuindbg)
+      {
              memset(RAM,0x00,0x800);
 
              BWrite[0x4015](0x4015,0x0);
@@ -361,27 +361,27 @@ static DECLFR(NSF_read)
               BWrite[0x4000+x](0x4000+x,0);
              BWrite[0x4015](0x4015,0xF);
 
-	     if(NSFHeader.SoundChip&4) 
-	     {
-	      BWrite[0x4017](0x4017,0xC0);	/* FDS BIOS writes $C0 */
-	      BWrite[0x4089](0x4089,0x80);
-	      BWrite[0x408A](0x408A,0xE8);
-	     }
-	     else 
-	     {
-	      memset(ExWRAM,0x00,8192);
-	      BWrite[0x4017](0x4017,0xC0);
+       if(NSFHeader.SoundChip&4) 
+       {
+        BWrite[0x4017](0x4017,0xC0);  /* FDS BIOS writes $C0 */
+        BWrite[0x4089](0x4089,0x80);
+        BWrite[0x408A](0x408A,0xE8);
+       }
+       else 
+       {
+        memset(ExWRAM,0x00,8192);
+        BWrite[0x4017](0x4017,0xC0);
               BWrite[0x4017](0x4017,0xC0);
               BWrite[0x4017](0x4017,0x40);
-	     }
+       }
 
              if(BSon)
              {
               for(x=0;x<8;x++)
-	       BANKSET(0x8000+x*4096,NSFHeader.BankSwitch[x]);
+         BANKSET(0x8000+x*4096,NSFHeader.BankSwitch[x]);
              }
              return (CurrentSong-1);
- 	     }
+        }
  case 0x3FF3:return PAL;
  }
  return 0;

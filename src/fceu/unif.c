@@ -19,9 +19,9 @@
  */
 
 /* TODO:  Battery backup file saving, mirror force */
-/* **INCOMPLETE** 				   */
+/* **INCOMPLETE**            */
 /* Override stuff: CHR RAM instead of CHR ROM,
-		   mirroring.
+       mirroring.
 */
 
 #include <stdio.h>
@@ -29,17 +29,17 @@
 #include <string.h>
 
 
-#include	"types.h"
+#include  "types.h"
 #include        "fceu.h"
-#include	"cart.h"
+#include  "cart.h"
 #include        "unif.h"
 #include        "general.h"
-#include	"state.h"
-#include	"endian.h"
-#include	"file.h"
-#include	"memory.h"
-#include	"input.h"
-#include	"md5.h"
+#include  "state.h"
+#include  "endian.h"
+#include  "file.h"
+#include  "memory.h"
+#include  "input.h"
+#include  "md5.h"
 
 typedef struct {
            char ID[4];
@@ -49,7 +49,7 @@ typedef struct {
 typedef struct {
            char *name;
            void (*init)(CartInfo *);
-	   int flags;
+     int flags;
 } BMAPPING;
 
 typedef struct {
@@ -187,7 +187,7 @@ static int DINF(FCEUFILE *fp)
  FCEU_printf(" Dumped with: %s\n",method);
  {
   char *months[12]={"January","February","March","April","May","June","July",
-		    "August","September","October","November","December"};
+        "August","September","October","November","December"};
   FCEU_printf(" Dumped on: %s %d, %d\n",months[(m-1)%12],d,y);
  }
  return(1);
@@ -312,9 +312,9 @@ static int LoadCHR(FCEUFILE *fp)
 }
 
 
-#define BMCFLAG_FORCE4	1
-#define BMCFLAG_CHRROK	2	// Ok for generic UNIF code to make available
-				// 8KB of CHR RAM if no CHR ROM is present.
+#define BMCFLAG_FORCE4  1
+#define BMCFLAG_CHRROK  2  // Ok for generic UNIF code to make available
+        // 8KB of CHR RAM if no CHR ROM is present.
 static BMAPPING bmap[] = {
 
 /* Sachen Carts */
@@ -332,9 +332,9 @@ static BMAPPING bmap[] = {
  { "8237", UNL8237_Init,0},
 
 // /* AVE carts. */
-// { "MB-91", MB91_Init,0},	// DeathBots
-// { "NINA-06", NINA06_Init,0},	// F-15 City War
-// { "NINA-03", NINA03_Init,0},	// Tiles of Fate
+// { "MB-91", MB91_Init,0},  // DeathBots
+// { "NINA-06", NINA06_Init,0},  // F-15 City War
+// { "NINA-03", NINA03_Init,0},  // Tiles of Fate
 // { "NINA-001", NINA001_Init,0}, // Impossible Mission 2
 
  { "HKROM", HKROM_Init,0},
@@ -393,9 +393,9 @@ static BFMAPPING bfunc[] = {
  { "MIRR", DoMirroring },
  { "PRG",  LoadPRG },
  { "CHR",  LoadCHR },
- //{ "CCK",  CCK	   },
- //{ "PCK",  PCK	   },
- { "NAME", NAME	},
+ //{ "CCK",  CCK     },
+ //{ "PCK",  PCK     },
+ { "NAME", NAME  },
  { "MAPR", SetBoardName },
  { "DINF", DINF },
  { 0, 0 }
@@ -418,7 +418,7 @@ int LoadUNIFChunks(FCEUFILE *fp)
      return 0;
     t=0;
     x=0;
-	//printf("Funky: %s\n",((uint8 *)&uchead));
+  //printf("Funky: %s\n",((uint8 *)&uchead));
     while(bfunc[x].name)
     {
      if(!memcmp(&uchead,bfunc[x].name,strlen(bfunc[x].name)))
@@ -475,16 +475,16 @@ static void UNIFGI(int h)
   case GI_RESETM2:
                 if(UNIFCart.Reset)
                  UNIFCart.Reset();
-		break;
+    break;
   case GI_POWER:
                 if(UNIFCart.Power)
                  UNIFCart.Power();
-		if(UNIFchrrama) memset(UNIFchrrama,0,8192);
-		break;
+    if(UNIFchrrama) memset(UNIFchrrama,0,8192);
+    break;
   case GI_CLOSE:
                 FCEU_SaveGameSave(&UNIFCart);
-		if(UNIFCart.Close)
-		 UNIFCart.Close();
+    if(UNIFCart.Close)
+     UNIFCart.Close();
                 FreeUNIF();
                 break;
  }
@@ -497,45 +497,45 @@ int UNIFLoad(const char *name, FCEUFILE *fp)
         if(memcmp(&unhead,"UNIF",4))
          return 0;        
 
-	ResetCartMapping();
+  ResetCartMapping();
 
         ResetExState(0,0);
         ResetUNIF();
         if(!FCEU_read32le(&unhead.info,fp))
-	 goto aborto;
+   goto aborto;
         if(FCEU_fseek(fp,0x20,SEEK_SET)<0)
-	 goto aborto;
+   goto aborto;
         if(!LoadUNIFChunks(fp))
-	 goto aborto;
-	{
-	 int x;
-	 struct md5_context md5;
-	 
-	 md5_starts(&md5);
+   goto aborto;
+  {
+   int x;
+   struct md5_context md5;
+   
+   md5_starts(&md5);
 
-	 for(x=0;x<32;x++)
-	  if(malloced[x])
-	  {
-	   md5_update(&md5,malloced[x],mallocedsizes[x]);
-	  }
-	  md5_finish(&md5,UNIFCart.MD5);
+   for(x=0;x<32;x++)
+    if(malloced[x])
+    {
+     md5_update(&md5,malloced[x],mallocedsizes[x]);
+    }
+    md5_finish(&md5,UNIFCart.MD5);
           FCEU_printf(" ROM MD5:  0x");
           for(x=0;x<16;x++)
            FCEU_printf("%02x",UNIFCart.MD5[x]);
           FCEU_printf("\n");
-	  memcpy(FCEUGameInfo->MD5,UNIFCart.MD5,sizeof(UNIFCart.MD5));
-	}
+    memcpy(FCEUGameInfo->MD5,UNIFCart.MD5,sizeof(UNIFCart.MD5));
+  }
 
         if(!InitializeBoard())
-	 goto aborto;
+   goto aborto;
 
-	FCEU_LoadGameSave(&UNIFCart);
+  FCEU_LoadGameSave(&UNIFCart);
         GameInterface=UNIFGI;
         return 1;
-	
-	aborto:
+  
+  aborto:
 
-	FreeUNIF();
-	ResetUNIF();
-	return 0;
+  FreeUNIF();
+  ResetUNIF();
+  return 0;
 }

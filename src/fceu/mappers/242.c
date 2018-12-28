@@ -28,7 +28,7 @@ DECLFW(Mapper242_write)
   {
    case 0:MIRROR_SET(0);break;
    case 1:MIRROR_SET(1);break;
-   case 2:onemir(0);break;		
+   case 2:onemir(0);break;    
    case 3:onemir(1);break;
   }
 }

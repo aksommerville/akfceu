@@ -34,8 +34,8 @@ static DECLFW(Mapper62_write)
 
 void Mapper62_init(void)
 {
-	SetWriteHandler(0x8000,0xffff, Mapper62_write);
-	ROM_BANK32(0);
+  SetWriteHandler(0x8000,0xffff, Mapper62_write);
+  ROM_BANK32(0);
 }
 
 

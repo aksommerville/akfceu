@@ -75,27 +75,27 @@ static char *fstrings[12]=
         "($%04X)",      // IND
         "($%02X,X)",    // INX
         "($%02X),Y",    // INY
-	""
+  ""
 };
 static int flengths[12]={1,1,1,1,1,2,2,2,2,1,1,0};
 
-#define IMD(x)	((0<<16)|x)
-#define	REL(x)	((1<<16)|x)
-#define	ZP(x)	((2<<16)|x)
-#define	ZPX(x)	((3<<16)|x)
-#define	ZPY(x)	((4<<16)|x)
-#define	ABS(x)	((5<<16)|x)
-#define	ABX(x)	((6<<16)|x)
-#define ABY(x)	((7<<16)|x)
-#define	IND(x)	((8<<16)|x)
-#define	INX(x)	((9<<16)|x)
-#define	INY(x)	((10<<16)|x)
-#define IMP(x)	((11<<16)|x)
+#define IMD(x)  ((0<<16)|x)
+#define  REL(x)  ((1<<16)|x)
+#define  ZP(x)  ((2<<16)|x)
+#define  ZPX(x)  ((3<<16)|x)
+#define  ZPY(x)  ((4<<16)|x)
+#define  ABS(x)  ((5<<16)|x)
+#define  ABX(x)  ((6<<16)|x)
+#define ABY(x)  ((7<<16)|x)
+#define  IND(x)  ((8<<16)|x)
+#define  INX(x)  ((9<<16)|x)
+#define  INY(x)  ((10<<16)|x)
+#define IMP(x)  ((11<<16)|x)
 
 typedef struct {
-	char *name;
+  char *name;
         int type;       /* 1 for read, 2 for write, 3 for r then write. */
-	int32 modes[10];
+  int32 modes[10];
 } OPS;
 #define NUMOPS 56
 static OPS optable[NUMOPS]=
@@ -134,7 +134,7 @@ static OPS optable[NUMOPS]=
  {"ROL",3,{IMP(0x2a),ZP(0x26),ZPX(0x36),ABS(0x2E),ABX(0x3E),-1}},
  {"ROR",3,{IMP(0x6a),ZP(0x66),ZPX(0x76),ABS(0x6E),ABX(0x7E),-1}},
  {"ADC",1,{IMD(0x69),ZP(0x65),ZPX(0x75),ABS(0x6D),ABX(0x7d),ABY(0x79),
-	 INX(0x61),INY(0x71),-1}},
+   INX(0x61),INY(0x71),-1}},
  {"AND",1,{IMD(0x29),ZP(0x25),ZPX(0x35),ABS(0x2D),ABX(0x3d),ABY(0x39),
          INX(0x21),INY(0x31),-1}},
  {"BIT",1,{ZP(0x24),ABS(0x2c),-1}},
@@ -334,10 +334,10 @@ void FCEUI_MemPoke(uint16 a, uint8 v, int hl)
 }
 
 typedef struct __BPOINT {
-	struct __BPOINT *next;
-	void (*Handler)(X6502 *X, int type, unsigned int A);
-	unsigned int A[2];
-	int type;
+  struct __BPOINT *next;
+  void (*Handler)(X6502 *X, int type, unsigned int A);
+  unsigned int A[2];
+  int type;
 } BPOINT;
 
 static BPOINT *BreakPoints=NULL;
@@ -355,9 +355,9 @@ static int FindBPoint(X6502 *X, int who, unsigned int A)
   if(tmp->type&who)
   {
    if(tmp->type&BPOINT_PC)
-    if(X->PC!=A) goto don;	/* Doesn't match, so go on. */
+    if(X->PC!=A) goto don;  /* Doesn't match, so go on. */
 
-   if((A>=tmp->A[0]) && (A<=tmp->A[1]))	/* Whee, match. */
+   if((A>=tmp->A[0]) && (A<=tmp->A[1]))  /* Whee, match. */
    {
     tmp->Handler(X,tmp->type,A);
     return(1);
@@ -389,7 +389,7 @@ static void WriteHandler(X6502 *X, unsigned int A, uint8 V)
 }
 
 int FCEUI_AddBreakPoint(int type, unsigned int A1, unsigned int A2, 
-		void (*Handler)(X6502 *, int type, unsigned int A))
+    void (*Handler)(X6502 *, int type, unsigned int A))
 {
  BPOINT *tmp;
 
@@ -484,23 +484,23 @@ int FCEUI_DeleteBreakPoint(uint32 w)
  {
   if(w==x)
   {
-   if(prev)			/* Not the first breakpoint. */
+   if(prev)      /* Not the first breakpoint. */
    {
-    if(tmp->next)		/* More breakpoints. */
+    if(tmp->next)    /* More breakpoints. */
      prev->next=tmp->next;
-    else			/* This is the last breakpoint. */
+    else      /* This is the last breakpoint. */
     {
      prev->next=0;
      LastBP=prev;
     }
    }
-   else				/* The first breakpoint. */
+   else        /* The first breakpoint. */
    {
-    if(tmp->next)		/* More breakpoints. */
+    if(tmp->next)    /* More breakpoints. */
      BreakPoints=tmp->next;
     else
     {
-     BreakPoints=LastBP=0;	/* No more breakpoints. */
+     BreakPoints=LastBP=0;  /* No more breakpoints. */
      /* Update the CPU hooks. */
      X6502_Debug(CPUHook,BreakPoints?ReadHandler:0,BreakPoints?WriteHandler:0);
     }

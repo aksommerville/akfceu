@@ -30,9 +30,9 @@ static DECLFW(Mapper33_write)
         if(A>=0xA000 && A<=0xA003)
          VROM_BANK1(0x1000+((A&3)<<10),V);
         else switch(A)
-	{
- 	 case 0x8000:if(!is48) MIRROR_SET((V>>6)&1);
-	             ROM_BANK8(0x8000,V);
+  {
+    case 0x8000:if(!is48) MIRROR_SET((V>>6)&1);
+               ROM_BANK8(0x8000,V);
                      break;
          case 0x8001:ROM_BANK8(0xA000,V); break;
          case 0x8002:VROM_BANK2(0x0000,V);break;
@@ -42,14 +42,14 @@ static DECLFW(Mapper33_write)
 
 static DECLFW(Mapper48_HiWrite)
 {
-	switch(A&0xF003)
-	{
+  switch(A&0xF003)
+  {
          case 0xc000:IRQLatch=V;break;
          case 0xc001:IRQCount=IRQLatch;break;
          case 0xc003:IRQa=0;X6502_IRQEnd(FCEU_IQEXT);break;
          case 0xc002:IRQa=1;break;
          case 0xe000:MIRROR_SET((V>>6)&1);break; 
-	}
+  }
 }
 
 static void heho(void)
@@ -67,14 +67,14 @@ static void heho(void)
 
 void Mapper33_init(void)
 {
-	SetWriteHandler(0x8000,0xffff,Mapper33_write);
-	is48=0;
+  SetWriteHandler(0x8000,0xffff,Mapper33_write);
+  is48=0;
 }
 
 void Mapper48_init(void)
 {
-	SetWriteHandler(0x8000,0xffff,Mapper33_write);
-	SetWriteHandler(0xc000,0xffff,Mapper48_HiWrite);
+  SetWriteHandler(0x8000,0xffff,Mapper33_write);
+  SetWriteHandler(0xc000,0xffff,Mapper48_HiWrite);
         GameHBIRQHook=heho;
-	is48=1;
+  is48=1;
 }

@@ -67,14 +67,14 @@ static DECLFW(Mapper23_write)
                  K4sel=V;
                  break;
      case 0x9000:
-     		switch(V&0x3)
-	        {
+         switch(V&0x3)
+          {
                  case 0:MIRROR_SET(0);break;
-	         case 1:MIRROR_SET(1);break;
-        	 case 2:onemir(0);break;
-	         case 3:onemir(1);break;
-        	}
-	        break;
+           case 1:MIRROR_SET(1);break;
+           case 2:onemir(0);break;
+           case 3:onemir(1);break;
+          }
+          break;
   }
  }
 }

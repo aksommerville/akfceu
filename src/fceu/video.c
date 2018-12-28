@@ -51,9 +51,9 @@ void FCEU_KillVirtualVideo(void)
 
 int FCEU_InitVirtualVideo(void)
 {
- if(!XBuf)		/* Some driver code may allocate XBuf externally. */
-			/* 256 bytes per scanline, * 240 scanline maximum, +8 for alignment,
-			*/
+ if(!XBuf)    /* Some driver code may allocate XBuf externally. */
+      /* 256 bytes per scanline, * 240 scanline maximum, +8 for alignment,
+      */
  if(!(XBuf= (uint8*) (FCEU_malloc(256 * 256 + 8))))
   return 0;
  xbsave=XBuf;
@@ -109,9 +109,9 @@ static void ReallySnap(void)
 
 void FCEU_PutImage(void)
 {
-	#ifdef SHOWFPS
-	ShowFPS();
-	#endif
+  #ifdef SHOWFPS
+  ShowFPS();
+  #endif
         if(FCEUGameInfo->type==GIT_NSF)
         {
          DrawNSF(XBuf);
@@ -134,8 +134,8 @@ void FCEU_PutImage(void)
          }
          if(FCEUGameInfo->type==GIT_VSUNI)
           FCEU_VSUniDraw(XBuf);
-	 FCEU_DrawSaveStates(XBuf);
-	 FCEU_DrawMovies(XBuf);
+   FCEU_DrawSaveStates(XBuf);
+   FCEU_DrawMovies(XBuf);
          FCEU_DrawNTSCControlBars(XBuf);
         }
         DrawMessage();
@@ -232,16 +232,16 @@ int SaveSnapshot(void)
   uint8 chunko[13];
 
   chunko[0]=chunko[1]=chunko[3]=0;
-  chunko[2]=0x1;			// Width of 256
+  chunko[2]=0x1;      // Width of 256
 
   chunko[4]=chunko[5]=chunko[6]=0;
-  chunko[7]=totallines;			// Height
+  chunko[7]=totallines;      // Height
 
-  chunko[8]=8;				// bit depth
-  chunko[9]=3;				// Color type; indexed 8-bit
-  chunko[10]=0;				// compression: deflate
-  chunko[11]=0;				// Basic adapative filter set(though none are used).
-  chunko[12]=0;				// No interlace.
+  chunko[8]=8;        // bit depth
+  chunko[9]=3;        // Color type; indexed 8-bit
+  chunko[10]=0;        // compression: deflate
+  chunko[11]=0;        // Basic adapative filter set(though none are used).
+  chunko[12]=0;        // No interlace.
 
   if(!WritePNGChunk(pp,13,"IHDR",chunko))
    goto PNGerr;
@@ -265,10 +265,10 @@ int SaveSnapshot(void)
 
   for(y=0;y<totallines;y++)
   {
-   *dest=0;			// No filter.
+   *dest=0;      // No filter.
    dest++;
    for(x=256;x;x--,tmp++,dest++)
-    *dest=*tmp; 	
+    *dest=*tmp;   
   }
 
   if(compress(compmem,&compmemsize,mork,(totallines<<8)+totallines)!=Z_OK)

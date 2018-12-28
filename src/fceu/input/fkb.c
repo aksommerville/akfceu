@@ -21,8 +21,8 @@
 #include <string.h>
 #include "share.h"
 #include "fkb.h"
-#define AK2(x,y)	( (FKB_##x) | (FKB_##y <<8) )
-#define AK(x) 		FKB_##x
+#define AK2(x,y)  ( (FKB_##x) | (FKB_##y <<8) )
+#define AK(x)     FKB_##x
 
 static uint8 bufit[0x49];
 static uint8 ksmode;
@@ -32,23 +32,23 @@ static uint8 ksindex;
 static uint16 matrix[9][2][4]=
 {
 {{AK(F8),AK(RETURN),AK(BRACKETLEFT),AK(BRACKETRIGHT)},   
-	{AK(KANA),AK(RIGHTSHIFT),AK(BACKSLASH),AK(STOP)}},
-{{AK(F7),AK(AT),AK(COLON),AK(SEMICOLON)}, 		
-	{AK(UNDERSCORE),AK(SLASH),AK(MINUS),AK(CARET)}},
+  {AK(KANA),AK(RIGHTSHIFT),AK(BACKSLASH),AK(STOP)}},
+{{AK(F7),AK(AT),AK(COLON),AK(SEMICOLON)},     
+  {AK(UNDERSCORE),AK(SLASH),AK(MINUS),AK(CARET)}},
 {{AK(F6),AK(O),AK(L),AK(K)},   
-	{AK(PERIOD),AK(COMMA),AK(P),AK(0)}},
-{{AK(F5),AK(I),AK(U),AK(J)},   	
-	{AK(M),AK(N),AK(9),AK(8)}},
+  {AK(PERIOD),AK(COMMA),AK(P),AK(0)}},
+{{AK(F5),AK(I),AK(U),AK(J)},     
+  {AK(M),AK(N),AK(9),AK(8)}},
 {{AK(F4),AK(Y),AK(G),AK(H)},  
-	{AK(B),AK(V),AK(7),AK(6)}},
+  {AK(B),AK(V),AK(7),AK(6)}},
 {{AK(F3),AK(T),AK(R),AK(D)},  
-	{AK(F),AK(C),AK(5),AK(4)}},
+  {AK(F),AK(C),AK(5),AK(4)}},
 {{AK(F2),AK(W),AK(S),AK(A)},  
-	{AK(X),AK(Z),AK(E),AK(3)}},
+  {AK(X),AK(Z),AK(E),AK(3)}},
 {{AK(F1),AK(ESCAPE),AK(Q),AK(CONTROL)},    
-	{AK(LEFTSHIFT),AK(GRAPH),AK(1),AK(2)}},
+  {AK(LEFTSHIFT),AK(GRAPH),AK(1),AK(2)}},
 {{AK(CLEAR),AK(UP),AK(RIGHT),AK(LEFT)},    
-	{AK(DOWN),AK(SPACE),AK(DELETE),AK(INSERT)}},
+  {AK(DOWN),AK(SPACE),AK(DELETE),AK(INSERT)}},
 };
 
 static void FP_FASTAPASS(1) FKB_Write(uint8 v)

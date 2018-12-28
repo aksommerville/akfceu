@@ -28,13 +28,13 @@ static DECLFW(Mapper61_write)
  {
   case 0x00:
   case 0x30:
-	  ROM_BANK32(A&0xF);
-	  break;
+    ROM_BANK32(A&0xF);
+    break;
   case 0x20:
   case 0x10:
-	  ROM_BANK16(0x8000,((A&0xF)<<1)| (((A&0x20)>>4)) );
-	  ROM_BANK16(0xC000,((A&0xF)<<1)| (((A&0x20)>>4)) );
-	  break;
+    ROM_BANK16(0x8000,((A&0xF)<<1)| (((A&0x20)>>4)) );
+    ROM_BANK16(0xC000,((A&0xF)<<1)| (((A&0x20)>>4)) );
+    break;
  }
  #ifdef moo
  if(!(A&0x10))

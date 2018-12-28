@@ -22,12 +22,12 @@
 
 static int is209;
 
-static uint8 IRQMode;	// from $c001
-static uint8 IRQPre;	// from $c004
+static uint8 IRQMode;  // from $c001
+static uint8 IRQPre;  // from $c004
 static uint8 IRQPreSize; // from $c007
-static uint8 IRQCount;	// from $c005
-static uint8 IRQXOR;	// Loaded from $C006
-static uint8 IRQa;	// $c002, $c003, and $c000
+static uint8 IRQCount;  // from $c005
+static uint8 IRQXOR;  // Loaded from $C006
+static uint8 IRQa;  // $c002, $c003, and $c000
 
 static uint8 mul[2];
 static uint8 regie;
@@ -41,20 +41,20 @@ static uint16 names[4];
 static uint8 tekker;
 
 static SFORMAT Tek_StateRegs[]={
-	{&IRQCount, 1, "IRQC"},
-	{&IRQa, 1, "IRQa"},
-	{mul, 2, "MUL"},
-	{&regie, 1, "REGI"},
-	{tkcom, 4, "TKCO"},
-	{prgb, 4, "PRGB"},
-	{chrlow, 4, "CHRL"},
-	{chrhigh, 8, "CHRH"},
-	{&names[0], 2|FCEUSTATE_RLSB, "NMS0"},
-	{&names[1], 2|FCEUSTATE_RLSB, "NMS1"},
-	{&names[2], 2|FCEUSTATE_RLSB, "NMS2"},
-	{&names[3], 2|FCEUSTATE_RLSB, "NMS3"},
-	{&tekker, 1, "TEKR"},
-	{0}
+  {&IRQCount, 1, "IRQC"},
+  {&IRQa, 1, "IRQa"},
+  {mul, 2, "MUL"},
+  {&regie, 1, "REGI"},
+  {tkcom, 4, "TKCO"},
+  {prgb, 4, "PRGB"},
+  {chrlow, 4, "CHRL"},
+  {chrhigh, 8, "CHRH"},
+  {&names[0], 2|FCEUSTATE_RLSB, "NMS0"},
+  {&names[1], 2|FCEUSTATE_RLSB, "NMS1"},
+  {&names[2], 2|FCEUSTATE_RLSB, "NMS2"},
+  {&names[3], 2|FCEUSTATE_RLSB, "NMS3"},
+  {&tekker, 1, "TEKR"},
+  {0}
 };
 
 static DECLFR(tekread)
@@ -76,16 +76,16 @@ static void mira(void)
  if(tkcom[0]&0x20 && is209)
  {
   int x;
-  if(tkcom[0] & 0x40)	// Name tables are ROM-only
+  if(tkcom[0] & 0x40)  // Name tables are ROM-only
   {
    for(x=0;x<4;x++)
     setntamem(CHRptr[0]+(((names[x])&CHRmask1[0])<<10), 0, x);
   }
-  else			// Name tables can be RAM or ROM.
+  else      // Name tables can be RAM or ROM.
   {
    for(x=0;x<4;x++)
    {
-    if((tkcom[2]&0x80) == (names[x]&0x80))	// RAM selected.
+    if((tkcom[2]&0x80) == (names[x]&0x80))  // RAM selected.
      setntamem(NTARAM + ((names[x]&0x1)<<10),1,x);
     else
      setntamem(CHRptr[0]+(((names[x])&CHRmask1[0])<<10), 0, x);
@@ -112,23 +112,23 @@ static void tekprom(void)
           setprg16(0xC000,prgb[2]);
           break;
    case 2:              //2 = 8 KB ??
-	  if(tkcom[0]&0x4)
-	  {
+    if(tkcom[0]&0x4)
+    {
            setprg8(0x8000,prgb[0]);
            setprg8(0xa000,prgb[1]);
            setprg8(0xc000,prgb[2]);
            setprg8(0xe000,prgb[3]);
-	  }
-	  else
-	  {
-	   if(tkcom[0]&0x80)
-	    setprg8(0x6000,prgb[3]);
+    }
+    else
+    {
+     if(tkcom[0]&0x80)
+      setprg8(0x6000,prgb[3]);
            setprg8(0x8000,prgb[0]);
            setprg8(0xa000,prgb[1]);
            setprg8(0xc000,prgb[2]);
            setprg8(0xe000,~0);
-	  }
- 	  break;
+    }
+     break;
    case 0:
    case 3:
           setprg8(0x8000,prgb[0]);
@@ -147,19 +147,19 @@ static void tekvrom(void)
   {
    case 0x00:      // 8KB
            setchr8(chrlow[0]|(chrhigh[0]<<8));
-	   break;
+     break;
    case 0x08:      // 4KB
           for(x=0;x<8;x+=4)
            setchr4(x<<10,chrlow[x]|(chrhigh[x]<<8));
-	  break;
+    break;
    case 0x10:      // 2KB
-	  for(x=0;x<8;x+=2)
+    for(x=0;x<8;x+=2)
            setchr2(x<<10,chrlow[x]|(chrhigh[x]<<8));
-	  break;
+    break;
    case 0x18:      // 1KB
-	   for(x=0;x<8;x++)
-	    setchr1(x<<10,(chrlow[x]|(chrhigh[x]<<8)));
-	   break;
+     for(x=0;x<8;x++)
+      setchr1(x<<10,(chrlow[x]|(chrhigh[x]<<8)));
+     break;
  }
 }
 
@@ -270,7 +270,7 @@ static void ClockCounter(void)
 static void SLWrap(void)
 {
  int x;
- for(x=0;x<8;x++) ClockCounter();	// 8 PPU A10 0->1 transitions per scanline(usually)
+ for(x=0;x<8;x++) ClockCounter();  // 8 PPU A10 0->1 transitions per scanline(usually)
 }
 /*
 static uint32 lasta;

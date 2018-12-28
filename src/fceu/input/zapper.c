@@ -19,7 +19,7 @@
  */
 
 #include        <string.h>
-#include	<stdlib.h>
+#include  <stdlib.h>
 
 #include        "share.h"
 
@@ -27,8 +27,8 @@ typedef struct {
         uint32 mzx,mzy,mzb;
         int zap_readbit;
         int bogo;
-	int zappo;
-	uint64 zaphit;
+  int zappo;
+  uint64 zaphit;
 } ZAPPER;
 
 static ZAPPER ZD[2];
@@ -97,7 +97,7 @@ static INLINE int CheckColor(int w)
 static uint8 FP_FASTAPASS(1) ReadZapperVS(int w)
 {
                 uint8 ret=0;
-		
+    
                 if(ZD[w].zap_readbit==4) ret=1;
 
                 if(ZD[w].zap_readbit==7)
@@ -110,14 +110,14 @@ static uint8 FP_FASTAPASS(1) ReadZapperVS(int w)
                  if(!CheckColor(w))
                   ret|=0x1;
                 }
-		if(!fceuindbg)
+    if(!fceuindbg)
                  ZD[w].zap_readbit++; 
                 return ret;
 }
 
 static void FP_FASTAPASS(1) StrobeZapperVS(int w)
 {                        
-			ZD[w].zap_readbit=0;
+      ZD[w].zap_readbit=0;
 }
 
 static uint8 FP_FASTAPASS(1) ReadZapper(int w)

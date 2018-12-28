@@ -26,10 +26,10 @@ static uint8 cmd;
 static uint8 MirCache[8];
 
 static SFORMAT DB_StateRegs[]={
-	{DRegs, 8, "DREG"},
-	{&cmd, 1, "CMD"},
-	{&lastA, 1, "LAST"},
-	{0}
+  {DRegs, 8, "DREG"},
+  {&cmd, 1, "CMD"},
+  {&lastA, 1, "LAST"},
+  {0}
 };
 
 static void FP_FASTAPASS(1) dragonbust_ppu(uint32 A)
@@ -66,7 +66,7 @@ static void toot(void)
 static DECLFW(Mapper95_write)
 {
         switch(A&0xF001)
-	{
+  {
 
          case 0x8000:
          cmd = V;
@@ -74,7 +74,7 @@ static DECLFW(Mapper95_write)
 
          case 0x8001:
                 switch(cmd&0x07)
-		{
+    {
                  case 0: DRegs[0]=(V&0x3F)>>1;toot();V>>=1;setchr2(0x0000,V&0x1F);break;
                  case 1: DRegs[1]=(V&0x3F)>>1;toot();V>>=1;setchr2(0x0800,V&0x1F);break;
                  case 2: DRegs[2]=V&0x3F;toot();setchr1(0x1000,V&0x1F); break;
@@ -89,7 +89,7 @@ static DECLFW(Mapper95_write)
                          break;
                 }
                 break;
-	}
+  }
 }
 
 static void DBSync()

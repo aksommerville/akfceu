@@ -24,39 +24,39 @@
 
 void Mapper230_Reset(void)
 {
-	rom_sw ^= 1; //1 - rom_sw;
+  rom_sw ^= 1; //1 - rom_sw;
 
-	if( rom_sw ) {
-		ROM_BANK16(0x8000,0);
-		ROM_BANK16(0xc000,7);
-	} else {
-		ROM_BANK16(0x8000,8);
-		ROM_BANK16(0xc000,39);
-	}
-	MIRROR_SET2(1);
+  if( rom_sw ) {
+    ROM_BANK16(0x8000,0);
+    ROM_BANK16(0xc000,7);
+  } else {
+    ROM_BANK16(0x8000,8);
+    ROM_BANK16(0xc000,39);
+  }
+  MIRROR_SET2(1);
 }
 
 static DECLFW(Mapper230_write)
 {
-	if( rom_sw ) {
-		ROM_BANK16( 0x8000, V&0x07 );
-	} else {
-		if( V & 0x20 ) {
-			ROM_BANK16( 0x8000, (V&0x1F)+8 );
-			ROM_BANK16( 0xc000, (V&0x1F)+8 );
-		} else {
-			ROM_BANK32( ((V&0x1E) >> 1) + 4 );
-		}
-		MIRROR_SET2( ((V & 0x40) >> 6) );
-	}
+  if( rom_sw ) {
+    ROM_BANK16( 0x8000, V&0x07 );
+  } else {
+    if( V & 0x20 ) {
+      ROM_BANK16( 0x8000, (V&0x1F)+8 );
+      ROM_BANK16( 0xc000, (V&0x1F)+8 );
+    } else {
+      ROM_BANK32( ((V&0x1E) >> 1) + 4 );
+    }
+    MIRROR_SET2( ((V & 0x40) >> 6) );
+  }
 }
 
 void Mapper230_init(void)
 {
-	ROM_BANK16(0x8000,0);
-	ROM_BANK16(0xc000,7);
-	SetWriteHandler(0x8000, 0xffff, Mapper230_write);
-	MapperReset = Mapper230_Reset;
-	rom_sw = 1;
+  ROM_BANK16(0x8000,0);
+  ROM_BANK16(0xc000,7);
+  SetWriteHandler(0x8000, 0xffff, Mapper230_write);
+  MapperReset = Mapper230_Reset;
+  rom_sw = 1;
 }
 

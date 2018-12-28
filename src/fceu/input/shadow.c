@@ -19,7 +19,7 @@
  */
 
 #include        <string.h>
-#include	<stdlib.h>
+#include  <stdlib.h>
 
 #include        "share.h"
 
@@ -96,22 +96,22 @@ static INLINE int CheckColor(void)
 
 static uint8 FP_FASTAPASS(2) ReadZapper(int w, uint8 ret)
 {
-		if(w)
-		{
-		 ret&=~0x18;
+    if(w)
+    {
+     ret&=~0x18;
                  if(ZD.bogo)
                   ret|=0x10;
                  if(CheckColor())
                   ret|=0x8;
-		}
-		else
-		{
-		 //printf("Kayo: %d\n",ZD.zap_readbit);
-		 ret&=~2;
-		 //if(ZD.zap_readbit==4) ret|=ZD.mzb&2;
-		 ret|=(ret&1)<<1;
-		 //ZD.zap_readbit++;
-		}
+    }
+    else
+    {
+     //printf("Kayo: %d\n",ZD.zap_readbit);
+     ret&=~2;
+     //if(ZD.zap_readbit==4) ret|=ZD.mzb&2;
+     ret|=(ret&1)<<1;
+     //ZD.zap_readbit++;
+    }
                 return ret;
 }
 

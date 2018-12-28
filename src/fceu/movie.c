@@ -10,7 +10,7 @@
 #include "general.h"
 #include "video.h"
 
-static int current = 0;		// > 0 for recording, < 0 for playback
+static int current = 0;    // > 0 for recording, < 0 for playback
 static FILE *slots[10]={0};
 static uint8 joop[4];
 static uint32 framets;
@@ -38,14 +38,14 @@ void FCEUI_SaveMovie(char *fname)
  FILE *fp;
  char *fn;
 
- if(current < 0)	/* Can't interrupt playback.*/
+ if(current < 0)  /* Can't interrupt playback.*/
   return;
 
- if(current > 0)	/* Stop saving. */
+ if(current > 0)  /* Stop saving. */
  {
-  DoEncode(0,0,1);	/* Write a dummy timestamp value so that the movie will keep
-			   "playing" after user input has stopped.
-			*/
+  DoEncode(0,0,1);  /* Write a dummy timestamp value so that the movie will keep
+         "playing" after user input has stopped.
+      */
   fclose(slots[current-1]);
   MovieStatus[current - 1] = 1;
   current=0;
@@ -156,9 +156,9 @@ void FCEUMOV_AddJoy(uint8 *js)
 {
  int x,y;
 
- if(!current) return;	/* Not playback nor recording. */
+ if(!current) return;  /* Not playback nor recording. */
 
- if(current < 0)	/* Playback */
+ if(current < 0)  /* Playback */
  {
   while(nextts == framets)
   {
@@ -169,7 +169,7 @@ void FCEUMOV_AddJoy(uint8 *js)
    {
     if(nextd&0x80)
     {
-	//puts("Egads");
+  //puts("Egads");
      FCEU_DoSimpleCommand(nextd&0x1F);
     }
     else
@@ -209,7 +209,7 @@ void FCEUMOV_AddJoy(uint8 *js)
   }
   memcpy(js,joop,4);
  }
- else			/* Recording */
+ else      /* Recording */
  {
   for(x=0;x<4;x++)
   {
@@ -220,7 +220,7 @@ void FCEUMOV_AddJoy(uint8 *js)
       DoEncode(x, y, 0);
     joop[x] = js[x];
    }
-   else if(framets == ((1<<24)-1)) DoEncode(0,0,1);	/* Overflow will happen, so do dummy update. */
+   else if(framets == ((1<<24)-1)) DoEncode(0,0,1);  /* Overflow will happen, so do dummy update. */
   }
  }
  framets++;
@@ -228,7 +228,7 @@ void FCEUMOV_AddJoy(uint8 *js)
 
 void FCEUMOV_AddCommand(int cmd)
 {
- if(current <= 0) return;	/* Return if not recording a movie */
+ if(current <= 0) return;  /* Return if not recording a movie */
  //printf("%d\n",cmd);
  DoEncode((cmd>>3)&0x3,cmd&0x7,1);
 }

@@ -1139,7 +1139,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_PG (MOD(opll,i));
         UPDATE_RKS (MOD(opll,i));
         UPDATE_EG (MOD(opll,i));
@@ -1153,7 +1153,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_PG (CAR(opll,i));
         UPDATE_RKS (CAR(opll,i));
         UPDATE_EG (CAR(opll,i));
@@ -1167,7 +1167,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_TLL(MOD(opll,i));
       }
     }
@@ -1179,7 +1179,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_WF(MOD(opll,i));
         UPDATE_WF(CAR(opll,i));
       }
@@ -1192,7 +1192,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_EG (MOD(opll,i));
       }
     }
@@ -1204,7 +1204,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_EG(CAR(opll,i));
       }
     }
@@ -1216,7 +1216,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
         UPDATE_EG (MOD(opll,i));
       }
     }
@@ -1228,7 +1228,7 @@ OPLL_writeReg (OPLL * opll, e_uint32 reg, e_uint32 data)
     {
       if (opll->patch_number[i] == 0)
       {
-	setInstrument(opll, i, 0);
+  setInstrument(opll, i, 0);
          UPDATE_EG (CAR(opll,i));
       }
     }

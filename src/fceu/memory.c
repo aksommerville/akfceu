@@ -49,7 +49,7 @@ void *FCEU_malloc(uint32 size)
  return ret;
 }
 
-void FCEU_free(void *ptr)		// Might do something with this and FCEU_malloc later...
+void FCEU_free(void *ptr)    // Might do something with this and FCEU_malloc later...
 {
  free(ptr);
 }

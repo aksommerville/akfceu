@@ -53,8 +53,8 @@ extern void FP_FASTAPASS(1) (*MapIRQHook)(int a);
 #define FCEU_IQEXT2     0x002
 /* ... */
 #define FCEU_IQRESET    0x020
-#define FCEU_IQNMI2	0x040	// Delayed NMI, gets converted to *_IQNMI
-#define FCEU_IQNMI	0x080
+#define FCEU_IQNMI2  0x040  // Delayed NMI, gets converted to *_IQNMI
+#define FCEU_IQNMI  0x080
 #define FCEU_IQDPCM     0x100
 #define FCEU_IQFCOUNT   0x200
 #define FCEU_IQTEMP     0x800

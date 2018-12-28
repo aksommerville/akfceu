@@ -52,7 +52,7 @@ static uint8 PRGBanks[4];
 static uint8 WRAMPage;
 static uint8 CHRBanksA[8], CHRBanksB[4];
 static uint8 WRAMMaskEnable[2];
-static uint8 ABMode;		/* A=0, B=1 */
+static uint8 ABMode;    /* A=0, B=1 */
 
 static uint8 IRQScanline,IRQEnable;
 static uint8 CHRMode, NTAMirroring, NTFill, ATFill;
@@ -100,7 +100,7 @@ cartdata MMC5CartList[MMC5_NOCARTS]=
  {0x8ce478db,2},        /* Nobunaga's Ambition 2 */
  {0xeee9a682,2},
 
- {0x1ced086f,2},	/* Ishin no Arashi */
+ {0x1ced086f,2},  /* Ishin no Arashi */
 
  {0xf540677b,4},        /* Nobunaga...Bushou Fuuun Roku */
 
@@ -142,33 +142,33 @@ static void BuildWRAMSizeTable(void)
 
 static void MMC5CHRA(void)
 {
-	int x;
-	switch(mmc5vsize&3)
-	{
-	 case 0:setchr8(CHRBanksA[7]);
-		MMC5SPRVROM_BANK8(CHRBanksA[7]);
-        	break;
-	 case 1:setchr4(0x0000,CHRBanksA[3]);
-	        setchr4(0x1000,CHRBanksA[7]);
-		MMC5SPRVROM_BANK4(0x0000,CHRBanksA[3]);
+  int x;
+  switch(mmc5vsize&3)
+  {
+   case 0:setchr8(CHRBanksA[7]);
+    MMC5SPRVROM_BANK8(CHRBanksA[7]);
+          break;
+   case 1:setchr4(0x0000,CHRBanksA[3]);
+          setchr4(0x1000,CHRBanksA[7]);
+    MMC5SPRVROM_BANK4(0x0000,CHRBanksA[3]);
                 MMC5SPRVROM_BANK4(0x1000,CHRBanksA[7]);
-        	break;
- 	 case 2:setchr2(0x0000,CHRBanksA[1]);
-        	setchr2(0x0800,CHRBanksA[3]);
-	        setchr2(0x1000,CHRBanksA[5]);
-	        setchr2(0x1800,CHRBanksA[7]);
-		MMC5SPRVROM_BANK2(0x0000,CHRBanksA[1]);
+          break;
+    case 2:setchr2(0x0000,CHRBanksA[1]);
+          setchr2(0x0800,CHRBanksA[3]);
+          setchr2(0x1000,CHRBanksA[5]);
+          setchr2(0x1800,CHRBanksA[7]);
+    MMC5SPRVROM_BANK2(0x0000,CHRBanksA[1]);
                 MMC5SPRVROM_BANK2(0x0800,CHRBanksA[3]);
                 MMC5SPRVROM_BANK2(0x1000,CHRBanksA[5]);
                 MMC5SPRVROM_BANK2(0x1800,CHRBanksA[7]);
-        	break;
-	 case 3:
-	 	for(x=0;x<8;x++)
-	        {
-	         setchr1(x<<10,CHRBanksA[x]);
-	         MMC5SPRVROM_BANK1(x<<10,CHRBanksA[x]);
-		}
-	        break;
+          break;
+   case 3:
+     for(x=0;x<8;x++)
+          {
+           setchr1(x<<10,CHRBanksA[x]);
+           MMC5SPRVROM_BANK1(x<<10,CHRBanksA[x]);
+    }
+          break;
  }
 }
 
@@ -177,35 +177,35 @@ static void MMC5CHRB(void)
  int x;
  switch(mmc5vsize&3)
  {
-	case 0:	
-		setchr8(CHRBanksB[3]);
-		MMC5BGVROM_BANK8(CHRBanksB[3]);
-	        break;
+  case 0:  
+    setchr8(CHRBanksB[3]);
+    MMC5BGVROM_BANK8(CHRBanksB[3]);
+          break;
 
-	case 1: 
-		setchr4(0x0000,CHRBanksB[3]);
-	       	setchr4(0x1000,CHRBanksB[3]);
-	        MMC5BGVROM_BANK4(0x0000,CHRBanksB[3]);
-	        MMC5BGVROM_BANK4(0x1000,CHRBanksB[3]);
-	        break;
+  case 1: 
+    setchr4(0x0000,CHRBanksB[3]);
+           setchr4(0x1000,CHRBanksB[3]);
+          MMC5BGVROM_BANK4(0x0000,CHRBanksB[3]);
+          MMC5BGVROM_BANK4(0x1000,CHRBanksB[3]);
+          break;
 
-	case 2:	
-		setchr2(0x0000,CHRBanksB[1]);
-		setchr2(0x0800,CHRBanksB[3]);
-		setchr2(0x1000,CHRBanksB[1]);
-		setchr2(0x1800,CHRBanksB[3]);
-		MMC5BGVROM_BANK2(0x0000,CHRBanksB[1]);
-	        MMC5BGVROM_BANK2(0x0800,CHRBanksB[3]);
-	        MMC5BGVROM_BANK2(0x1000,CHRBanksB[1]);
-	        MMC5BGVROM_BANK2(0x1800,CHRBanksB[3]);
-	        break;
-	case 3:
-        	for(x=0;x<8;x++)
-		{
-		 setchr1(x<<10,CHRBanksB[x&3]);
-	         MMC5BGVROM_BANK1(x<<10,CHRBanksB[x&3]);
-		}
-	        break;
+  case 2:  
+    setchr2(0x0000,CHRBanksB[1]);
+    setchr2(0x0800,CHRBanksB[3]);
+    setchr2(0x1000,CHRBanksB[1]);
+    setchr2(0x1800,CHRBanksB[3]);
+    MMC5BGVROM_BANK2(0x0000,CHRBanksB[1]);
+          MMC5BGVROM_BANK2(0x0800,CHRBanksB[3]);
+          MMC5BGVROM_BANK2(0x1000,CHRBanksB[1]);
+          MMC5BGVROM_BANK2(0x1800,CHRBanksB[3]);
+          break;
+  case 3:
+          for(x=0;x<8;x++)
+    {
+     setchr1(x<<10,CHRBanksB[x&3]);
+           MMC5BGVROM_BANK1(x<<10,CHRBanksB[x&3]);
+    }
+          break;
  }
 }
 
@@ -232,15 +232,15 @@ static void MMC5PRG(void)
            MMC5ROMWrProtect[0]=MMC5ROMWrProtect[1]=
            MMC5ROMWrProtect[2]=MMC5ROMWrProtect[3]=1;
            setprg32(0x8000,((PRGBanks[1]&0x7F)>>2));
-	   for(x=0;x<4;x++)
- 	    MMC5MemIn[1+x]=1;
+     for(x=0;x<4;x++)
+       MMC5MemIn[1+x]=1;
            break;
   case 1:
          if(PRGBanks[1]&0x80)
           {
            MMC5ROMWrProtect[0]=MMC5ROMWrProtect[1]=1;
            setprg16(0x8000,(PRGBanks[1]>>1));
-	   MMC5MemIn[1]=MMC5MemIn[2]=1;
+     MMC5MemIn[1]=MMC5MemIn[2]=1;
           }
          else
           {
@@ -248,14 +248,14 @@ static void MMC5PRG(void)
            MMC5WRAM(0x8000,PRGBanks[1]&7&0xFE);
            MMC5WRAM(0xA000,(PRGBanks[1]&7&0xFE)+1);
           }
-	  MMC5MemIn[3]=MMC5MemIn[4]=1;
+    MMC5MemIn[3]=MMC5MemIn[4]=1;
           MMC5ROMWrProtect[2]=MMC5ROMWrProtect[3]=1;
           setprg16(0xC000,(PRGBanks[3]&0x7F)>>1);
          break;
   case 2:
          if(PRGBanks[1]&0x80)
           {
-	   MMC5MemIn[1]=MMC5MemIn[2]=1;
+     MMC5MemIn[1]=MMC5MemIn[2]=1;
            MMC5ROMWrProtect[0]=MMC5ROMWrProtect[1]=1;
            setprg16(0x8000,(PRGBanks[1]&0x7F)>>1);
           }
@@ -269,24 +269,24 @@ static void MMC5PRG(void)
           {MMC5ROMWrProtect[2]=1;MMC5MemIn[3]=1;setprg8(0xC000,PRGBanks[2]&0x7F);}
          else
           {MMC5ROMWrProtect[2]=0;MMC5WRAM(0xC000,PRGBanks[2]&7);}
-	 MMC5MemIn[4]=1;
+   MMC5MemIn[4]=1;
          MMC5ROMWrProtect[3]=1;
          setprg8(0xE000,PRGBanks[3]&0x7F);
          break;
   case 3:
-	 for(x=0;x<3;x++)
-	  if(PRGBanks[x]&0x80)
-	  {
-	   MMC5ROMWrProtect[x]=1;
-	   setprg8(0x8000+(x<<13),PRGBanks[x]&0x7F);
-	   MMC5MemIn[1+x]=1;
-	  }
-	  else
-	  {
-	   MMC5ROMWrProtect[x]=0;
-	   MMC5WRAM(0x8000+(x<<13),PRGBanks[x]&7);
-	  }
-	 MMC5MemIn[4]=1;
+   for(x=0;x<3;x++)
+    if(PRGBanks[x]&0x80)
+    {
+     MMC5ROMWrProtect[x]=1;
+     setprg8(0x8000+(x<<13),PRGBanks[x]&0x7F);
+     MMC5MemIn[1+x]=1;
+    }
+    else
+    {
+     MMC5ROMWrProtect[x]=0;
+     MMC5WRAM(0x8000+(x<<13),PRGBanks[x]&7);
+    }
+   MMC5MemIn[4]=1;
          MMC5ROMWrProtect[3]=1;
          setprg8(0xE000,PRGBanks[3]&0x7F);
          break;
@@ -304,8 +304,8 @@ static DECLFW(Mapper5_write)
  else switch(A)
  {
    default:
-	   //printf("$%04x, $%02x\n",A,V);
-	   break;
+     //printf("$%04x, $%02x\n",A,V);
+     break;
    case 0x5105:
                 {
                 int x;
@@ -320,7 +320,7 @@ static DECLFW(Mapper5_write)
                  }
                 }
                }
-	       NTAMirroring=V;
+         NTAMirroring=V;
                break;
 
    case 0x5113:WRAMPage=V;MMC5WRAM(0x6000,V&7);break;
@@ -336,34 +336,34 @@ static DECLFW(Mapper5_write)
    case 0x5115:
    case 0x5116:
    case 0x5117:
-	       PRGBanks[A&3]=V;MMC5PRG();break;
+         PRGBanks[A&3]=V;MMC5PRG();break;
    case 0x5128:
    case 0x5129:
    case 0x512a:
    case 0x512b:ABMode=1;
                CHRBanksB[A&3]=V;
-	       MMC5CHRB();
-	       break;
+         MMC5CHRB();
+         break;
    case 0x5102:WRAMMaskEnable[0]=V;break;
    case 0x5103:WRAMMaskEnable[1]=V;break;
    case 0x5104:CHRMode=V;MMC5HackCHRMode=V&3;break;
    case 0x5106:if(V!=NTFill)
                {
-		uint32 t;
-		t=V|(V<<8)|(V<<16)|(V<<24);
+    uint32 t;
+    t=V|(V<<8)|(V<<16)|(V<<24);
                 FCEU_dwmemset(MMC5fill,t,0x3c0);
                }
-	       NTFill=V;
+         NTFill=V;
                break;
    case 0x5107:if(V!=ATFill)
                {
                 unsigned char moop;
                 uint32 t;
                 moop=V|(V<<2)|(V<<4)|(V<<6);
-		t=moop|(moop<<8)|(moop<<16)|(moop<<24);
+    t=moop|(moop<<8)|(moop<<16)|(moop<<24);
                 FCEU_dwmemset(MMC5fill+0x3c0,t,0x40);
                }
-	       ATFill=V;
+         ATFill=V;
                break;
    case 0x5200:MMC5HackSPMode=V;break;
    case 0x5201:MMC5HackSPScroll=(V>>3)&0x1F;break;
@@ -377,10 +377,10 @@ static DECLFW(Mapper5_write)
 
 static DECLFR(MMC5_ReadROMRAM)
 {
-	if(MMC5MemIn[(A-0x6000)>>13])
+  if(MMC5MemIn[(A-0x6000)>>13])
          return Page[A>>11][A];
-	else
-	 return X.DB;
+  else
+   return X.DB;
 }
 
 static DECLFW(MMC5_WriteROMRAM)
@@ -415,12 +415,12 @@ static DECLFR(MMC5_read)
   //default:printf("$%04x\n",A);break;
   case 0x5204:X6502_IRQEnd(FCEU_IQEXT);
               {
-		uint8 x;
-		x=MMC5IRQR;
-		if(!fceuindbg)
-		 MMC5IRQR&=0x40;
-		return x;
-	      }
+    uint8 x;
+    x=MMC5IRQR;
+    if(!fceuindbg)
+     MMC5IRQR&=0x40;
+    return x;
+        }
   case 0x5205:return (mul[0]*mul[1]);
   case 0x5206:return ((mul[0]*mul[1])>>8);
  }
@@ -504,7 +504,7 @@ typedef struct {
         uint16 wl[2];
         uint8 env[2];
         uint8 enable;
-	uint8 running;
+  uint8 running;
         uint8 raw;
         uint8 rawcontrol;
 
@@ -556,7 +556,7 @@ static DECLFW(Mapper5_SW)
 
   case 0x0:
   case 0x4://printf("%04x:$%02x\n",A,V&0x30);
-	   if(sfun) sfun(A>>2);
+     if(sfun) sfun(A>>2);
            MMC5Sound.env[A>>2]=V;
            break;
   case 0x2:
@@ -566,18 +566,18 @@ static DECLFW(Mapper5_SW)
            break;
   case 0x3:
   case 0x7://printf("%04x:$%02x\n",A,V>>3);
-	   MMC5Sound.wl[A>>2]&=~0x0700;
+     MMC5Sound.wl[A>>2]&=~0x0700;
            MMC5Sound.wl[A>>2]|=(V&0x07)<<8;           
-	   MMC5Sound.running|=1<<(A>>2);
-	   break;
+     MMC5Sound.running|=1<<(A>>2);
+     break;
   case 0x15:if(sfun)
             {
              sfun(0);
              sfun(1);
             }
-	    MMC5Sound.running&=V;
+      MMC5Sound.running&=V;
             MMC5Sound.enable=V;
-		//printf("%02x\n",V);
+    //printf("%02x\n",V);
             break;
  }
 }
@@ -763,20 +763,20 @@ static SFORMAT MMC5_StateRegs[]={
         { CHRBanksA, 8, "CHRA"},
         { CHRBanksB, 4, "CHRB"},
         { &WRAMPage, 1, "WRMP"}, 
-	{ WRAMMaskEnable, 2, "WRME"},
-	{ &ABMode, 1, "ABMD"},
-	{ &IRQScanline, 1, "IRQS"},
-	{ &IRQEnable, 1, "IRQE"},
-	{ &CHRMode, 1, "CHRM"},
-	{ &NTAMirroring, 1, "NTAM"},
-	{ &NTFill, 1, "NTFL"},
-	{ &ATFill, 1, "ATFL"},
+  { WRAMMaskEnable, 2, "WRME"},
+  { &ABMode, 1, "ABMD"},
+  { &IRQScanline, 1, "IRQS"},
+  { &IRQEnable, 1, "IRQE"},
+  { &CHRMode, 1, "CHRM"},
+  { &NTAMirroring, 1, "NTAM"},
+  { &NTFill, 1, "NTFL"},
+  { &ATFill, 1, "ATFL"},
 
         { &MMC5Sound.wl[0], 2|FCEUSTATE_RLSB, "SDW0"},
         { &MMC5Sound.wl[1], 2|FCEUSTATE_RLSB, "SDW1"},
         { MMC5Sound.env, 2, "SDEV"},
         { &MMC5Sound.enable, 1, "SDEN"},
-	{ &MMC5Sound.running, 1, "SDRU"},
+  { &MMC5Sound.running, 1, "SDRU"},
         { &MMC5Sound.raw, 1, "SDRW"},
         { &MMC5Sound.rawcontrol, 1, "SDRC"},
         {0}

@@ -19,12 +19,12 @@
  */
 
 #include        <string.h>
-#include	<stdlib.h>
-#include	"share.h"
+#include  <stdlib.h>
+#include  "share.h"
 
 typedef struct {
-	uint32 mzx,mzb;
-	uint32 readbit;
+  uint32 mzx,mzb;
+  uint32 readbit;
 } ARK;
 
 static ARK NESArk[2];
@@ -32,7 +32,7 @@ static ARK FCArk;
 
 static void StrobeARKFC(void)
 {
-	FCArk.readbit=0;
+  FCArk.readbit=0;
 }
 
 
@@ -99,7 +99,7 @@ static uint8 FP_FASTAPASS(1) ReadARK(int w)
 
 static void FP_FASTAPASS(1) StrobeARK(int w)
 {
-	NESArk[w].readbit=0;
+  NESArk[w].readbit=0;
 }
 
 static void FP_FASTAPASS(3) UpdateARK(int w, void *data, int arg)

@@ -19,20 +19,20 @@
  */
 
 typedef struct {
-	   void (*Fill)(int Count);	/* Low quality ext sound. */
+     void (*Fill)(int Count);  /* Low quality ext sound. */
 
-	   /* NeoFill is for sound devices that are emulated in a more
-	      high-level manner(VRC7) in HQ mode.  Interestingly, 
-	      this device has slightly better sound quality(updated more
-	      often) in lq mode than in high-quality mode.  Maybe that
-     	      should be fixed. :)
-	   */
+     /* NeoFill is for sound devices that are emulated in a more
+        high-level manner(VRC7) in HQ mode.  Interestingly, 
+        this device has slightly better sound quality(updated more
+        often) in lq mode than in high-quality mode.  Maybe that
+             should be fixed. :)
+     */
            void (*NeoFill)(int32 *Wave, int Count);
-	   void (*HiFill)(void);
-	   void (*HiSync)(int32 ts);
+     void (*HiFill)(void);
+     void (*HiSync)(int32 ts);
 
-	   void (*RChange)(void);
-	   void (*Kill)(void);
+     void (*RChange)(void);
+     void (*Kill)(void);
 } EXPSOUND;
 
 extern EXPSOUND GameExpSound;

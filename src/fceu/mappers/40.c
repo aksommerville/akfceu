@@ -36,11 +36,11 @@ static void FP_FASTAPASS(1) Mapper40IRQ(int a)
  if(IRQa)
  {
         if(IRQCount<4096) 
-	 IRQCount+=a;
-	else
+   IRQCount+=a;
+  else
         {
          IRQa=0;
-	 X6502_IRQBegin(FCEU_IQEXT);
+   X6502_IRQBegin(FCEU_IQEXT);
         }
  }
 }

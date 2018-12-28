@@ -90,15 +90,15 @@ static DECLFW(M187HWrite)
 
   case 0x8000:cmd=V;safe=1;break;
   case 0x8001:
-	      if(safe)
-	      {
-	       //printf("Cmd: %d, %02x, %04x\n",cmd&0x7,V,X.PC);
-	       DRegs[cmd&7]=V;
-	       Sync();
+        if(safe)
+        {
+         //printf("Cmd: %d, %02x, %04x\n",cmd&0x7,V,X.PC);
+         DRegs[cmd&7]=V;
+         Sync();
                safe=0;
               }
-		if(poofish==0x28) setprg8(0xc000,0x17);
-	      break;
+    if(poofish==0x28) setprg8(0xc000,0x17);
+        break;
 
  }
 }

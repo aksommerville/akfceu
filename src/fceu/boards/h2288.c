@@ -70,13 +70,13 @@ static DECLFW(H2288Write)
  {
   case 0xa000:setmirror((V&1)^1);break;
   case 0x8000:
-	      cmd=V;DoPRG();DoCHR();break;
+        cmd=V;DoPRG();DoCHR();break;
   case 0x8001:regs[cmd&7]=V;
-	      if((cmd&7)==4 || (cmd&7)==5)
-	       DoPRG();
-	      else
-	       DoCHR();
-	      break;
+        if((cmd&7)==4 || (cmd&7)==5)
+         DoPRG();
+        else
+         DoCHR();
+        break;
  }
 }
 

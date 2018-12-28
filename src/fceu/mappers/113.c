@@ -29,16 +29,16 @@ DECLFW(Mapper113_write)
 {
         ROM_BANK32((V>>3)&7);
         VROM_BANK8(V&7);
-	//printf("$%04x:$%02x\n",A,V);
+  //printf("$%04x:$%02x\n",A,V);
 }
 
       
 /*      Deathbots */
 DECLFW(Mapper113_writeh)
 {
-	//printf("$%04x:$%02x\n",A,V);
+  //printf("$%04x:$%02x\n",A,V);
         ROM_BANK32(V&0x7);
-	//VROM_BANK8((V>>4)&0x7);
+  //VROM_BANK8((V>>4)&0x7);
 }
 
 

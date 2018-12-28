@@ -63,7 +63,7 @@ static void swsetchr2(uint32 A, uint32 V)
 static void Sup24_hb(void)
 {
       resetmode=0;
-	if(scanline==238) X6502_IRQBegin(FCEU_IQEXT);
+  if(scanline==238) X6502_IRQBegin(FCEU_IQEXT);
       if(IRQCount>=0)
       {
         IRQCount--;
@@ -72,8 +72,8 @@ static void Sup24_hb(void)
          if(IRQa)
          {
             resetmode = 1;
-	    X6502_IRQBegin(FCEU_IQEXT);
-	    //printf("IRQ: %d,%d\n",scanline,timestamp);
+      X6502_IRQBegin(FCEU_IQEXT);
+      //printf("IRQ: %d,%d\n",scanline,timestamp);
          }
         }
       }
@@ -81,7 +81,7 @@ static void Sup24_hb(void)
 
 static DECLFW(Sup24IRQWrite)
 {
-	//printf("%04x, $%02x, %d, %d\n",A,V,scanline,timestamp);
+  //printf("%04x, $%02x, %d, %d\n",A,V,scanline,timestamp);
         switch(A&0xE001)
         {
          case 0xc000:IRQLatch=V;
@@ -104,8 +104,8 @@ static DECLFW(Sup24IRQWrite)
 
 static INLINE void FixMMC3PRG(int V)
 {
-	  swsetprg8(0xA000,DRegBuf[7]);
-	  swsetprg8(0xE000,~0);
+    swsetprg8(0xA000,DRegBuf[7]);
+    swsetprg8(0xE000,~0);
           if(V&0x40)
            {
             swsetprg8(0xC000,DRegBuf[6]);
@@ -131,7 +131,7 @@ static INLINE void FixMMC3CHR(int V)
 
 static DECLFW(Super24hiwrite)
 {
-	//printf("$%04x:$%02x, %d\n",A,V,scanline);
+  //printf("$%04x:$%02x, %d\n",A,V,scanline);
         switch(A&0xE001)
         {
          case 0x8000:
@@ -164,7 +164,7 @@ static DECLFW(Super24hiwrite)
                 break;
 
         case 0xA000:
-		mbia=V;
+    mbia=V;
                 setmirror((V&1)^1);
                 break;
  }
@@ -177,17 +177,17 @@ static DECLFW(Super24Write)
  switch(A)
  {
   case 0x5ff0:sizer=V;
-	      FixMMC3PRG(MMC3_cmd);
-	      FixMMC3CHR(MMC3_cmd);
-	      break;
+        FixMMC3PRG(MMC3_cmd);
+        FixMMC3CHR(MMC3_cmd);
+        break;
   case 0x5FF1:
-	      bigbank=V;
-	      FixMMC3PRG(MMC3_cmd);
-	      break;
+        bigbank=V;
+        FixMMC3PRG(MMC3_cmd);
+        break;
   case 0x5FF2:
-	      bigbank2=V;
-	      FixMMC3CHR(MMC3_cmd);
-	      break;
+        bigbank2=V;
+        FixMMC3CHR(MMC3_cmd);
+        break;
  }
 }
 

@@ -34,8 +34,8 @@ void blop(void)
     IRQCount--;
     if(!IRQCount)
     {
-	IRQa=0;
-	X6502_IRQBegin(FCEU_IQEXT);
+  IRQa=0;
+  X6502_IRQBegin(FCEU_IQEXT);
     }
    }
   }

@@ -25,15 +25,15 @@ static uint8 DRegs[11];
 static uint8 IRQCount,IRQa,IRQLatch;
 
 static SFORMAT Rambo_StateRegs[]={
-	{&cmd, 1, "CMD"},
-	{&mir, 1, "MIR"},
-	{&rmode, 1, "RMOD"},
-	{&IRQmode, 1, "IRQM"},
-	{&IRQCount, 1, "IRQC"},
-	{&IRQa, 1, "IRQA"},
-	{&IRQLatch, 1, "IRQL"},
-	{DRegs, 11, "DREG"},
-	{0}
+  {&cmd, 1, "CMD"},
+  {&mir, 1, "MIR"},
+  {&rmode, 1, "RMOD"},
+  {&IRQmode, 1, "IRQM"},
+  {&IRQCount, 1, "IRQC"},
+  {&IRQa, 1, "IRQA"},
+  {&IRQLatch, 1, "IRQL"},
+  {DRegs, 11, "DREG"},
+  {0}
 };
 
 static void FP_FASTAPASS(2) (*setchr1wrap)(unsigned int A, unsigned int V);
@@ -64,8 +64,8 @@ static void FP_FASTAPASS(1) RAMBO1_IRQHook(int a)
 static void RAMBO1_hb(void)
 {
       if(IRQmode) return;
-      if(scanline==240) return;	/* hmm.  Maybe that should be an mmc3-only
-					   call in fce.c. */
+      if(scanline==240) return;  /* hmm.  Maybe that should be an mmc3-only
+             call in fce.c. */
       rmode=0;
       IRQCount--;
       if(IRQCount==0xFF)
@@ -113,18 +113,18 @@ static DECLFW(RAMBO1_write)
  switch(A&0xF001)
  {
         case 0xa000:mir=V&1;
-		    if(!nomirror)
-		     setmirror(mir^1);
-		    break;
+        if(!nomirror)
+         setmirror(mir^1);
+        break;
         case 0x8000:cmd = V;
-		    break;
+        break;
         case 0x8001:
-		    if((cmd&0xF)<10)
-		     DRegs[cmd&0xF]=V;
-		    else if((cmd&0xF)==0xF)
-		     DRegs[10]=V;
-		    Synco();
-		    break;
+        if((cmd&0xF)<10)
+         DRegs[cmd&0xF]=V;
+        else if((cmd&0xF)==0xF)
+         DRegs[10]=V;
+        Synco();
+        break;
         case 0xc000:IRQLatch=V;
                     if(rmode==1)
                      {
@@ -133,7 +133,7 @@ static DECLFW(RAMBO1_write)
                     break;
         case 0xc001:rmode=1;
                     IRQCount=IRQLatch;
-		    IRQmode=V&1;
+        IRQmode=V&1;
                     break;
         case 0xE000:IRQa=0;X6502_IRQEnd(FCEU_IQEXT);
                     if(rmode==1)
@@ -143,7 +143,7 @@ static DECLFW(RAMBO1_write)
                     if(rmode==1)
                      {IRQCount=IRQLatch;}
                     break;
-  }	
+  }  
 }
 
 static void RAMBO1_Restore(int version)
@@ -155,13 +155,13 @@ static void RAMBO1_Restore(int version)
 
 static void RAMBO1_init(void)
 {
-	int x;
+  int x;
  
         for(x=0;x<11;x++)
          DRegs[x]=~0;
         cmd=0;
         mir=0;
-	if(!nomirror)
+  if(!nomirror)
          setmirror(1);
         Synco();
         GameHBIRQHook=RAMBO1_hb;
@@ -169,7 +169,7 @@ static void RAMBO1_init(void)
         GameStateRestore=RAMBO1_Restore;
         SetWriteHandler(0x8000,0xffff,RAMBO1_write);
 
-	AddExState(Rambo_StateRegs, ~0, 0, 0);
+  AddExState(Rambo_StateRegs, ~0, 0, 0);
 }
 
 static void FP_FASTAPASS(2) CHRWrap(unsigned int A, unsigned int V)
@@ -179,9 +179,9 @@ static void FP_FASTAPASS(2) CHRWrap(unsigned int A, unsigned int V)
 
 void Mapper64_init(void)
 {
-	setchr1wrap=CHRWrap;
-	nomirror=0;
-	RAMBO1_init();
+  setchr1wrap=CHRWrap;
+  nomirror=0;
+  RAMBO1_init();
 }
 
 static int MirCache[8];
@@ -205,10 +205,10 @@ static void FP_FASTAPASS(1) MirrorFear(uint32 A)
 
 void Mapper158_init(void)
 {
-	setchr1wrap=MirWrap;
-	PPU_hook=MirrorFear;
-	nomirror=1;
-	RAMBO1_init();
+  setchr1wrap=MirWrap;
+  PPU_hook=MirrorFear;
+  nomirror=1;
+  RAMBO1_init();
 }
 
 
@@ -220,5 +220,5 @@ static DECLFW(MIMIC1_Write)
 
 void Mapper159_init(void)
 {
-	SetWriteHandler(0x8000,0xFFFF,MIMIC1_Write);
+  SetWriteHandler(0x8000,0xFFFF,MIMIC1_Write);
 }

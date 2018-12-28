@@ -27,48 +27,48 @@
 static int acount=0;
 static DECLFW(Mapper25_write)
 {
-	A=(A&0xF003)|((A&0xC)>>2);
+  A=(A&0xF003)|((A&0xC)>>2);
 
-	if((A&0xF000)==0xA000)
-	  ROM_BANK8(0xA000,V);
-	else if(A>=0xB000 && A<=0xEFFF)
-	{
+  if((A&0xF000)==0xA000)
+    ROM_BANK8(0xA000,V);
+  else if(A>=0xB000 && A<=0xEFFF)
+  {
          int x=(A&1)|((A-0xB000)>>11);
 
          K4buf[x]&=(0xF0)>>((A&2)<<1);
          K4buf[x]|=(V&0xF)<<((A&2)<<1);
          VROM_BANK1(x<<10,K4buf[x]);
-	}
-	else if((A&0xF000)==0x8000)
-	{
+  }
+  else if((A&0xF000)==0x8000)
+  {
          if(K4sel&2)
           ROM_BANK8(0xC000,V);
          else
           ROM_BANK8(0x8000,V);
-	}
-	else switch(A)
-	{
-	 case 0x9000:switch(V&0x3)
-	             {
-        	      case 0:MIRROR_SET(0);break;
-	              case 1:MIRROR_SET(1);break;
-	              case 2:onemir(0);break;
-	              case 3:onemir(1);break;
-         	     }
-	             break;
-	 case 0x9001:if((K4sel&2)!=(V&2))
-        	     {
-             	      uint8 swa;
-	              swa=PRGBankList[0];
-         	      ROM_BANK8(0x8000,PRGBankList[2]);
-	              ROM_BANK8(0xc000,swa);
-	             }
-        	     K4sel=V;
-	             break;
-	case 0xf000:IRQLatch&=0xF0;IRQLatch|=V&0xF;break;
-	case 0xf002:IRQLatch&=0x0F;IRQLatch|=V<<4;break;
-	case 0xf001:IRQCount=IRQLatch;IRQa=V&2;K4IRQ=V&1;acount=0;X6502_IRQEnd(FCEU_IQEXT);break;
-	case 0xf003:IRQa=K4IRQ;X6502_IRQEnd(FCEU_IQEXT);break;
+  }
+  else switch(A)
+  {
+   case 0x9000:switch(V&0x3)
+               {
+                case 0:MIRROR_SET(0);break;
+                case 1:MIRROR_SET(1);break;
+                case 2:onemir(0);break;
+                case 3:onemir(1);break;
+                }
+               break;
+   case 0x9001:if((K4sel&2)!=(V&2))
+               {
+                     uint8 swa;
+                swa=PRGBankList[0];
+                 ROM_BANK8(0x8000,PRGBankList[2]);
+                ROM_BANK8(0xc000,swa);
+               }
+               K4sel=V;
+               break;
+  case 0xf000:IRQLatch&=0xF0;IRQLatch|=V&0xF;break;
+  case 0xf002:IRQLatch&=0x0F;IRQLatch|=V<<4;break;
+  case 0xf001:IRQCount=IRQLatch;IRQa=V&2;K4IRQ=V&1;acount=0;X6502_IRQEnd(FCEU_IQEXT);break;
+  case 0xf003:IRQa=K4IRQ;X6502_IRQEnd(FCEU_IQEXT);break;
  }
 }
 
@@ -86,7 +86,7 @@ static void FP_FASTAPASS(1) KonamiIRQHook(int a)
     if(IRQCount&0x100) 
     {//acount=0;
      X6502_IRQBegin(FCEU_IQEXT);IRQCount=IRQLatch;
-	}
+  }
     if(acount>=LCYCS) goto doagainbub;
    }
  }

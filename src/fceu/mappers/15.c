@@ -22,32 +22,32 @@
 
 static void Sync(void)
 {
-	int x;
+  int x;
 
-	setmirror(((mapbyte1[0]>>6)&1)^1);
-	switch(mapbyte1[1]&0x3)
-	{
+  setmirror(((mapbyte1[0]>>6)&1)^1);
+  switch(mapbyte1[1]&0x3)
+  {
          case 0x0:
-	  for(x=0;x<4;x++) 
+    for(x=0;x<4;x++) 
            setprg8(0x8000+x*8192,(((mapbyte1[0]&0x7F)<<1)+x)^(mapbyte1[0]>>7));
-	  break;
+    break;
          case 0x2:
-	  for(x=0;x<4;x++) 
-	   setprg8(0x8000+x*8192,((mapbyte1[0]&0x7F)<<1)+(mapbyte1[0]>>7));
-	  break; 
-	 case 0x1:
+    for(x=0;x<4;x++) 
+     setprg8(0x8000+x*8192,((mapbyte1[0]&0x7F)<<1)+(mapbyte1[0]>>7));
+    break; 
+   case 0x1:
          case 0x3:
           for(x=0;x<4;x++)
-	  {
-	   unsigned int b;
+    {
+     unsigned int b;
 
-	   b=mapbyte1[0]&0x7F;
-	   if(x>=2 && !(mapbyte1[1]&0x2))
-	    b=0x7F;
+     b=mapbyte1[0]&0x7F;
+     if(x>=2 && !(mapbyte1[1]&0x2))
+      b=0x7F;
            setprg8(0x8000+x*8192,(x&1)+((b<<1)^(mapbyte1[0]>>7)));
-	  }
-	  break;
-	}
+    }
+    break;
+  }
 }
 
 
@@ -65,9 +65,9 @@ static void StateRestore(int version)
 
 void Mapper15_init(void)
 {
-	mapbyte1[0]=mapbyte1[1]=0;
-	Sync();
-	GameStateRestore=StateRestore;
-	SetWriteHandler(0x8000,0xFFFF,Mapper15_write);
+  mapbyte1[0]=mapbyte1[1]=0;
+  Sync();
+  GameStateRestore=StateRestore;
+  SetWriteHandler(0x8000,0xFFFF,Mapper15_write);
 }
 

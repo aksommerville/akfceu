@@ -40,7 +40,7 @@
 
 static char BaseDirectory[2048];
 static char FileBase[2048];
-static char FileExt[2048];	/* Includes the . character, as in ".nes" */
+static char FileExt[2048];  /* Includes the . character, as in ".nes" */
 
 static char FileBaseDirectory[2048];
 
@@ -118,43 +118,43 @@ char *FCEU_MakeFName(int type, int id1, char *cd1)
                       else
                        asprintf(&ret,"%s"PSS"fcs"PSS"%s.%s.%d.fcm",BaseDirectory,FileBase,md5_asciistr(FCEUGameInfo->MD5),id1);
                      }
-		     break;
+         break;
   case FCEUMKF_STATE:if(odirs[FCEUIOD_STATE])
                       asprintf(&ret,"%s"PSS"%s.fc%d",odirs[FCEUIOD_STATE],FileBase,id1);
                      else
                       asprintf(&ret,"%s"PSS"fcs"PSS"%s.fc%d",BaseDirectory,FileBase,id1);
-		     if(stat(ret,&tmpstat)==-1)
-		     {
-		      if(odirs[FCEUIOD_STATE])                                  
+         if(stat(ret,&tmpstat)==-1)
+         {
+          if(odirs[FCEUIOD_STATE])                                  
                        asprintf(&ret,"%s"PSS"%s.%s.fc%d",odirs[FCEUIOD_STATE],FileBase,md5_asciistr(FCEUGameInfo->MD5),id1);
                       else
                        asprintf(&ret,"%s"PSS"fcs"PSS"%s.%s.fc%d",BaseDirectory,FileBase,md5_asciistr(FCEUGameInfo->MD5),id1);
-		     }
+         }
                      break;
   case FCEUMKF_SNAP:
-		    if(FSettings.SnapName)
-		    {
+        if(FSettings.SnapName)
+        {
                      if(odirs[FCEUIOD_SNAPS])
                       asprintf(&ret,"%s"PSS"%s-%d.%s",odirs[FCEUIOD_SNAPS],FileBase,id1,cd1);
                      else
                       asprintf(&ret,"%s"PSS"snaps"PSS"%s-%d.%s",BaseDirectory,FileBase,id1,cd1);
-		    }
-		    else
-		    {
-		     if(odirs[FCEUIOD_SNAPS])
+        }
+        else
+        {
+         if(odirs[FCEUIOD_SNAPS])
                       asprintf(&ret,"%s"PSS"%d.%s",odirs[FCEUIOD_SNAPS],id1,cd1);
                      else
                       asprintf(&ret,"%s"PSS"snaps"PSS"%d.%s",BaseDirectory,id1,cd1);
-		    }
+        }
                     break;
   case FCEUMKF_FDS:if(odirs[FCEUIOD_NV])
-		    asprintf(&ret,"%s"PSS"%s.%s.fds",odirs[FCEUIOD_NV],FileBase,md5_asciistr(FCEUGameInfo->MD5));
-		   else
-	 	    asprintf(&ret,"%s"PSS"sav"PSS"%s.%s.fds",BaseDirectory,FileBase,md5_asciistr(FCEUGameInfo->MD5));
-		   break;
+        asprintf(&ret,"%s"PSS"%s.%s.fds",odirs[FCEUIOD_NV],FileBase,md5_asciistr(FCEUGameInfo->MD5));
+       else
+         asprintf(&ret,"%s"PSS"sav"PSS"%s.%s.fds",BaseDirectory,FileBase,md5_asciistr(FCEUGameInfo->MD5));
+       break;
   case FCEUMKF_SAV:if(odirs[FCEUIOD_NV])
                     asprintf(&ret,"%s"PSS"%s.%s",odirs[FCEUIOD_NV],FileBase,cd1);
-	           else
+             else
                     asprintf(&ret,"%s"PSS"sav"PSS"%s.%s",BaseDirectory,FileBase,cd1);
                    if(stat(ret,&tmpstat)==-1)
                    {     

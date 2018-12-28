@@ -26,7 +26,7 @@ static DECLFW(morko)
 {
  VROM_BANK8((V>>2)&1);
  oldmorko(A,V);
- setprg8(0x8000,V&0x4);	/* Special for VS Gumshoe */
+ setprg8(0x8000,V&0x4);  /* Special for VS Gumshoe */
 }
 
 void Mapper99_init(void)

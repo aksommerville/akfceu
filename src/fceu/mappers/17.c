@@ -42,13 +42,13 @@ DECLFW(Mapper17_write)
 {
         switch(A){
         default:
-	           break;
+             break;
         case 0x42FE:
                    onemir((V>>4)&1);
                    break;
         case 0x42FF:
                    MIRROR_SET((V>>4)&1);
-        	   break;
+             break;
         case 0x4501:IRQa=V&1;X6502_IRQEnd(FCEU_IQEXT);break;
         case 0x4502:IRQCount&=0xFF00;IRQCount|=V;X6502_IRQEnd(FCEU_IQEXT);break;
         case 0x4503:IRQCount&=0x00FF;IRQCount|=V<<8;IRQa=1;X6502_IRQEnd(FCEU_IQEXT);break;

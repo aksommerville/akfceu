@@ -84,8 +84,8 @@ static DECLFW(M208HWrite)
   case 0xe001:IRQa=1;break;
   case 0x8000:cmd=V;break;
   case 0x8001:DRegs[cmd&7]=V;
-		Sync();
-		break;
+    Sync();
+    break;
 
  }
 }

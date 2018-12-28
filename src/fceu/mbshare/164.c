@@ -25,9 +25,9 @@ static uint8 DRegs[8];
 
 static SFORMAT StateRegs[]=
 {
-	{&cmd, 1, "CMD"},
-	{DRegs, 8, "DREG"},
-	{0}
+  {&cmd, 1, "CMD"},
+  {DRegs, 8, "DREG"},
+  {0}
 };
 
 static void Sync(void)

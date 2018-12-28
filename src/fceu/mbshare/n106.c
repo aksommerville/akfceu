@@ -50,16 +50,16 @@ static void DoNamcoSound(int32 *Wave, int Count);
 static void DoNamcoSoundHQ(void);
 static void SyncHQ(int32 ts);
 
-static int is210;	/* Lesser mapper. */
+static int is210;  /* Lesser mapper. */
 
 static uint8 PRG[3];
 static uint8 CHR[8];
 
 static SFORMAT N106_StateRegs[]={
-	{PRG,3,"PRG"},
-	{CHR,8,"CHR"},
-	{NTAPage,4,"NTA"},
-	{0}
+  {PRG,3,"PRG"},
+  {CHR,8,"CHR"},
+  {NTAPage,4,"NTA"},
+  {0}
 };
 
 static void SyncPRG(void)
@@ -86,15 +86,15 @@ static void FP_FASTAPASS(1) NamcoIRQHook(int a)
 
 static DECLFR(Namco_Read4800)
 {
-	uint8 ret=IRAM[dopol&0x7f];
+  uint8 ret=IRAM[dopol&0x7f];
 
-	//printf("Read: %02x, %02x\n",dopol&0x7f,IRAM[dopol&0x7f]);
+  //printf("Read: %02x, %02x\n",dopol&0x7f,IRAM[dopol&0x7f]);
 
-	/* Maybe I should call NamcoSoundHack() here? */
-	if(!fceuindbg)
-	 if(dopol&0x80)
-	  dopol=(dopol&0x80)|((dopol+1)&0x7f);
-	return ret;
+  /* Maybe I should call NamcoSoundHack() here? */
+  if(!fceuindbg)
+   if(dopol&0x80)
+    dopol=(dopol&0x80)|((dopol+1)&0x7f);
+  return ret;
 }
 
 static DECLFR(Namco_Read5000)
@@ -111,17 +111,17 @@ static void FASTAPASS(2) DoNTARAMROM(int w, uint8 V)
 {
         NTAPage[w]=V;
         //if(V>=0xE0)
-	// setntamem(NTARAM+((V&1)<<10), 1, w);
+  // setntamem(NTARAM+((V&1)<<10), 1, w);
 
-	//printf("%d, %02x\n",w,V);
-	//printf("%02x, %02x\n",((gorko>>(6+(w>>1)))&1),V);
-	if(V>=0xE0)
-	 setntamem(NTARAM+((V&1)<<10), 1, w);
-	else 
-	{
-	 V&=CHRmask1[0];
-	 setntamem(CHRptr[0]+(V<<10), 0, w);
-	}
+  //printf("%d, %02x\n",w,V);
+  //printf("%02x, %02x\n",((gorko>>(6+(w>>1)))&1),V);
+  if(V>=0xE0)
+   setntamem(NTARAM+((V&1)<<10), 1, w);
+  else 
+  {
+   V&=CHRmask1[0];
+   setntamem(CHRptr[0]+(V<<10), 0, w);
+  }
 }
 
 static void FixNTAR(void)
@@ -137,15 +137,15 @@ static void FASTAPASS(2) DoCHRRAMROM(int x, uint8 V)
          CHR[x]=V;
 
          if(!is210 && !((gorfus>>((x>>2)+6))&1) && (V>=0xE0))
-	 {
-	  // printf("BLAHAHA: %d, %02x\n",x,V);
+   {
+    // printf("BLAHAHA: %d, %02x\n",x,V);
           //setchr1r(0x10,x<<10,V&7);
-	 }
+   }
          else
-	 {
-//	  printf("Noha: %d, %02x\n",x,V);
+   {
+//    printf("Noha: %d, %02x\n",x,V);
           setchr1(x<<10,V);
-	 }
+   }
 }
 
 static void FixCRR(void)
@@ -157,7 +157,7 @@ static void FixCRR(void)
 
 static DECLFW(Mapper19C0D8_write)
 {
-	DoNTARAMROM((A-0xC000)>>11,V);
+  DoNTARAMROM((A-0xC000)>>11,V);
 }
 
 static uint32 FreqCache[8];
@@ -181,29 +181,29 @@ static void FixCache(int a,int V)
 
 static DECLFW(Mapper19_write)
 {
-	A&=0xF800;
+  A&=0xF800;
 
-	if(A>=0x8000 && A<=0xb800)
-	 DoCHRRAMROM((A-0x8000)>>11,V);
+  if(A>=0x8000 && A<=0xb800)
+   DoCHRRAMROM((A-0x8000)>>11,V);
         else switch(A)
-	{
-	 case 0x4800:
-		   //printf("Yahaoo: %02x, %02x\n",dopol&0x7F,V);
-		   //puts("Hmm");
-		   if(dopol&0x40)
+  {
+   case 0x4800:
+       //printf("Yahaoo: %02x, %02x\n",dopol&0x7F,V);
+       //puts("Hmm");
+       if(dopol&0x40)
                    {
                     if(FSettings.SndRate)
-	  	    {
-		     NamcoSoundHack();
+          {
+         NamcoSoundHack();
                      GameExpSound.Fill=NamcoSound;
-		     //GameExpSound.NeoFill=DoNamcoSound;
-		     GameExpSound.HiFill=DoNamcoSoundHQ;
-		     GameExpSound.HiSync=SyncHQ;
-		    }
-		    FixCache(dopol,V);
+         //GameExpSound.NeoFill=DoNamcoSound;
+         GameExpSound.HiFill=DoNamcoSoundHQ;
+         GameExpSound.HiSync=SyncHQ;
+        }
+        FixCache(dopol,V);
                    }
-		   IRAM[dopol&0x7f]=V;
-		   
+       IRAM[dopol&0x7f]=V;
+       
                    if(dopol&0x80)
                     dopol=(dopol&0x80)|((dopol+1)&0x7f);
                    break;
@@ -213,20 +213,20 @@ static DECLFW(Mapper19_write)
         case 0x5800: IRQCount&=0x00ff;IRQCount|=(V&0x7F)<<8;
                      IRQa=V&0x80;
                      X6502_IRQEnd(FCEU_IQEXT);
-		     //puts("IRQe");
+         //puts("IRQe");
                      break;
 
         case 0xE000:gorko=V&0xC0;
-		    PRG[0]=V&0x3F;
-		    SyncPRG();
+        PRG[0]=V&0x3F;
+        SyncPRG();
                     break;
         case 0xE800:gorfus=V&0xC0;
-		    FixCRR();
+        FixCRR();
                     PRG[1]=V&0x3F;
                     SyncPRG();
                     break;
         case 0xF000:PRG[2]=V&0x3F;
-		    SyncPRG();
+        SyncPRG();
                     break;
         }
 }
@@ -263,7 +263,7 @@ static uint32 PlayIndex[8];
 static int32 vcount[8];
 static int32 CVBC;
 
-#define TOINDEX	(16+1)
+#define TOINDEX  (16+1)
 
 // 16:15
 static void SyncHQ(int32 ts)
@@ -273,11 +273,11 @@ static void SyncHQ(int32 ts)
 
 
 /* Things to do:
-	1	Read freq low
-	2	Read freq mid
-	3	Read freq high
-	4	Read envelope
-	...?
+  1  Read freq low
+  2  Read freq mid
+  3  Read freq high
+  4  Read envelope
+  ...?
 */
 
 static INLINE uint32 FetchDuff(uint32 P, uint32 envelope)
@@ -332,7 +332,7 @@ static void DoNamcoSoundHQ(void)
 
 static void DoNamcoSound(int32 *Wave, int Count)
 {
-	int P,V;
+  int P,V;
 
 
       //FCEU_DispMessage("%d",MapperExRAM[0x7F]>>4);
@@ -340,27 +340,27 @@ static void DoNamcoSound(int32 *Wave, int Count)
       {
        if((IRAM[0x44+(P<<3)]&0xE0) && (IRAM[0x47+(P<<3)]&0xF))
        {
-	int32 inc;   
-	uint32 freq;
-	int32 vco;
-	uint32 duff,duff2,lengo,envelope;
+  int32 inc;   
+  uint32 freq;
+  int32 vco;
+  uint32 duff,duff2,lengo,envelope;
         //uint64 ta;
 
         vco=vcount[P];
-	freq=FreqCache[P];
-	envelope=EnvCache[P];
-	lengo=LengthCache[P];
+  freq=FreqCache[P];
+  envelope=EnvCache[P];
+  lengo=LengthCache[P];
 
         if(!freq) {/*printf("Ack");*/  continue;}
 
-	{
-	 int c=((IRAM[0x7F]>>4)&7)+1;
+  {
+   int c=((IRAM[0x7F]>>4)&7)+1;
 
-	 inc=(long double)(FSettings.SndRate<<15)/((long double)freq*
-	 	21477272/((long double)0x400000*c*45));
-	}
+   inc=(long double)(FSettings.SndRate<<15)/((long double)freq*
+     21477272/((long double)0x400000*c*45));
+  }
 
-	duff=IRAM[(((IRAM[0x46+(P<<3)]+PlayIndex[P])&0xFF)>>1)];
+  duff=IRAM[(((IRAM[0x46+(P<<3)]+PlayIndex[P])&0xFF)>>1)];
         if((IRAM[0x46+(P<<3)]+PlayIndex[P])&1)
          duff>>=4;
         duff&=0xF;
@@ -424,45 +424,45 @@ static int battery=0;
 
 static void N106_Power(void)
 {
-	int x;
+  int x;
 
         SetReadHandler(0x8000,0xFFFF,CartBR);
         SetWriteHandler(0x8000,0xffff,Mapper19_write);
         SetWriteHandler(0x4020,0x5fff,Mapper19_write);
   
-	if(!is210)
-	{
+  if(!is210)
+  {
          SetWriteHandler(0xc000,0xdfff,Mapper19C0D8_write);
          SetReadHandler(0x4800,0x4fff,Namco_Read4800);
          SetReadHandler(0x5000,0x57ff,Namco_Read5000);
          SetReadHandler(0x5800,0x5fff,Namco_Read5800);
-	 NTAPage[0]=NTAPage[1]=NTAPage[2]=NTAPage[3]=0xFF;
-	 FixNTAR();
-	}
+   NTAPage[0]=NTAPage[1]=NTAPage[2]=NTAPage[3]=0xFF;
+   FixNTAR();
+  }
 
         SetReadHandler(0x6000,0x7FFF,AWRAM);
         SetWriteHandler(0x6000,0x7FFF,BWRAM);
         FCEU_CheatAddRAM(8,0x6000,WRAM);
 
         gorfus=0xFF;
-	SyncPRG();
-	FixCRR();
+  SyncPRG();
+  FixCRR();
 
-	if(!battery)
-	{
-	 FCEU_dwmemset(WRAM,0,8192);
-	 FCEU_dwmemset(IRAM,0,128);
-	}
-	for(x=0x40;x<0x80;x++)
-	 FixCache(x,IRAM[x]);
+  if(!battery)
+  {
+   FCEU_dwmemset(WRAM,0,8192);
+   FCEU_dwmemset(IRAM,0,128);
+  }
+  for(x=0x40;x<0x80;x++)
+   FixCache(x,IRAM[x]);
 }
 
 void Mapper19_Init(CartInfo *info)
 {
-	is210=0;
+  is210=0;
 
-	battery=info->battery;
-	info->Power=N106_Power;
+  battery=info->battery;
+  info->Power=N106_Power;
 
         MapIRQHook=NamcoIRQHook;
         GameStateRestore=Mapper19_StateRestore;
@@ -471,17 +471,17 @@ void Mapper19_Init(CartInfo *info)
         if(FSettings.SndRate)
          Mapper19_ESI();
 
-	AddExState(WRAM, 8192, 0, "WRAM");
-	AddExState(IRAM, 128, 0, "WRAM");
-	AddExState(N106_StateRegs, ~0, 0, 0);
+  AddExState(WRAM, 8192, 0, "WRAM");
+  AddExState(IRAM, 128, 0, "WRAM");
+  AddExState(N106_StateRegs, ~0, 0, 0);
 
-	if(info->battery)
-	{
-	 info->SaveGame[0]=WRAM;
+  if(info->battery)
+  {
+   info->SaveGame[0]=WRAM;
          info->SaveGameLen[0]=8192; 
-	 info->SaveGame[1]=IRAM;
-	 info->SaveGameLen[1]=128;
-	}
+   info->SaveGame[1]=IRAM;
+   info->SaveGameLen[1]=128;
+  }
 }
 
 static void Mapper210_StateRestore(int version)

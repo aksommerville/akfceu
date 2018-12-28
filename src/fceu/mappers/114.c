@@ -61,17 +61,17 @@ static DECLFW(Mapper114_write)
   case 0x8000:MIRROR_SET(V&1);break;
   case 0xa000:mapbyte1[0]=V;incmd=1;break;
   case 0xc000:
-	      if(!incmd) break;
-	      mapbyte2[mapbyte1[0]&0x7]=V;
-	      switch(mapbyte1[0]&0x7)
-	      {
-	       case 0x0: case 1: case 2: case 3: case 6: case 7: 
-		dochr();break;
-	       case 0x4:
-	       case 0x5:doprg();break;
-	      }
-		incmd=0;
-		break;
+        if(!incmd) break;
+        mapbyte2[mapbyte1[0]&0x7]=V;
+        switch(mapbyte1[0]&0x7)
+        {
+         case 0x0: case 1: case 2: case 3: case 6: case 7: 
+    dochr();break;
+         case 0x4:
+         case 0x5:doprg();break;
+        }
+    incmd=0;
+    break;
  }
 
 }

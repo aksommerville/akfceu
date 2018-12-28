@@ -49,11 +49,11 @@ static DECLFW(Mapper69_SWL)
 
 static DECLFW(Mapper69_SWH)
 {
-	     int x;
+       int x;
              GameExpSound.Fill=AYSound;
-	     GameExpSound.HiFill=AYSoundHQ;
-	     //if(FSettings.SndRate); // aks: intention of this no-op statement was unclear
-	     printf("SndRate: %d, sunindex: %d\n",FSettings.SndRate,sunindex);
+       GameExpSound.HiFill=AYSoundHQ;
+       //if(FSettings.SndRate); // aks: intention of this no-op statement was unclear
+       printf("SndRate: %d, sunindex: %d\n",FSettings.SndRate,sunindex);
              switch(sunindex)
              {
               case 0:
@@ -66,9 +66,9 @@ static DECLFW(Mapper69_SWH)
               case 5:
               case 10:if(FSettings.soundq>=1) DoAYSQHQ(2); else DoAYSQ(2);break;
               case 7:
-		     for(x=0;x<2;x++)
-  		      if(FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
-		     break;
+         for(x=0;x<2;x++)
+            if(FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
+         break;
              }
              MapperExRAM[sunindex]=V; 
 }

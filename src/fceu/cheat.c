@@ -56,16 +56,16 @@ struct CHEATF {
            char *name;
            uint16 addr;
            uint8 val;
-	   int compare;	/* -1 for no compare. */
-	   int type;	/* 0 for replace, 1 for substitute(GG). */
-	   int status;
+     int compare;  /* -1 for no compare. */
+     int type;  /* 0 for replace, 1 for substitute(GG). */
+     int status;
 };
 
 typedef struct {
-	uint16 addr;
-	uint8 val;
-	int compare;
-	readfunc PrevRead;
+  uint16 addr;
+  uint8 val;
+  int compare;
+  readfunc PrevRead;
 } CHEATF_SUBFAST;
 
 
@@ -102,7 +102,7 @@ static DECLFR(SubCheatsRead)
   }
   s++;
  } while(--x);
- return(0);	/* We should never get here. */
+ return(0);  /* We should never get here. */
 }
 
 void RebuildSubCheats(void)
@@ -139,7 +139,7 @@ void RebuildSubCheats(void)
 
 void FCEU_PowerCheats()
 {
- numsubcheats=0;	/* Quick hack to prevent setting of ancient read addresses. */
+ numsubcheats=0;  /* Quick hack to prevent setting of ancient read addresses. */
  RebuildSubCheats();
 }
 
@@ -273,7 +273,7 @@ void FCEU_FlushGameCheats(FILE *override, int nosave)
   free(CheatComp);
   CheatComp=0;
  }
- if((!savecheats || nosave) && !override)	/* Always save cheats if we're being overridden. */
+ if((!savecheats || nosave) && !override)  /* Always save cheats if we're being overridden. */
  {
   if(cheats)
   {
@@ -507,7 +507,7 @@ int FCEUI_DecodeGG(const char *str, uint16 *a, uint8 *v, int *c)
 
  t=GGtobin(*str++);
  A|=(t&0x07)<<4;
- //if(t&0x08) return(0);	/* 8-character code?! */
+ //if(t&0x08) return(0);  /* 8-character code?! */
 
  t=GGtobin(*str++);
  A|=(t&0x07)<<12;

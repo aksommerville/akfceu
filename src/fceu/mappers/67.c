@@ -35,14 +35,14 @@ static DECLFW(Mapper67_write)
   case 0xc800:
   case 0xc000:if(!suntoggle)
               {
-	       IRQCount&=0xFF;
+         IRQCount&=0xFF;
                IRQCount|=V<<8;
               }
               else
-	      {
+        {
                IRQCount&=0xFF00;
-	       IRQCount|=V;
-	      }
+         IRQCount|=V;
+        }
               suntoggle^=1;
               break;
   case 0xd800:suntoggle=0;IRQa=V&0x10;X6502_IRQEnd(FCEU_IQEXT);break;

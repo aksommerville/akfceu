@@ -19,34 +19,34 @@
  */
 
 #include        <string.h>
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<stdarg.h>
+#include  <stdio.h>
+#include  <stdlib.h>
+#include  <stdarg.h>
 
-#include	"types.h"
-#include	"x6502.h"
-#include	"fceu.h"
-#include	"ppu.h"
-#include	"sound.h"
-#include	"netplay.h"
-#include	"general.h"
-#include	"endian.h"
+#include  "types.h"
+#include  "x6502.h"
+#include  "fceu.h"
+#include  "ppu.h"
+#include  "sound.h"
+#include  "netplay.h"
+#include  "general.h"
+#include  "endian.h"
 #include        "memory.h"
 
-#include	"cart.h"
-#include	"nsf.h"
-#include	"fds.h"
-#include	"ines.h"
-#include	"unif.h"
+#include  "cart.h"
+#include  "nsf.h"
+#include  "fds.h"
+#include  "ines.h"
+#include  "unif.h"
 #include        "cheat.h"
-#include	"palette.h"
-#include	"state.h"
-#include	"movie.h"
+#include  "palette.h"
+#include  "state.h"
+#include  "movie.h"
 #include        "video.h"
-#include	"input.h"
-#include	"file.h"
-#include	"crc32.h"
-#include	"vsuni.h"
+#include  "input.h"
+#include  "file.h"
+#include  "crc32.h"
+#include  "vsuni.h"
 
 void FCEUD_NetworkClose();
 
@@ -217,7 +217,7 @@ void ResetGameLoaded(void)
         MapIRQHook=0;
         MMC5Hack=0;
         PAL&=1;
-	pale=0;
+  pale=0;
 }
 
 int UNIFLoad(const char *name, FCEUFILE *fp);
@@ -228,15 +228,15 @@ int NSFLoad(FCEUFILE *fp);
 FCEUGI *FCEUI_LoadGame(const char *name)
 {
         FCEUFILE *fp;
-	char *ipsfn;
+  char *ipsfn;
 
         ResetGameLoaded();
 
-	FCEUGameInfo = malloc(sizeof(FCEUGI));
-	memset(FCEUGameInfo, 0, sizeof(FCEUGI));
+  FCEUGameInfo = malloc(sizeof(FCEUGI));
+  memset(FCEUGameInfo, 0, sizeof(FCEUGI));
 
-	FCEUGameInfo->soundchan = 0;
-	FCEUGameInfo->soundrate = 0;
+  FCEUGameInfo->soundchan = 0;
+  FCEUGameInfo->soundrate = 0;
         FCEUGameInfo->name=0;
         FCEUGameInfo->type=GIT_CART;
         FCEUGameInfo->vidsys=GIV_USER;
@@ -244,19 +244,19 @@ FCEUGI *FCEUI_LoadGame(const char *name)
         FCEUGameInfo->inputfc=-1;
         FCEUGameInfo->cspecial=0;
 
-	FCEU_printf("Loading %s...\n\n",name);
+  FCEU_printf("Loading %s...\n\n",name);
 
         GetFileBase(name);
 
-	ipsfn=FCEU_MakeFName(FCEUMKF_IPS,0,0);
-	fp=FCEU_fopen(name,ipsfn,"rb",0);
-	free(ipsfn);
+  ipsfn=FCEU_MakeFName(FCEUMKF_IPS,0,0);
+  fp=FCEU_fopen(name,ipsfn,"rb",0);
+  free(ipsfn);
 
-	if(!fp)
+  if(!fp)
         {
- 	 FCEU_PrintError("Error opening \"%s\"!",name);
-	 return 0;
-	}
+    FCEU_PrintError("Error opening \"%s\"!",name);
+   return 0;
+  }
 
         if(iNESLoad(name,fp))
          goto endlseq;
@@ -277,11 +277,11 @@ FCEUGI *FCEUI_LoadGame(const char *name)
         FCEU_ResetVidSys();
         if(FCEUGameInfo->type!=GIT_NSF)
          if(FSettings.GameGenie)
-	  OpenGenie();
+    OpenGenie();
 
         PowerNES();
-	FCEUSS_CheckStates();
-	FCEUMOV_CheckMovies();
+  FCEUSS_CheckStates();
+  FCEUMOV_CheckMovies();
 
         if(FCEUGameInfo->type!=GIT_NSF)
         {
@@ -289,8 +289,8 @@ FCEUGI *FCEUI_LoadGame(const char *name)
          FCEU_LoadGameCheats(0);
         }
         
-	FCEU_ResetPalette();
-	FCEU_ResetMessages();	// Save state, status messages, etc.
+  FCEU_ResetPalette();
+  FCEU_ResetMessages();  // Save state, status messages, etc.
 
         return(FCEUGameInfo);
 }
@@ -300,14 +300,14 @@ int FCEUI_Initialize(void)
 {
         if(!FCEU_InitVirtualVideo())
          return 0;
-	memset(&FSettings,0,sizeof(FSettings));
-	FSettings.UsrFirstSLine[0]=8;
-	FSettings.UsrFirstSLine[1]=0;
+  memset(&FSettings,0,sizeof(FSettings));
+  FSettings.UsrFirstSLine[0]=8;
+  FSettings.UsrFirstSLine[1]=0;
         FSettings.UsrLastSLine[0]=231;
-	FSettings.UsrLastSLine[1]=239;
-	FSettings.SoundVolume=100;
-	FCEUPPU_Init();
-	X6502_Init();
+  FSettings.UsrLastSLine[1]=239;
+  FSettings.SoundVolume=100;
+  FCEUPPU_Init();
+  X6502_Init();
         return 1;
 }
 
@@ -338,7 +338,7 @@ void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize, int ski
 
 void FCEUI_CloseGame(void)
 {
-	CloseGame();
+  CloseGame();
 }
 
 void ResetNES(void)
@@ -373,13 +373,13 @@ void PowerNES(void)
         FCEUMOV_AddCommand(FCEUNPCMD_POWER);
         if(!FCEUGameInfo) return;
 
-	FCEU_CheatResetRAM();
-	FCEU_CheatAddRAM(2,0,RAM);
+  FCEU_CheatResetRAM();
+  FCEU_CheatAddRAM(2,0,RAM);
 
         GeniePower();
 
-	FCEU_MemoryRand(RAM,0x800);
-	//memset(RAM,0xFF,0x800);
+  FCEU_MemoryRand(RAM,0x800);
+  //memset(RAM,0xFF,0x800);
 
         SetReadHandler(0x0000,0xFFFF,ANull);
         SetWriteHandler(0x0000,0xFFFF,BNull);
@@ -394,17 +394,17 @@ void PowerNES(void)
         FCEUSND_Power();
         FCEUPPU_Power();
 
-	/* Have the external game hardware "powered" after the internal NES stuff.  
-	   Needed for the NSF code and VS System code.
-	*/
-	GameInterface(GI_POWER);
+  /* Have the external game hardware "powered" after the internal NES stuff.  
+     Needed for the NSF code and VS System code.
+  */
+  GameInterface(GI_POWER);
         if(FCEUGameInfo->type==GIT_VSUNI)
          FCEU_VSUniPower();
 
 
-	timestampbase=0;
-	X6502_Power();
-	FCEU_PowerCheats();
+  timestampbase=0;
+  X6502_Power();
+  FCEU_PowerCheats();
 }
 
 void FCEU_ResetVidSys(void)
@@ -504,5 +504,5 @@ int32 FCEUI_GetDesiredFPS(void)
   if(PAL)
    return(838977920); // ~50.007
   else
-   return(1008307711);	// ~60.1
+   return(1008307711);  // ~60.1
 }

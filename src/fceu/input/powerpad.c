@@ -19,8 +19,8 @@
  */
 
 #include        <string.h>
-#include	<stdlib.h>
-#include	"share.h"
+#include  <stdlib.h>
+#include  "share.h"
 
 
 static char side;
@@ -32,20 +32,20 @@ static uint8 FP_FASTAPASS(1) ReadPP(int w)
                 uint8 ret=0;
                 ret|=((pprdata[w]>>pprsb[w])&1)<<3;
                 ret|=((pprdata[w]>>(pprsb[w]+8))&1)<<4;
-		if(pprsb[w]>=4) 
-		{
-		 ret|=0x10;
-		 if(pprsb[w]>=8) 
-		  ret|=0x08;
-		}
-		if(!fceuindbg)
+    if(pprsb[w]>=4) 
+    {
+     ret|=0x10;
+     if(pprsb[w]>=8) 
+      ret|=0x08;
+    }
+    if(!fceuindbg)
                  pprsb[w]++;
                 return ret;
 }
 
 static void FP_FASTAPASS(1) StrobePP(int w)
 {
-		pprsb[w]=0;
+    pprsb[w]=0;
 }
 
 void FP_FASTAPASS(3) UpdatePP(int w, void *data, int arg)

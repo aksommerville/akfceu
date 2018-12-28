@@ -44,12 +44,12 @@ uint8 fontdata2[2048] =
 
 void DrawTextTrans(uint8 *dest, uint32 width, uint8 *textmsg, uint8 fgcolor)
 {
-	uint8 length=strlen((char *)textmsg);
-	uint8 x;
-	uint8 y;
-	uint8 z;
+  uint8 length=strlen((char *)textmsg);
+  uint8 x;
+  uint8 y;
+  uint8 z;
 
-	for(x=0;x<length;x++)    
+  for(x=0;x<length;x++)    
          for(y=0;y<8;y++)       
           for(z=0;z<8;z++) 
            if((fontdata2[(textmsg[x]<<3)+y]>>z)&1) dest[y*width+(x<<3)+z]=fgcolor;

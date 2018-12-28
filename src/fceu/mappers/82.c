@@ -20,7 +20,7 @@
 
 #include "mapinc.h"
 
-#define ctrl	mapbyte1[6]
+#define ctrl  mapbyte1[6]
 
 static void DoCHR(void)
 {
@@ -43,9 +43,9 @@ static DECLFW(Mapper82_write)
   switch(A)
   {
    case 0x7ef6:ctrl=V&3;
-	       MIRROR_SET2(V&1);
- 	       DoCHR();
-  	       break;
+         MIRROR_SET2(V&1);
+          DoCHR();
+           break;
    case 0x7efa:V>>=2;mapbyte2[0]=V;ROM_BANK8(0x8000,V);break;
    case 0x7efb:V>>=2;mapbyte2[1]=V;ROM_BANK8(0xa000,V);break;
    case 0x7efc:V>>=2;mapbyte2[2]=V;ROM_BANK8(0xc000,V);break;

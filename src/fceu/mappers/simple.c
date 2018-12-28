@@ -27,7 +27,7 @@ static uint8 latche;
 
 static DECLFW(Mapper2_write)
 {
-	latche=V;
+  latche=V;
         ROM_BANK16(0x8000,V);
 }
 
@@ -40,13 +40,13 @@ void Mapper2_init(void)
 static DECLFW(Mapper3_write)
 {
         VROM_BANK8(V);
-	latche=V;
+  latche=V;
 }
 
 void Mapper3_init(void)
 {
-	SetWriteHandler(0x8000,0xFFFF,Mapper3_write);
-	AddExState(&latche, 1, 0, "LATC");
+  SetWriteHandler(0x8000,0xFFFF,Mapper3_write);
+  AddExState(&latche, 1, 0, "LATC");
 }
 
 static DECLFW(Mapper7_write)
@@ -59,9 +59,9 @@ static DECLFW(Mapper7_write)
 void Mapper7_init(void)
 {
         onemir(0);
-	ROM_BANK32(0);
+  ROM_BANK32(0);
         SetWriteHandler(0x8000,0xFFFF,Mapper7_write);
-	AddExState(&latche, 1, 0, "LATC");
+  AddExState(&latche, 1, 0, "LATC");
 }
 
 void Mapper243_init(void)
@@ -74,14 +74,14 @@ static DECLFW(Mapper11_write)
 {
         ROM_BANK32(V&0xF);
         VROM_BANK8(V>>4);
-	latche=V;
+  latche=V;
 }
 
 void Mapper11_init(void)
 {
         ROM_BANK32(0);
         SetWriteHandler(0x8000,0xFFFF,Mapper11_write);
-	AddExState(&latche, 1, 0, "LATC");
+  AddExState(&latche, 1, 0, "LATC");
 }
 void Mapper144_init(void)
 {
@@ -92,27 +92,27 @@ void Mapper144_init(void)
 }
 static DECLFW(Mapper13_write)
 {
-	setchr4r(0x10,0x1000,V&3);
-	setprg32(0x8000,(V>>4)&3);
-	latche=V;
+  setchr4r(0x10,0x1000,V&3);
+  setprg32(0x8000,(V>>4)&3);
+  latche=V;
 }
 
 static void Mapper13_StateRestore(int version)
 {
-	setchr4r(0x10,0x0000,0);
+  setchr4r(0x10,0x0000,0);
         setchr4r(0x10,0x1000,latche&3);
         setprg32(0x8000,(latche>>4)&3);
 }
 
 void Mapper13_init(void)
 {
-	SetWriteHandler(0x8000,0xFFFF,Mapper13_write);
-	GameStateRestore=Mapper13_StateRestore;
-	AddExState(&latche, 1, 0, "LATC");
-	AddExState(MapperExRAM, 16384, 0, "CHRR");
-	SetupCartCHRMapping(0x10, MapperExRAM, 16384, 1);
+  SetWriteHandler(0x8000,0xFFFF,Mapper13_write);
+  GameStateRestore=Mapper13_StateRestore;
+  AddExState(&latche, 1, 0, "LATC");
+  AddExState(MapperExRAM, 16384, 0, "CHRR");
+  SetupCartCHRMapping(0x10, MapperExRAM, 16384, 1);
 
-	latche=0;
+  latche=0;
         Mapper13_StateRestore(FCEU_VERSION_NUMERIC);
 }
 
@@ -152,7 +152,7 @@ DECLFW(Mapper152_write)
 {
  ROM_BANK16(0x8000,(V>>4)&0x7);
  VROM_BANK8(V&0xF);
- onemir((V>>7)&1);	/* Saint Seiya...hmm. */
+ onemir((V>>7)&1);  /* Saint Seiya...hmm. */
  latche=V;
 }
 

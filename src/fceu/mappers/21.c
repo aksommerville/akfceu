@@ -28,20 +28,20 @@ static int acount=0;
 
 DECLFW(Mapper21_write)
 {
-	A|=((A>>5)&0xF);
+  A|=((A>>5)&0xF);
 
-	if((A&0xF000)==0xA000)
-	  ROM_BANK8(0xA000,V);
-	else if((A&0xF000)==0x8000)
-	{
+  if((A&0xF000)==0xA000)
+    ROM_BANK8(0xA000,V);
+  else if((A&0xF000)==0x8000)
+  {
          if(K4sel&2)
           ROM_BANK8(0xC000,V);
          else
           ROM_BANK8(0x8000,V);
- 	}
-	else if(A>=0xb000 && A<=0xefff)
-	{
-	  A&=0xF006;
+   }
+  else if(A>=0xb000 && A<=0xefff)
+  {
+    A&=0xF006;
           {
            int x=((A>>2)&1)|((A-0xB000)>>11);
 
@@ -50,36 +50,36 @@ DECLFW(Mapper21_write)
            VROM_BANK1(x<<10,K4buf[x]);
           }
  
-	}
-	else switch(A&0xF006)
+  }
+  else switch(A&0xF006)
         {
-	 case 0x9000:
-        	     switch(V&0x3)
-	             {
-        	      case 0:MIRROR_SET(0);break;
-	              case 1:MIRROR_SET(1);break;
-	              case 2:onemir(0);break;
-	              case 3:onemir(1);break;
-         	     }
-	             break;
-	 case 0x9006:
-	 case 0x9004:
-	 case 0x9002:if((K4sel&2)!=(V&2))
-        	     {
-             	      uint8 swa;
-	              swa=PRGBankList[0];
-         	      ROM_BANK8(0x8000,PRGBankList[2]);
-	              ROM_BANK8(0xc000,swa);
-         	     }
-	             K4sel=V;
-        	     break;
-	 case 0xf000:IRQLatch&=0xF0;IRQLatch|=V&0xF;break;
+   case 0x9000:
+               switch(V&0x3)
+               {
+                case 0:MIRROR_SET(0);break;
+                case 1:MIRROR_SET(1);break;
+                case 2:onemir(0);break;
+                case 3:onemir(1);break;
+                }
+               break;
+   case 0x9006:
+   case 0x9004:
+   case 0x9002:if((K4sel&2)!=(V&2))
+               {
+                     uint8 swa;
+                swa=PRGBankList[0];
+                 ROM_BANK8(0x8000,PRGBankList[2]);
+                ROM_BANK8(0xc000,swa);
+                }
+               K4sel=V;
+               break;
+   case 0xf000:IRQLatch&=0xF0;IRQLatch|=V&0xF;break;
          case 0xf002:IRQLatch&=0x0F;IRQLatch|=V<<4;break;
-	 case 0xf004:IRQCount=IRQLatch;acount=0;
-	             IRQa=V&2;K4IRQ=V&1;
-		     X6502_IRQEnd(FCEU_IQEXT);
-		     break;
-	 case 0xf006:IRQa=K4IRQ;X6502_IRQEnd(FCEU_IQEXT);break;
+   case 0xf004:IRQCount=IRQLatch;acount=0;
+               IRQa=V&2;K4IRQ=V&1;
+         X6502_IRQEnd(FCEU_IQEXT);
+         break;
+   case 0xf006:IRQa=K4IRQ;X6502_IRQEnd(FCEU_IQEXT);break;
  }
 }
 static void FP_FASTAPASS(1) KonamiIRQHook(int a)

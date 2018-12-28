@@ -28,7 +28,7 @@ static DECLFW(Mapper8_write)
 
 void Mapper8_init(void)
 {
-	ROM_BANK32(0);
+  ROM_BANK32(0);
         SetWriteHandler(0x8000,0xFFFF,Mapper8_write);
 }
 

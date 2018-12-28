@@ -28,7 +28,7 @@ static DECLFW(Mapper32_write)
  switch(A>>12)
  {
   case 0x8:
-	   mapbyte1[1]=V;
+     mapbyte1[1]=V;
            if(IREMCon) {ROM_BANK8(0xc000,V);ROM_BANK8(0x8000,~1);}
            else {ROM_BANK8(0x8000,V);ROM_BANK8(0xc000,~1);}
            break;

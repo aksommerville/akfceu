@@ -45,12 +45,12 @@ typedef uint32_t uint32;
  typedef __int64 int64;
  typedef unsigned __int64 uint64;
  #define INLINE __inline
- #define GINLINE			/* Can't declare a function INLINE
-					   and global in MSVC.  Bummer.
-					*/
- #define PSS_STYLE 2			/* Does MSVC compile for anything
-					   other than Windows/DOS targets?
-					*/
+ #define GINLINE      /* Can't declare a function INLINE
+             and global in MSVC.  Bummer.
+          */
+ #define PSS_STYLE 2      /* Does MSVC compile for anything
+             other than Windows/DOS targets?
+          */
 #endif
 
 #if PSS_STYLE==2
@@ -81,8 +81,8 @@ typedef uint32_t uint32;
   #define FASTAPASS(x) __attribute__((regparm(x)))
   #define FP_FASTAPASS FASTAPASS
  #else
-  #define FASTAPASS(x)	
-  #define FP_FASTAPASS(x)	
+  #define FASTAPASS(x)  
+  #define FP_FASTAPASS(x)  
  #endif
 #elif MSVC
  #define FP_FASTAPASS(x)

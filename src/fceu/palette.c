@@ -276,7 +276,7 @@ static int controllength=0;
 
 void FCEUI_NTSCDEC(void)
 {
-	if(ntsccol && FCEUGameInfo->type!=GIT_VSUNI &&!PAL && FCEUGameInfo->type!=GIT_NSF)
+  if(ntsccol && FCEUGameInfo->type!=GIT_VSUNI &&!PAL && FCEUGameInfo->type!=GIT_NSF)
         {
          int which;
          if(controlselect)
@@ -293,7 +293,7 @@ void FCEUI_NTSCDEC(void)
           }
           controllength=360;
          }   
-	}
+  }
 }
 
 void FCEUI_NTSCINC(void)

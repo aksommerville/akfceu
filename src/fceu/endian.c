@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*	Contains file I/O functions that write/read data    */
-/*	LSB first.				            */
+/*  Contains file I/O functions that write/read data    */
+/*  LSB first.                    */
 
 
 #include <stdio.h>

@@ -16,7 +16,7 @@ static long wsize;
 */
 void FCEU_WriteWaveData(int32 *Buffer, int Count)
 {
- int16 temp[Count];	/* Yay.  Is this the first use of this "feature" of C in FCE Ultra? */
+ int16 temp[Count];  /* Yay.  Is this the first use of this "feature" of C in FCE Ultra? */
  int16 *dest;
  int x;
 

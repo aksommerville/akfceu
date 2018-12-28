@@ -63,7 +63,7 @@ uint8 FCEU_GetJoyJoy(void)
 }
 extern uint8 coinon;
 
-static int FSDisable=0;	/* Set to 1 if NES-style four-player adapter is disabled. */
+static int FSDisable=0;  /* Set to 1 if NES-style four-player adapter is disabled. */
 static int JPAttrib[2]={0,0};
 static int JPType[2]={0,0};
 static void *InputDataPtr[2];
@@ -104,65 +104,65 @@ static uint8 FP_FASTAPASS(1) ReadGP(int w)
                  ret = ((joy[w]>>(joy_readbit[w]))&1);
                 if(joy_readbit[w]>=16) ret=0;
                 if(FSDisable)
-		{
-	  	 if(joy_readbit[w]>=8) ret|=1;
-		}
-		else
-		{
+    {
+       if(joy_readbit[w]>=8) ret|=1;
+    }
+    else
+    {
                  if(joy_readbit[w]==19-w) ret|=1;
-		}
-		if(!fceuindbg)
-		 joy_readbit[w]++;
+    }
+    if(!fceuindbg)
+     joy_readbit[w]++;
                 return ret;
 }
 
 static DECLFR(JPRead)
 {
-	uint8 ret=0;
+  uint8 ret=0;
 
-	if(JPorts[A&1]->Read)
-	 ret|=JPorts[A&1]->Read(A&1);
-	
-	if(FCExp)
-	 if(FCExp->Read)
-	  ret=FCExp->Read(A&1,ret);
+  if(JPorts[A&1]->Read)
+   ret|=JPorts[A&1]->Read(A&1);
+  
+  if(FCExp)
+   if(FCExp->Read)
+    ret=FCExp->Read(A&1,ret);
 
-	ret|=X.DB&0xC0;
-	return(ret);
+  ret|=X.DB&0xC0;
+  return(ret);
 }
 
 static DECLFW(B4016)
 {
-	if(FCExp)
-	 if(FCExp->Write)
-	  FCExp->Write(V&7);
+  if(FCExp)
+   if(FCExp->Write)
+    FCExp->Write(V&7);
 
-	if(JPorts[0]->Write)
-	 JPorts[0]->Write(V&1);
+  if(JPorts[0]->Write)
+   JPorts[0]->Write(V&1);
         if(JPorts[1]->Write)
          JPorts[1]->Write(V&1);
 
         if((LastStrobe&1) && (!(V&1)))
         {
-	 /* This strobe code is just for convenience.  If it were
-	    with the code in input / *.c, it would more accurately represent
-	    what's really going on.  But who wants accuracy? ;)
-	    Seriously, though, this shouldn't be a problem.
-	 */
-	 if(JPorts[0]->Strobe)
-	  JPorts[0]->Strobe(0);
+   /* This strobe code is just for convenience.  If it were
+      with the code in input / *.c, it would more accurately represent
+      what's really going on.  But who wants accuracy? ;)
+      Seriously, though, this shouldn't be a problem.
+   */
+   if(JPorts[0]->Strobe)
+    JPorts[0]->Strobe(0);
          if(JPorts[1]->Strobe)
           JPorts[1]->Strobe(1);
-	 if(FCExp)
-	  if(FCExp->Strobe)
-	   FCExp->Strobe();
-	 }
+   if(FCExp)
+    if(FCExp->Strobe)
+     FCExp->Strobe();
+   }
          LastStrobe=V&0x1;
 }
 
 static void FP_FASTAPASS(1) StrobeGP(int w)
 {
-	joy_readbit[w]=0;
+  joy_readbit[w]=0;
 }
 
 static INPUTC GPC={ReadGP,0,StrobeGP,0,0,0};
@@ -182,13 +182,13 @@ void FCEU_DrawInput(uint8 *buf)
 
 void FCEU_UpdateInput(void)
 {
-	int x;
+  int x;
 
-	for(x=0;x<2;x++)
-	{
-	 switch(JPType[x])
-	 {
-	  case SI_GAMEPAD:
+  for(x=0;x<2;x++)
+  {
+   switch(JPType[x])
+   {
+    case SI_GAMEPAD:
                 if(!x)
                 {
                  joy[0]=*(uint32 *)InputDataPtr[0];
@@ -199,25 +199,25 @@ void FCEU_UpdateInput(void)
                  joy[1]=*(uint32 *)InputDataPtr[1] >>8;
                  joy[3]=*(uint32 *)InputDataPtr[1] >>24;
                 }
-		break;
-	  default:
-		if(JPorts[x]->Update)
-		 JPorts[x]->Update(x,InputDataPtr[x],JPAttrib[x]);
-		break;
-	 }
-	}
-	if(FCExp)
-	 if(FCExp->Update)
-	  FCExp->Update(InputDataPtrFC,JPAttribFC);
+    break;
+    default:
+    if(JPorts[x]->Update)
+     JPorts[x]->Update(x,InputDataPtr[x],JPAttrib[x]);
+    break;
+   }
+  }
+  if(FCExp)
+   if(FCExp->Update)
+    FCExp->Update(InputDataPtrFC,JPAttribFC);
 
         if(FCEUGameInfo->type==GIT_VSUNI)
-	 if(coinon) coinon--;
+   if(coinon) coinon--;
 
         if(FCEUnetplay) NetplayUpdate(joy);
-	FCEUMOV_AddJoy(joy);
+  FCEUMOV_AddJoy(joy);
 
         if(FCEUGameInfo->type==GIT_VSUNI)
-	 FCEU_VSUniSwap(&joy[0],&joy[1]);
+   FCEU_VSUniSwap(&joy[0],&joy[1]);
 }
 
 static DECLFR(VSUNIRead0)
@@ -267,22 +267,22 @@ static void CheckSLHook(void)
 
 static void FASTAPASS(1) SetInputStuff(int x)
 {
- 	 switch(JPType[x])
-	 {
-	  case SI_GAMEPAD:
+    switch(JPType[x])
+   {
+    case SI_GAMEPAD:
            if(FCEUGameInfo->type==GIT_VSUNI)
-	    JPorts[x] = &GPCVS;
-	   else
-	    JPorts[x]=&GPC;
-	  break;
-	  case SI_ARKANOID:JPorts[x]=FCEU_InitArkanoid(x);break;
-	  case SI_ZAPPER:JPorts[x]=FCEU_InitZapper(x);break;
+      JPorts[x] = &GPCVS;
+     else
+      JPorts[x]=&GPC;
+    break;
+    case SI_ARKANOID:JPorts[x]=FCEU_InitArkanoid(x);break;
+    case SI_ZAPPER:JPorts[x]=FCEU_InitZapper(x);break;
           case SI_POWERPADA:JPorts[x]=FCEU_InitPowerpadA(x);break;
-	  case SI_POWERPADB:JPorts[x]=FCEU_InitPowerpadB(x);break;
-	  case SI_NONE:JPorts[x]=&DummyJPort;break;
+    case SI_POWERPADB:JPorts[x]=FCEU_InitPowerpadB(x);break;
+    case SI_NONE:JPorts[x]=&DummyJPort;break;
          }
 
-	CheckSLHook();
+  CheckSLHook();
 }
 
 static uint8 F4ReadBit[2];
@@ -309,26 +309,26 @@ static void SetInputStuffFC(void)
         {
          case SIFC_NONE:FCExp=0;break;
          case SIFC_ARKANOID:FCExp=FCEU_InitArkanoidFC();break;
-	 case SIFC_SHADOW:FCExp=FCEU_InitSpaceShadow();break;
-	 case SIFC_OEKAKIDS:FCExp=FCEU_InitOekaKids();break;
+   case SIFC_SHADOW:FCExp=FCEU_InitSpaceShadow();break;
+   case SIFC_OEKAKIDS:FCExp=FCEU_InitOekaKids();break;
          case SIFC_4PLAYER:FCExp=&FAMI4C;memset(&F4ReadBit,0,sizeof(F4ReadBit));break;
-	 case SIFC_FKB:FCExp=FCEU_InitFKB();break;
-	 case SIFC_HYPERSHOT:FCExp=FCEU_InitHS();break;
-	 case SIFC_MAHJONG:FCExp=FCEU_InitMahjong();break;
-	 case SIFC_QUIZKING:FCExp=FCEU_InitQuizKing();break;
-	 case SIFC_FTRAINERA:FCExp=FCEU_InitFamilyTrainerA();break;
-	 case SIFC_FTRAINERB:FCExp=FCEU_InitFamilyTrainerB();break;
-	 case SIFC_BWORLD:FCExp=FCEU_InitBarcodeWorld();break;
-	 case SIFC_TOPRIDER:FCExp=FCEU_InitTopRider();break;
+   case SIFC_FKB:FCExp=FCEU_InitFKB();break;
+   case SIFC_HYPERSHOT:FCExp=FCEU_InitHS();break;
+   case SIFC_MAHJONG:FCExp=FCEU_InitMahjong();break;
+   case SIFC_QUIZKING:FCExp=FCEU_InitQuizKing();break;
+   case SIFC_FTRAINERA:FCExp=FCEU_InitFamilyTrainerA();break;
+   case SIFC_FTRAINERB:FCExp=FCEU_InitFamilyTrainerB();break;
+   case SIFC_BWORLD:FCExp=FCEU_InitBarcodeWorld();break;
+   case SIFC_TOPRIDER:FCExp=FCEU_InitTopRider();break;
         }
-	CheckSLHook();
+  CheckSLHook();
 }
 
 void InitializeInput(void)
 { 
-	memset(joy_readbit,0,sizeof(joy_readbit));
+  memset(joy_readbit,0,sizeof(joy_readbit));
         memset(joy,0,sizeof(joy));
-	LastStrobe = 0;
+  LastStrobe = 0;
 
         if(FCEUGameInfo->type==GIT_VSUNI)
         {
@@ -342,7 +342,7 @@ void InitializeInput(void)
 
         SetInputStuff(0);
         SetInputStuff(1);
-	SetInputStuffFC();
+  SetInputStuffFC();
 }
 
 void FCEUI_SetInput(int port, int type, void *ptr, int attrib)
@@ -431,7 +431,7 @@ void FCEUI_VSUniCoin(void)
 
 void FCEUI_ResetNES(void)
 {
-	FCEU_QSimpleCommand(FCEUNPCMD_RESET);
+  FCEU_QSimpleCommand(FCEUNPCMD_RESET);
 }
   
 void FCEUI_PowerNES(void)

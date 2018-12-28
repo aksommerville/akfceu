@@ -33,7 +33,7 @@ static uint32 CHRRAMSize;
 
 static uint8 PPUCHRBus;
 static uint8 TKSMIR[8];
-static uint8 EXPREGS[8];	/* For bootleg games, mostly. */
+static uint8 EXPREGS[8];  /* For bootleg games, mostly. */
 #undef IRQCount
 #undef IRQLatch
 #undef IRQa
@@ -41,16 +41,16 @@ static uint8 IRQCount,IRQLatch,IRQa;
 static uint8 IRQReload;
 
 static SFORMAT MMC3_StateRegs[]={
-	{DRegBuf, 8, "REGS"},
-	{&resetmode, 1, "RMOD"},
-	{&MMC3_cmd, 1, "CMD"},
-	{&A000B, 1, "A000"},
-	{&A001B, 1, "A001"},
-	{&IRQReload, 1, "IRQR"},
-	{&IRQCount, 1, "IRQC"},
-	{&IRQLatch, 1, "IRQL"},
-	{&IRQa, 1, "IRQA"},
-	{0}
+  {DRegBuf, 8, "REGS"},
+  {&resetmode, 1, "RMOD"},
+  {&MMC3_cmd, 1, "CMD"},
+  {&A000B, 1, "A000"},
+  {&A001B, 1, "A001"},
+  {&IRQReload, 1, "IRQR"},
+  {&IRQCount, 1, "IRQC"},
+  {&IRQLatch, 1, "IRQL"},
+  {&IRQa, 1, "IRQA"},
+  {0}
 };
 
 
@@ -77,8 +77,8 @@ static void FixMMC3PRG(int V)
            pwrap(0x8000,DRegBuf[6]);
            pwrap(0xC000,~1);
           }
-	  pwrap(0xA000,DRegBuf[7]);
-	  pwrap(0xE000,~0);
+    pwrap(0xA000,DRegBuf[7]);
+    pwrap(0xE000,~0);
 }
 
 static void FixMMC3CHR(int V)
@@ -115,10 +115,10 @@ static void MMC3RegReset(void)
 static DECLFW(Mapper4_write)
 {
         switch(A&0xE001)
-	{
+  {
          case 0x8000:
           if((V&0x40) != (MMC3_cmd&0x40))
-	   FixMMC3PRG(V);
+     FixMMC3PRG(V);
           if((V&0x80) != (MMC3_cmd&0x80))
            FixMMC3CHR(V);
           MMC3_cmd = V;
@@ -131,11 +131,11 @@ static DECLFW(Mapper4_write)
                  switch(MMC3_cmd&0x07)
                  {
                   case 0: cwrap((cbase^0x000),V&(~1));
-			  cwrap((cbase^0x400),V|1);
-			  break;
+        cwrap((cbase^0x400),V|1);
+        break;
                   case 1: cwrap((cbase^0x800),V&(~1));
-			  cwrap((cbase^0xC00),V|1);
-			  break;
+        cwrap((cbase^0xC00),V|1);
+        break;
                   case 2: cwrap(cbase^0x1000,V); break;
                   case 3: cwrap(cbase^0x1400,V); break;
                   case 4: cwrap(cbase^0x1800,V); break;
@@ -150,11 +150,11 @@ static DECLFW(Mapper4_write)
                 break;
 
         case 0xA000:
-	        if(mwrap) mwrap(V&1);
+          if(mwrap) mwrap(V&1);
                 break;
-	case 0xA001:
-		A001B=V;
-		break;
+  case 0xA001:
+    A001B=V;
+    break;
  }
 }
 
@@ -196,9 +196,9 @@ static void MMC3_hb(void)
 
 static void MMC3_hb_KickMasterHack(void)
 {
-	if(scanline==238)
-	 ClockMMC3Counter();
-	ClockMMC3Counter();
+  if(scanline==238)
+   ClockMMC3Counter();
+  ClockMMC3Counter();
 }
 
 static void MMC3_hb_PALStarWarsHack(void)
@@ -437,8 +437,8 @@ static void M45CW(uint32 A, uint8 V)
  else
   NV&=0;
  NV|=EXPREGS[0]|((EXPREGS[2]&0xF0)<<4); // &0x10(not 0xf0) is valid given the original
-					// description of mapper 45 by kevtris,
-					// but this fixes Super 8 in 1.
+          // description of mapper 45 by kevtris,
+          // but this fixes Super 8 in 1.
  setchr1(A,NV);
 }
 
@@ -666,19 +666,19 @@ void Mapper165_Init(CartInfo *info)
 
 static DECLFW(Mapper250_write)
 {
-	Mapper4_write((A&0xE000)|((A&0x400)>>10),A&0xFF);
+  Mapper4_write((A&0xE000)|((A&0x400)>>10),A&0xFF);
 }
 
 static DECLFW(M250_IRQWrite)
 {
-	MMC3_IRQWrite((A&0xE000)|((A&0x400)>>10),A&0xFF);
+  MMC3_IRQWrite((A&0xE000)|((A&0x400)>>10),A&0xFF);
 }
 
 static void M250_Power(void)
 {
-	GenMMC3Power();
-	SetWriteHandler(0x8000,0xBFFF,Mapper250_write);
-	SetWriteHandler(0xC000,0xFFFF,M250_IRQWrite);
+  GenMMC3Power();
+  SetWriteHandler(0x8000,0xBFFF,Mapper250_write);
+  SetWriteHandler(0xC000,0xFFFF,M250_IRQWrite);
 }
 
 void Mapper250_Init(CartInfo *info)
@@ -736,7 +736,7 @@ static void M245CW(uint32 A, uint8 V)
 {
  //printf("$%04x:$%02x\n",A,V);
  //setchr1(A,V);
- //	
+ //  
  EXPREGS[0]=V;
  FixMMC3PRG(MMC3_cmd);
 }
@@ -938,18 +938,18 @@ void GenMMC3_Init(CartInfo *info, int prg, int chr, int wram, int battery)
 
  //PPU_hook=MMC3_PPUIRQ;
 
- if(info->CRC32 == 0x5104833e)		// Kick Master
+ if(info->CRC32 == 0x5104833e)    // Kick Master
   GameHBIRQHook = MMC3_hb_KickMasterHack;
  else if(info->CRC32 == 0x5a6860f1 || info->CRC32 == 0xae280e20) // Shougi Meikan '92/'93
   GameHBIRQHook = MMC3_hb_KickMasterHack;
- else if(info->CRC32 == 0xfcd772eb)	// PAL Star Wars, similar problem as Kick Master.
+ else if(info->CRC32 == 0xfcd772eb)  // PAL Star Wars, similar problem as Kick Master.
   GameHBIRQHook = MMC3_hb_PALStarWarsHack;
  else 
   GameHBIRQHook=MMC3_hb;
  GameStateRestore=genmmc3restore;
 }
 
-static int hackm4=0;		/* For Karnov, maybe others.  BLAH.  Stupid iNES format.*/
+static int hackm4=0;    /* For Karnov, maybe others.  BLAH.  Stupid iNES format.*/
 
 static void Mapper4Power(void)
 {

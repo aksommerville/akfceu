@@ -98,11 +98,11 @@ static DECLFW(UNL8237Write)
   case 0x8000:setmirror(((V|(V>>7))&1)^1);break;
   case 0xa000:cmd=V;cmdin=1;DoPRG();DoCHR();break;
   case 0xC000:if(!cmdin) break;
-	      regs[cmd&7]=V;
-	      DoPRG();
-	      DoCHR();
-	      cmdin=0;
-	      break;
+        regs[cmd&7]=V;
+        DoPRG();
+        DoCHR();
+        cmdin=0;
+        break;
  }
 }
 

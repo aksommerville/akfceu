@@ -30,7 +30,7 @@ static void FP_FASTAPASS(1) Mapper50IRQ(int a)
         else
         {
          IRQa=0;
-	 X6502_IRQBegin(FCEU_IQEXT);
+   X6502_IRQBegin(FCEU_IQEXT);
         }
  }
 }

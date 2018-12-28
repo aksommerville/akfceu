@@ -81,7 +81,7 @@ static void S8259Synco(void)
 
  setprg32(0x8000,latch[5]&7);
 
- if(!UNIFchrrama)	// No CHR RAM?  Then BS'ing is ok.
+ if(!UNIFchrrama)  // No CHR RAM?  Then BS'ing is ok.
  {
   if(!type)
   {

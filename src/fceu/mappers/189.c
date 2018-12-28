@@ -16,19 +16,19 @@ static DECLFW(Mapper189_write)
   case 0xa000:MIRROR_SET(V&1);break;
   case 0x8000:cmd=V;break; 
   case 0x8001:switch(cmd&7)
-	      {
-	       case 0:VROM_BANK2(0x0000,V>>1);break;
-	       case 1:VROM_BANK2(0x0800,V>>1);break;
-	       case 2:VROM_BANK1(0x1000,V);break;
+        {
+         case 0:VROM_BANK2(0x0000,V>>1);break;
+         case 1:VROM_BANK2(0x0800,V>>1);break;
+         case 2:VROM_BANK1(0x1000,V);break;
                case 3:VROM_BANK1(0x1400,V);break;
                case 4:VROM_BANK1(0x1800,V);break;
                case 5:VROM_BANK1(0x1C00,V);break;
-	      }
+        }
    case 0xc000:IRQLatch=V;break;
    case 0xc001:IRQCount=IRQLatch;break;
    case 0xe000:IRQa=0;X6502_IRQEnd(FCEU_IQEXT);break;
    case 0xe001:IRQa=1;break;
-	      break;
+        break;
 
  }
 }

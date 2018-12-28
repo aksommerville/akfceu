@@ -91,17 +91,17 @@ static void M15Reset(void)
 void Mapper234_init(void)
 {
         SetWriteHandler(0xff80,0xff9f,R1W);
-	SetReadHandler(0xff80,0xff9f,R1R);
+  SetReadHandler(0xff80,0xff9f,R1R);
 
-	SetWriteHandler(0xffe8,0xfff7,R2W);
-	SetReadHandler(0xffe8,0xfff7,R2R);
+  SetWriteHandler(0xffe8,0xfff7,R2W);
+  SetReadHandler(0xffe8,0xfff7,R2R);
 
-	SetReadHandler(0x6000,0x7FFF,0);
-	SetWriteHandler(0x6000,0x7FFF,0);
+  SetReadHandler(0x6000,0x7FFF,0);
+  SetWriteHandler(0x6000,0x7FFF,0);
 
-	M15Reset();
-		
-	GameStateRestore=M15Restore;
-	MapperReset=M15Reset;
+  M15Reset();
+    
+  GameStateRestore=M15Restore;
+  MapperReset=M15Reset;
 }
 

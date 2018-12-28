@@ -4,9 +4,9 @@ void FCEUI_LoadMem(const char *fname, uint32 start, int hl);
 #ifdef FCEUDEF_DEBUGGER
 
 /* Type attributes, you can OR them together. */
-#define BPOINT_READ		1
-#define BPOINT_WRITE		2
-#define BPOINT_PC		4
+#define BPOINT_READ    1
+#define BPOINT_WRITE    2
+#define BPOINT_PC    4
 
 #include "x6502struct.h"
 

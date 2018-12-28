@@ -74,7 +74,7 @@ void Mapper226_init(void)
   M26Reset();
 }
 
-#ifdef OLD	// What the heck is this??
+#ifdef OLD  // What the heck is this??
 DECLFW(Mapper226_write)
 {
  MIRROR_SET((A>>13)&1);

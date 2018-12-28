@@ -33,7 +33,7 @@ DECLFW(Mapper22_write)
           case 0x8000:ROM_BANK8(0x8000,V);break;
           case 0xa000:ROM_BANK8(0xA000,V);break;
           case 0x9000:switch(V&3)
-		      {
+          {
                        case 0x00:MIRROR_SET2(1);break;
                        case 0x01:MIRROR_SET2(0);break;
                        case 0x02:onemir(0);break;
@@ -44,20 +44,20 @@ DECLFW(Mapper22_write)
          }
         else
         {
-	  A&=0xF003;
-	  if(A>=0xb000 && A<=0xe003)
-	  {
-	   int x=(A&1)|((A-0xB000)>>11);
+    A&=0xF003;
+    if(A>=0xb000 && A<=0xe003)
+    {
+     int x=(A&1)|((A-0xB000)>>11);
 
-	   K4buf[x]&=(0xF0)>>((A&2)<<1);
-	   K4buf[x]|=(V&0xF)<<((A&2)<<1);
-	   VROM_BANK1(x<<10,K4buf[x]>>1);
-	  }
+     K4buf[x]&=(0xF0)>>((A&2)<<1);
+     K4buf[x]|=(V&0xF)<<((A&2)<<1);
+     VROM_BANK1(x<<10,K4buf[x]>>1);
+    }
         }
 }
 
 
 void Mapper22_init(void)
 {
-	SetWriteHandler(0x8000,0xffff,Mapper22_write);
+  SetWriteHandler(0x8000,0xffff,Mapper22_write);
 }

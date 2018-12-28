@@ -26,8 +26,8 @@
 #include        "types.h"
 #include        "x6502.h"
 #include        "fceu.h"
-#include	"ppu.h"
-#include	"nsf.h"
+#include  "ppu.h"
+#include  "nsf.h"
 #include        "sound.h"
 #include        "general.h"
 #include        "endian.h"
@@ -150,50 +150,50 @@ static DECLFR(A2002)
 {
                         uint8 ret;
         
-			FCEUPPU_LineUpdate();
+      FCEUPPU_LineUpdate();
                         ret = PPU_status;
                         ret|=PPUGenLatch&0x1F;
 
-			#ifdef FCEUDEF_DEBUGGER
+      #ifdef FCEUDEF_DEBUGGER
                         if(!fceuindbg)
-			#endif
+      #endif
                         {
                          vtoggle=0;
                          PPU_status&=0x7F;
-			 PPUGenLatch=ret;
+       PPUGenLatch=ret;
                         }
                         return ret;
 }
 
-static DECLFR(A200x)	/* Not correct for $2004 reads. */
+static DECLFR(A200x)  /* Not correct for $2004 reads. */
 {
-			FCEUPPU_LineUpdate();
+      FCEUPPU_LineUpdate();
                         return PPUGenLatch;
 }
 
 /*
 static DECLFR(A2004)
 {
-			uint8 ret;
+      uint8 ret;
 
-			FCEUPPU_LineUpdate();
-			ret = SPRAM[PPU[3]];
+      FCEUPPU_LineUpdate();
+      ret = SPRAM[PPU[3]];
 
-	                if(PPUSPL>=8) 
-        	        {
-                	 if(PPU[3]>=8)
-	                  ret = SPRAM[PPU[3]];
-	                }
-	                else
-	                {
-	                 //printf("$%02x:$%02x\n",PPUSPL,V);
-	                 ret = SPRAM[PPUSPL];
-	                }
-	                PPU[3]++;
-	                PPUSPL++;
-			PPUGenLatch = ret;
-			printf("%d, %02x\n",scanline,ret);
-			return(ret);
+                  if(PPUSPL>=8) 
+                  {
+                   if(PPU[3]>=8)
+                    ret = SPRAM[PPU[3]];
+                  }
+                  else
+                  {
+                   //printf("$%02x:$%02x\n",PPUSPL,V);
+                   ret = SPRAM[PPUSPL];
+                  }
+                  PPU[3]++;
+                  PPUSPL++;
+      PPUGenLatch = ret;
+      printf("%d, %02x\n",scanline,ret);
+      return(ret);
 }
 */
 static DECLFR(A2007)
@@ -201,16 +201,16 @@ static DECLFR(A2007)
                         uint8 ret;
                         uint32 tmp=RefreshAddr&0x3FFF;
 
-			FCEUPPU_LineUpdate();
+      FCEUPPU_LineUpdate();
                         
                         ret=VRAMBuffer;
 
-			#ifdef FCEUDEF_DEBUGGER
-			if(!fceuindbg)
-			#endif
-			{
+      #ifdef FCEUDEF_DEBUGGER
+      if(!fceuindbg)
+      #endif
+      {
                          if(PPU_hook) PPU_hook(tmp);
-			 PPUGenLatch=VRAMBuffer;
+       PPUGenLatch=VRAMBuffer;
                          if(tmp<0x2000)
                          {
                           VRAMBuffer=VPage[tmp>>10][tmp];
@@ -220,9 +220,9 @@ static DECLFR(A2007)
                           VRAMBuffer=vnapage[(tmp>>10)&0x3][tmp&0x3FF];
                          }
                         }
-			#ifdef FCEUDEF_DEBUGGER
+      #ifdef FCEUDEF_DEBUGGER
                         if(!fceuindbg)
-			#endif
+      #endif
                         {
                          if (INC32) RefreshAddr+=32;
                          else RefreshAddr++;
@@ -235,7 +235,7 @@ static DECLFW(B2000)
 {
                 //printf("%04x:$%02x, %d\n",A,V&0x38,scanline);
 
-		FCEUPPU_LineUpdate();
+    FCEUPPU_LineUpdate();
                 PPUGenLatch=V;
                 if(!(PPU[0]&0x80) && (V&0x80) && (PPU_status&0x80))
                 {
@@ -249,10 +249,10 @@ static DECLFW(B2000)
 
 static DECLFW(B2001)
 {
-		//printf("%04x:$%02x, %d\n",A,V,scanline);
-		FCEUPPU_LineUpdate();
+    //printf("%04x:$%02x, %d\n",A,V,scanline);
+    FCEUPPU_LineUpdate();
                 PPUGenLatch=V;
-		PPU[1]=V;
+    PPU[1]=V;
                 if(V&0xE0)
                  deemp=V>>5;
 }
@@ -272,7 +272,7 @@ static DECLFW(B2003)
  
 static DECLFW(B2004)
 {
-		//printf("Wr: %04x:$%02x\n",A,V);
+    //printf("Wr: %04x:$%02x\n",A,V);
 
                 PPUGenLatch=V;
                 if(PPUSPL>=8) 
@@ -293,7 +293,7 @@ static DECLFW(B2004)
 static DECLFW(B2005)
 {
                 uint32 tmp=TempAddr;
-		FCEUPPU_LineUpdate();
+    FCEUPPU_LineUpdate();
                 PPUGenLatch=V;
                 if (!vtoggle) 
                 {
@@ -314,7 +314,7 @@ static DECLFW(B2005)
 
 static DECLFW(B2006)
 {
-		FCEUPPU_LineUpdate();
+    FCEUPPU_LineUpdate();
 
                 PPUGenLatch=V;
                 if(!vtoggle)  
@@ -330,7 +330,7 @@ static DECLFW(B2006)
                  RefreshAddr=TempAddr;
                  if(PPU_hook)
                   PPU_hook(RefreshAddr);
-		 //printf("%d, %04x\n",scanline,RefreshAddr);
+     //printf("%d, %04x\n",scanline,RefreshAddr);
                 }
                 vtoggle^=1;
 }
@@ -514,20 +514,20 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
                                     function. */
         if(norecurse) return;
 
-	if(sphitx != 0x100 && !(PPU_status&0x40))
+  if(sphitx != 0x100 && !(PPU_status&0x40))
         {
-	 if((sphitx < (lastpixel-16)) && !(sphitx < ((lasttile - 2)*8)))
-	 {
-	  //printf("OK: %d\n",scanline);
-	  lasttile++;
-	 }
+   if((sphitx < (lastpixel-16)) && !(sphitx < ((lasttile - 2)*8)))
+   {
+    //printf("OK: %d\n",scanline);
+    lasttile++;
+   }
 
         }
 
         if(lasttile>34) lasttile=34;
         numtiles=lasttile-firsttile;
         
-	if(numtiles<=0) return;
+  if(numtiles<=0) return;
 
         P=Pline;
         
@@ -560,7 +560,7 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
          return;
         }
 
-	/* Priority bits, needed for sprite emulation. */
+  /* Priority bits, needed for sprite emulation. */
         Pal[0]|=64; 
         Pal[4]|=64;
         Pal[8]|=64;
@@ -571,83 +571,83 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
            correct for carts in "SL" mode.
         */      
 
-	#define PPUT_MMC5
+  #define PPUT_MMC5
         if(MMC5Hack && geniestage!=1)
         {
          if(MMC5HackCHRMode==0 && (MMC5HackSPMode&0x80))
          {
-	  int tochange=MMC5HackSPMode&0x1F;
-	  tochange-=firsttile;
+    int tochange=MMC5HackSPMode&0x1F;
+    tochange-=firsttile;
           for(X1=firsttile;X1<lasttile;X1++)
           {
            if((tochange<=0 && MMC5HackSPMode&0x40) || (tochange>0 && !(MMC5HackSPMode&0x40)))
            {
             #define PPUT_MMC5SP
             #include "pputile.h"
- 	    #undef PPUT_MMC5SP
-	   }
-	   else
-	   {
-	    #include "pputile.h"	    
-	   }
-	   tochange--;
-	  }
-	 }
+       #undef PPUT_MMC5SP
+     }
+     else
+     {
+      #include "pputile.h"      
+     }
+     tochange--;
+    }
+   }
          else if(MMC5HackCHRMode==1 && (MMC5HackSPMode&0x80))
-	 {
+   {
           int tochange=MMC5HackSPMode&0x1F;
           tochange-=firsttile;
 
           #define PPUT_MMC5SP
-	  #define PPUT_MMC5CHR1
+    #define PPUT_MMC5CHR1
           for(X1=firsttile;X1<lasttile;X1++)
           {
            #include "pputile.h"
           }
-	  #undef PPUT_MMC5CHR1
+    #undef PPUT_MMC5CHR1
           #undef PPUT_MMC5SP
-	 }
+   }
          else if(MMC5HackCHRMode==1)
-	 {
+   {
           #define PPUT_MMC5CHR1
           for(X1=firsttile;X1<lasttile;X1++)
           {
            #include "pputile.h"
           }
           #undef PPUT_MMC5CHR1
-	 }
+   }
          else
-	 {
-	  for(X1=firsttile;X1<lasttile;X1++)
-	  {
-	   #include "pputile.h"
-	  }
-	 }
-	}
-	#undef PPUT_MMC5
-	else if(PPU_hook)
-	{
-	 norecurse=1;
-	 #define PPUT_HOOK
+   {
+    for(X1=firsttile;X1<lasttile;X1++)
+    {
+     #include "pputile.h"
+    }
+   }
+  }
+  #undef PPUT_MMC5
+  else if(PPU_hook)
+  {
+   norecurse=1;
+   #define PPUT_HOOK
          for(X1=firsttile;X1<lasttile;X1++)
          {
           #include "pputile.h"
          }
-	 #undef PPUT_HOOK
-	 norecurse=0;
-	}
-	else
-	{
+   #undef PPUT_HOOK
+   norecurse=0;
+  }
+  else
+  {
          for(X1=firsttile;X1<lasttile;X1++)
          {
-	  #include "pputile.h"
+    #include "pputile.h"
          }
-	}
+  }
 
         #undef vofs
         #undef RefreshAddr
 
-	/* Reverse changes made before. */
+  /* Reverse changes made before. */
         Pal[0]&=63; 
         Pal[4]&=63;
         Pal[8]&=63;
@@ -662,8 +662,8 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
          *(uint32 *)Plinef=*(uint32 *)(Plinef+4)=tem;
         }
 
-	if(!ScreenON)
-	{
+  if(!ScreenON)
+  {
          uint32 tem;
          int tstart,tcount;
          tem=Pal[0]|(Pal[0]<<8)|(Pal[0]<<16)|(Pal[0]<<24);
@@ -678,20 +678,20 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
          }
          if(tcount>0)
           FCEU_dwmemset(Plinef+tstart*8,tem,tcount*8);
-	}
+  }
 
         if(lastpixel>=TOFIXNUM && tofix)
         {
-	  //puts("Fixed");
+    //puts("Fixed");
           Fixit1();
           tofix=0;
         }
 
         //CheckSpriteHit(lasttile*8); //lasttile*8); //lastpixel);
-	
-	CheckSpriteHit(lastpixel);	/* This only works right because
-					   of a hack earlier in this function.
-					*/
+  
+  CheckSpriteHit(lastpixel);  /* This only works right because
+             of a hack earlier in this function.
+          */
         if(InputScanlineHook && (lastpixel-16)>=0)
         {
          InputScanlineHook(Plinef,spork?sprlinebuf:0,linestartts,lasttile*8-16);
@@ -752,7 +752,7 @@ static void DoLine(void)
  X6502_Run(256);
  EndRL();
 
- if(rendis & 2)	/* User asked to not display background data. */
+ if(rendis & 2)  /* User asked to not display background data. */
  {
   uint32 tem;
   tem=Pal[0]|(Pal[0]<<8)|(Pal[0]<<16)|(Pal[0]<<24);
@@ -842,8 +842,8 @@ static void FetchSpriteData(void)
         uint8 ns,sb;
         SPR *spr;
         uint8 H;
-	int n;
-	int vofs;
+  int n;
+  int vofs;
         uint8 P0=PPU[0];
 
         spr=(SPR *)SPRAM;
@@ -948,11 +948,11 @@ static void FetchSpriteData(void)
                   if(MMC5Hack) C = MMC5SPRVRAMADR(vadr);
                   else C = VRAMADR(vadr);
                   dst.ca[0]=C[0];
-		  if(ns<8)
-		  {
-		   PPU_hook(0x2000);
+      if(ns<8)
+      {
+       PPU_hook(0x2000);
                    PPU_hook(vadr);
-		  }
+      }
                   dst.ca[1]=C[8];
                   dst.x=spr->x;
                   dst.atr=spr->atr;
@@ -971,16 +971,16 @@ static void FetchSpriteData(void)
          }
         //if(ns>=7)
         //printf("%d %d\n",scanline,ns);
-        if(ns>8) PPU_status|=0x20;	/* Handle case when >8 sprites per
-					   scanline option is enabled. */
-	else if(PPU_hook)
-	{
-	 for(n=0;n<(8-ns);n++)
-	 {
+        if(ns>8) PPU_status|=0x20;  /* Handle case when >8 sprites per
+             scanline option is enabled. */
+  else if(PPU_hook)
+  {
+   for(n=0;n<(8-ns);n++)
+   {
                  PPU_hook(0x2000);
                  PPU_hook(vofs);
-	 }
-	}
+   }
+  }
         numsprites=ns;
         SpriteBlurp=sb;
 }
@@ -995,19 +995,19 @@ static void RefreshSprites(void)
 
         FCEU_dwmemset(sprlinebuf,0x80808080,256);
         numsprites--;
-	spr = (SPRB*)SPRBUF+numsprites;
+  spr = (SPRB*)SPRBUF+numsprites;
 
-	for(n=numsprites;n>=0;n--,spr--)
-	{
-	 //#ifdef C80x86
-	 //register uint32 pixdata asm ("eax");
-	 //register uint8 J, atr;
-	 //#else
-	 register uint32 pixdata;
-	 register uint8 J,atr;
-	 //#endif
+  for(n=numsprites;n>=0;n--,spr--)
+  {
+   //#ifdef C80x86
+   //register uint32 pixdata asm ("eax");
+   //register uint8 J, atr;
+   //#else
+   register uint32 pixdata;
+   register uint8 J,atr;
+   //#endif
 
-	 int x=spr->x;
+   int x=spr->x;
          uint8 *C;
          uint8 *VB;
                 
@@ -1121,7 +1121,7 @@ static void CopySprites(uint8 *target)
       if(!spork) return;
       spork=0;
 
-      if(rendis & 1) return;	/* User asked to not display sprites. */
+      if(rendis & 1) return;  /* User asked to not display sprites. */
 
       loopskie:
       {
@@ -1222,12 +1222,12 @@ void FCEUPPU_Reset(void)
         RefreshAddr=TempAddr=0;
         vtoggle = 0;
         ppudead = 2;
-	kook = 0;
+  kook = 0;
 }
 
 void FCEUPPU_Power(void)
 {
-	int x;
+  int x;
 
         memset(NTARAM,0x00,0x800);
         memset(PALRAM,0x00,0x20); 

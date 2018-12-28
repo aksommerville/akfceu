@@ -64,7 +64,7 @@ static void FP_FASTAPASS(1) latchcheck(uint32 VAddr)
      }
 }
 
-DECLFW(Mapper9_write)	// $Axxx
+DECLFW(Mapper9_write)  // $Axxx
 {
  ROM_BANK8(0x8000,V);
 }
@@ -107,7 +107,7 @@ void Mapper9_init(void)
         ROM_BANK8(0xA000,~2);
         ROM_BANK8(0x8000,0);
         SetWriteHandler(0xA000,0xAFFF,Mapper9_write);
-	SetWriteHandler(0xB000,0xFFFF,Mapper9and10_write);
+  SetWriteHandler(0xB000,0xFFFF,Mapper9and10_write);
         PPU_hook=latchcheck;
 }
 
@@ -115,7 +115,7 @@ void Mapper10_init(void)
 {
         latcha1=latcha2=0xFE;
         SetWriteHandler(0xA000,0xAFFF,Mapper10_write);
-	SetWriteHandler(0xB000,0xFFFF,Mapper9and10_write);
+  SetWriteHandler(0xB000,0xFFFF,Mapper9and10_write);
         PPU_hook=latchcheck;
 }
 

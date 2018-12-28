@@ -28,11 +28,11 @@ static void DoIt(void)
 
 DECLFW(Mapper232_write)
 {
-	if(A<=0x9FFF)
-	 mapbyte1[0]=V;
-	else
-	 mapbyte1[1]=V;
-	DoIt();
+  if(A<=0x9FFF)
+   mapbyte1[0]=V;
+  else
+   mapbyte1[1]=V;
+  DoIt();
 }
 
 static void QuattroReset(void)

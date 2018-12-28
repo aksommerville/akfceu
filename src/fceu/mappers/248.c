@@ -54,17 +54,17 @@ static DECLFW(Mapper248_write)
   case 0xe001:IRQa=1;break;
   case 0x8000:cmd=V;break;
   case 0x8001:switch(cmd&7)
-	      {
-	       case 0:VROM_BANK2(0x000,V>>1);break;
-	       case 1:VROM_BANK2(0x800,V>>1);break;
-	       case 2:VROM_BANK1(0x1000,V);break;
-	       case 3:VROM_BANK1(0x1400,V);break;
-	       case 4:VROM_BANK1(0x1800,V);break;
-	       case 5:VROM_BANK1(0x1c00,V);break;
-	       case 6:prgl[0]=V;PRGSynco();break;
-	       case 7:prgl[1]=V;PRGSynco();break;
-	      }
-	      break;
+        {
+         case 0:VROM_BANK2(0x000,V>>1);break;
+         case 1:VROM_BANK2(0x800,V>>1);break;
+         case 2:VROM_BANK1(0x1000,V);break;
+         case 3:VROM_BANK1(0x1400,V);break;
+         case 4:VROM_BANK1(0x1800,V);break;
+         case 5:VROM_BANK1(0x1c00,V);break;
+         case 6:prgl[0]=V;PRGSynco();break;
+         case 7:prgl[1]=V;PRGSynco();break;
+        }
+        break;
  }
 }
 
@@ -75,8 +75,8 @@ static void Mapper248_hb(void)
          IRQCount--;
          if(IRQCount<0)
          {
-	  X6502_IRQBegin(FCEU_IQEXT);
-	  IRQCount=IRQLatch;
+    X6502_IRQBegin(FCEU_IQEXT);
+    IRQCount=IRQLatch;
          }
  }
 }

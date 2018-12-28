@@ -44,7 +44,7 @@ uint8 *VPageG[8];
 uint8 *MMC5SPRVPage[8];
 uint8 *MMC5BGVPage[8];
 
-static uint8 PRGIsRAM[32];	/* This page is/is not PRG RAM. */
+static uint8 PRGIsRAM[32];  /* This page is/is not PRG RAM. */
 
 /* 16 are (sort of) reserved for UNIF/iNES and 16 to map other stuff. */
 static int CHRram[32];
@@ -465,7 +465,7 @@ void OpenGenie(void)
    fclose(fp);
    return;
   }
-  if(GENIEROM[0]==0x4E)	/* iNES ROM image */
+  if(GENIEROM[0]==0x4E)  /* iNES ROM image */
   {
    if(fread(GENIEROM,1,4096,fp)!=4096)
     goto grerr;
@@ -538,7 +538,7 @@ static DECLFW(GenieWrite)
               {
                modcon=V^0xFF;
                if(V==0x71) 
-		modcon=0;
+    modcon=0;
               }
               break;
  }
@@ -550,7 +550,7 @@ static DECLFR(GenieFix1)
 {
  uint8 r=GenieBackup[0](A);
 
- if((modcon>>1)&1)		// No check
+ if((modcon>>1)&1)    // No check
   return genieval[0];
  else if(r==geniech[0])
   return genieval[0];

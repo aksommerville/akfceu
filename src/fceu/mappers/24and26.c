@@ -71,33 +71,33 @@ static DECLFW(VRC6SW)
         {
          VPSG2[A&3]=V;
          if(sfun[2]) sfun[2]();
-	}
+  }
 
 }
 
 static DECLFW(Mapper24_write)
 {
-	if(swaparoo)
-	 A=(A&0xFFFC)|((A>>1)&1)|((A<<1)&2);
-	if(A>=0x9000 && A<=0xb002) 
-	{
-	 VRC6SW(A,V);
-	 return;
-	}
-	A&=0xF003;
-//	if(A>=0xF000) printf("%d, %d, $%04x:$%02x\n",scanline,timestamp,A,V);
+  if(swaparoo)
+   A=(A&0xFFFC)|((A>>1)&1)|((A<<1)&2);
+  if(A>=0x9000 && A<=0xb002) 
+  {
+   VRC6SW(A,V);
+   return;
+  }
+  A&=0xF003;
+//  if(A>=0xF000) printf("%d, %d, $%04x:$%02x\n",scanline,timestamp,A,V);
         switch(A&0xF003)
-	{
+  {
          case 0x8000:ROM_BANK16(0x8000,V);break;
          case 0xB003:
-	   	 switch(V&0xF)
-	         {
-	          case 0x0:MIRROR_SET2(1);break;
-	          case 0x4:MIRROR_SET2(0);break;
-	          case 0x8:onemir(0);break;
-	          case 0xC:onemir(1);break;
-	         }
-	         break;
+        switch(V&0xF)
+           {
+            case 0x0:MIRROR_SET2(1);break;
+            case 0x4:MIRROR_SET2(0);break;
+            case 0x8:onemir(0);break;
+            case 0xC:onemir(1);break;
+           }
+           break;
          case 0xC000:ROM_BANK8(0xC000,V);break;
          case 0xD000:VROM_BANK1(0x0000,V);break;
          case 0xD001:VROM_BANK1(0x0400,V);break;
@@ -108,19 +108,19 @@ static DECLFW(Mapper24_write)
          case 0xE002:VROM_BANK1(0x1800,V);break;
          case 0xE003:VROM_BANK1(0x1c00,V);break;
          case 0xF000:IRQLatch=V;
-			//acount=0;
-			break;
+      //acount=0;
+      break;
          case 0xF001:IRQa=V&2;
-		     vrctemp=V&1;
+         vrctemp=V&1;
                      if(V&2) 
-		     {
-		      IRQCount=IRQLatch;
-		      acount=0;
-		     }
-		     X6502_IRQEnd(FCEU_IQEXT);
+         {
+          IRQCount=IRQLatch;
+          acount=0;
+         }
+         X6502_IRQEnd(FCEU_IQEXT);
                      break;
          case 0xf002:IRQa=vrctemp;
-		     X6502_IRQEnd(FCEU_IQEXT);break;
+         X6502_IRQEnd(FCEU_IQEXT);break;
          case 0xF003:break;
   }
 }
@@ -324,26 +324,26 @@ static void VRC6_ESI(void)
         GameExpSound.HiFill=VRC6SoundHQ;
         GameExpSound.HiSync=VRC6SyncHQ;
 
-	memset(CVBC,0,sizeof(CVBC));
-	memset(vcount,0,sizeof(vcount));
-	memset(dcount,0,sizeof(dcount));
-	if(FSettings.SndRate)
-	{
-	 if(FSettings.soundq>=1)
-	 {
-	  sfun[0]=DoSQV1HQ;
-	  sfun[1]=DoSQV2HQ;
-	  sfun[2]=DoSawVHQ;
-	 }
-	 else
-	 {
-	  sfun[0]=DoSQV1;
-	  sfun[1]=DoSQV2;
-	  sfun[2]=DoSawV;
-	 }
-	}
-	else
-	 memset(sfun,0,sizeof(sfun));
+  memset(CVBC,0,sizeof(CVBC));
+  memset(vcount,0,sizeof(vcount));
+  memset(dcount,0,sizeof(dcount));
+  if(FSettings.SndRate)
+  {
+   if(FSettings.soundq>=1)
+   {
+    sfun[0]=DoSQV1HQ;
+    sfun[1]=DoSQV2HQ;
+    sfun[2]=DoSawVHQ;
+   }
+   else
+   {
+    sfun[0]=DoSQV1;
+    sfun[1]=DoSQV2;
+    sfun[2]=DoSawV;
+   }
+  }
+  else
+   memset(sfun,0,sizeof(sfun));
 }
 
 void Mapper24_init(void)
@@ -351,7 +351,7 @@ void Mapper24_init(void)
         SetWriteHandler(0x8000,0xffff,Mapper24_write);
         VRC6_ESI();
         MapIRQHook=KonamiIRQHook;
-	swaparoo=0;
+  swaparoo=0;
 }
 
 void Mapper26_init(void)
@@ -359,11 +359,11 @@ void Mapper26_init(void)
         SetWriteHandler(0x8000,0xffff,Mapper24_write);
         VRC6_ESI();
         MapIRQHook=KonamiIRQHook;
-	swaparoo=1;
+  swaparoo=1;
 }
 
 void NSFVRC6_Init(void)
 {
-	VRC6_ESI();
-	SetWriteHandler(0x8000,0xbfff,VRC6SW);
+  VRC6_ESI();
+  SetWriteHandler(0x8000,0xbfff,VRC6SW);
 }
