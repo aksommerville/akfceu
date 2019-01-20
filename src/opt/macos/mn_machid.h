@@ -1,7 +1,6 @@
 /* mn_machid.h
  * Standalone C API for HID in MacOS.
  * You must call all mn_machid functions from the same thread.
- * It does not need to be the main thread. (TODO confirm this)
  * Link: -framework IOKit
  */
 

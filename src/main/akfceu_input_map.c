@@ -1,9 +1,12 @@
 #include "akfceu_input_map.h"
+#include "util/akfceu_file.h"
 #include "fceu/types.h"
 #include "fceu/fceu.h"
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 /* Global registry of input maps.
  */
@@ -203,42 +206,191 @@ int akfceu_input_map_update(
   return 0;
 }
 
-/* Create mappings for my own devices.
+/* Test completeness of map.
+ */
+ 
+int akfceu_input_map_is_suitable_for_gamepad(const struct akfceu_input_map *map) {
+  if (!map) return 0;
+  uint8_t outputmask=0;
+  const struct akfceu_button_map *button=map->buttonv;
+  int i=map->buttonc;
+  for (;i-->0;button++) {
+    if (button->dstbtnid==AKFCEU_DSTBTNID_HAT) {
+      outputmask|=JOY_UP|JOY_DOWN|JOY_LEFT|JOY_RIGHT;
+    } else {
+      outputmask|=button->dstbtnid;
+    }
+  }
+  if ((outputmask&0xff)==0xff) return 1;
+  return 0;
+}
+
+/* Read mappings from file in memory.
  */
 
-int akfceu_define_andys_devices() {
-  struct akfceu_input_map *map;
+static struct akfceu_input_map *akfceu_input_map_load_configuration_introducer(const char *src,int srcc) {
 
-  /* Cheap PS knockoffs.
-   * Press the Heart button, LED should be off, to use D-Pad as axes 19 and 20.
-   */
-  if (!(map=akfceu_input_map_new(0x0e8f,0x0003))) return -1;
-  if (akfceu_input_map_add_button(map,-1, 6,1,1,JOY_A)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1, 7,1,1,JOY_B)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,12,1,1,JOY_SELECT)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,13,1,1,JOY_START)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,19,0,64,JOY_LEFT)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,19,192,256,JOY_RIGHT)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,20,0,64,JOY_UP)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,20,192,256,JOY_DOWN)<0) return -1;
+  int srcp=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *kw=src+srcp;
+  int kwc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; kwc++; }
+  if ((kwc!=6)||memcmp(kw,"device",6)) return 0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *vidsrc=src+srcp;
+  int vidsrcc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; vidsrcc++; }
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *pidsrc=src+srcp;
+  int pidsrcc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; pidsrcc++; }
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  if (srcp<srcc) return 0;
 
-  /* Expensive PS knockoff. */
-  if (!(map=akfceu_input_map_new(0x20d6,0xca6d))) return -1;
-  if (akfceu_input_map_add_hat(map,-1,15,0,7)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1, 3,1,1,JOY_A)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1, 2,1,1,JOY_B)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,10,1,1,JOY_SELECT)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,11,1,1,JOY_START)<0) return -1;
+  int vid,pid;
+  if (akfceu_int_eval(&vid,vidsrc,vidsrcc)<0) return 0;
+  if (akfceu_int_eval(&pid,pidsrc,pidsrcc)<0) return 0;
+  if ((vid<0)||(vid>0xffff)||(pid<0)||(pid>0xffff)) return 0;
 
-  /* Wii Official one. */
-  if (!(map=akfceu_input_map_new(0x20d6,0xa711))) return -1;
-  if (akfceu_input_map_add_hat(map,-1,16,0,7)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1, 3,1,1,JOY_A)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1, 2,1,1,JOY_B)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,14,1,1,JOY_START)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,11,1,1,JOY_START)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,15,1,1,JOY_SELECT)<0) return -1;
-  if (akfceu_input_map_add_button(map,-1,10,1,1,JOY_SELECT)<0) return -1;
- 
+  return akfceu_input_map_new(vid,pid);
+}
+
+static int akfceu_input_map_load_configuration_line(struct akfceu_input_map *map,const char *src,int srcc) {
+
+  int srcp=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *inputsrc=src+srcp;
+  int inputsrcc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; inputsrcc++; }
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *outputsrc=src+srcp;
+  int outputsrcc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; outputsrcc++; }
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *losrc=src+srcp;
+  int losrcc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; losrcc++; }
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  const char *hisrc=src+srcp;
+  int hisrcc=0;
+  while ((srcp<srcc)&&((unsigned char)src[srcp]>0x20)) { srcp++; hisrcc++; }
+  while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
+  if (srcp<srcc) return -1;
+
+  int input,output,lo,hi;
+  if (akfceu_int_eval(&input,inputsrc,inputsrcc)<0) return -1;
+  if ((output=akfceu_input_map_dstbtnid_eval(outputsrc,outputsrcc))<0) return -1;
+  if (losrcc) {
+    if (akfceu_int_eval(&lo,losrc,losrcc)<0) return -1;
+  } else {
+    lo=1;
+  }
+  if (hisrcc) {
+    if (akfceu_int_eval(&hi,hisrc,hisrcc)<0) return -1;
+  } else {
+    hi=INT_MAX;
+  }
+
+  switch (output) {
+    case AKFCEU_DSTBTNID_HAT: {
+        if (akfceu_input_map_add_hat(map,-1,input,lo,hi)<0) return -1;
+      } break;
+    case AKFCEU_DSTBTNID_HORZ: if (lo<hi) {
+        if (akfceu_input_map_add_button(map,-1,input,INT_MIN,lo,JOY_LEFT)<0) return -1;
+        if (akfceu_input_map_add_button(map,-1,input,hi,INT_MAX,JOY_RIGHT)<0) return -1;
+      } else {
+        if (akfceu_input_map_add_button(map,-1,input,INT_MIN,lo,JOY_RIGHT)<0) return -1;
+        if (akfceu_input_map_add_button(map,-1,input,hi,INT_MAX,JOY_LEFT)<0) return -1;
+      } break;
+    case AKFCEU_DSTBTNID_VERT: if (lo<hi) {
+        if (akfceu_input_map_add_button(map,-1,input,INT_MIN,lo,JOY_UP)<0) return -1;
+        if (akfceu_input_map_add_button(map,-1,input,hi,INT_MAX,JOY_DOWN)<0) return -1;
+      } else {
+        if (akfceu_input_map_add_button(map,-1,input,INT_MIN,lo,JOY_DOWN)<0) return -1;
+        if (akfceu_input_map_add_button(map,-1,input,hi,INT_MAX,JOY_UP)<0) return -1;
+      } break;
+    default: {
+        if (akfceu_input_map_add_button(map,-1,input,lo,hi,output)<0) return -1;
+      } break;
+  }
+
   return 0;
+}
+
+static int akfceu_input_map_load_configuration_text(const char *src,int srcc,const char *path) {
+  struct akfceu_input_map *map=0;
+  struct akfceu_line_reader reader={.src=src,.srcc=srcc};
+  while (akfceu_line_reader_next(&reader)>0) {
+    if (map) {
+      if ((reader.linec==10)&&!memcmp(reader.line,"end device",10)) {
+        map=0;
+      } else {
+        if (akfceu_input_map_load_configuration_line(map,reader.line,reader.linec)<0) {
+          printf("%s:%d: Failed to process input configuration.\n",path,reader.lineno);
+          return -1;
+        }
+      }
+    } else if ((reader.linec>=7)&&!memcmp(reader.line,"device ",7)) {
+      if (!(map=akfceu_input_map_load_configuration_introducer(reader.line,reader.linec))) {
+        printf("%s:%d: Failed to process device introducer.\n",path,reader.lineno);
+        return -1;
+      }
+    }
+  }
+  if (map) {
+    printf("%s: Unterminated device config block.\n",path);
+    return -1;
+  }
+  return 0;
+}
+
+/* Read mappings from a file, given its path.
+ */
+ 
+int akfceu_input_map_load_configuration(const char *path) {
+  printf("Read input configuration from '%s'...\n",path);
+  char *src=0;
+  int srcc=akfceu_file_read(&src,path);
+  if (srcc<0) return 0;
+  int err=akfceu_input_map_load_configuration_text(src,srcc,path);
+  free(src);
+  return err;
+}
+
+/* Evaluate single map output name.
+ */
+ 
+int akfceu_input_map_dstbtnid_eval(const char *src,int srcc) {
+  if (!src) return -1;
+  if (srcc<0) { srcc=0; while (src[srcc]) srcc++; }
+  if (srcc>8) return -1;
+  char lower[8];
+  int i=srcc; while (i-->0) {
+    if ((src[i]>='A')&&(src[i]<='Z')) lower[i]=src[i]+0x20;
+    else lower[i]=src[i];
+  }
+  switch (srcc) {
+    case 1: switch (lower[0]) {
+        case 'a': return JOY_A;
+        case 'b': return JOY_B;
+      } break;
+    case 2: {
+        if (!memcmp(lower,"up",2)) return JOY_UP;
+      } break;
+    case 4: {
+        if (!memcmp(lower,"down",4)) return JOY_DOWN;
+        if (!memcmp(lower,"left",4)) return JOY_LEFT;
+        if (!memcmp(lower,"dpad",4)) return AKFCEU_DSTBTNID_HAT;
+        if (!memcmp(lower,"horz",4)) return AKFCEU_DSTBTNID_HORZ;
+        if (!memcmp(lower,"vert",4)) return AKFCEU_DSTBTNID_VERT;
+      } break;
+    case 5: {
+        if (!memcmp(lower,"right",5)) return JOY_RIGHT;
+        if (!memcmp(lower,"start",5)) return JOY_START;
+      } break;
+    case 6: {
+        if (!memcmp(lower,"select",6)) return JOY_SELECT;
+      } break;
+  }
+  return -1;
 }

@@ -4,7 +4,9 @@
 #ifndef AKFCEU_INPUT_MAP_H
 #define AKFCEU_INPUT_MAP_H
 
-#define AKFCEU_DSTBTNID_HAT 0xffff
+#define AKFCEU_DSTBTNID_HAT  0xffff
+#define AKFCEU_DSTBTNID_HORZ 0xfffe
+#define AKFCEU_DSTBTNID_VERT 0xfffd
 
 struct akfceu_button_map {
   int srcbtnid;
@@ -42,9 +44,29 @@ int akfceu_input_map_update(
   void *userdata
 );
 
-/* Create maps in the global registry for the devices I own.
- * TODO Store this data in a file somewhere, make it useful for people who aren't me.
+/* Nonzero if this map can output all 8 buttons.
  */
-int akfceu_define_andys_devices();
+int akfceu_input_map_is_suitable_for_gamepad(const struct akfceu_input_map *map);
+
+/* Read a config file (FCEUMKF_CONFIG) and register any maps declared in it.
+ * Quietly do nothing if the file can't be opened.
+ * We read the file line-wise, discarding anything after '#', spurious space, and empty lines.
+ *
+ * Unknown data is quietly ignored until we reach a device block:
+ *   device VID PID
+ *
+ * Within the device block, each line is a single mapping:
+ *   SRCBTNID DSTBTNNAME LO HI
+ * DSTBTNNAME is one of: UP DOWN LEFT RIGHT A B START SELECT
+ * May also be an aggregate: HORZ VERT DPAD
+ * (LO,HI) may be omitted for standard buttons, for a range of 1..INT_MAX.
+ * Thresholds are required for aggregate outputs.
+
+ * Device block ends with a line reading exactly:
+ *   end device
+ */
+int akfceu_input_map_load_configuration(const char *path);
+
+int akfceu_input_map_dstbtnid_eval(const char *src,int srcc);
 
 #endif

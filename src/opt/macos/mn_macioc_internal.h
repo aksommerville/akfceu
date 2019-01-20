@@ -2,7 +2,6 @@
 #define MN_MACIOC_INTERNAL_H
 
 #include "mn_macioc.h"
-#include "util/mn_time.h"
 #include <Cocoa/Cocoa.h>
 
 #define MN_FRAME_RATE 60

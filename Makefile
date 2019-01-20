@@ -16,7 +16,7 @@ OUTDIR:=out
 # GCC toolchain.
 CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses
 CCINCLUDE:=-Isrc -I$(MIDDIR)
-CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DLSB_FIRST=1
+CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DUSE_romassist=1 -DLSB_FIRST=1
 CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
 OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
 LD:=gcc
@@ -30,7 +30,8 @@ TEST:=$(OUTDIR)/test
 #RUNCMD:=$(EXE)
 
 # Directories immediately under <src/opt> to include in the build.
-OPT:=macos
+# You should also declare each of these to the C compiler, eg "-DUSE_macos=1"
+OPT:=macos romassist
 
 # Only relevant for MacOS:
 BUNDLE_MAIN:=$(OUTDIR)/akfceu.app

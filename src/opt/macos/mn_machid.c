@@ -181,19 +181,7 @@ static int mn_machid_dev_insert_button(struct mn_machid_dev *dev,int p,int btnid
   btn->usage=usage;
   btn->lo=lo;
   btn->hi=hi;
-  if ((v>=lo)&&(v<=hi)) btn->value=v;
-  else if ((lo<=0)&&(hi>=0)) btn->value=0;
-  else if (lo>0) btn->value=lo;
-  else btn->value=hi;
-
-  /* If it's a hat switch, Minten Core does the heavy lifting.
-   * We only need to ensure that OOB values are never clamped.
-   */
-  if ((usage==0x00010039)&&(lo==0)&&(hi==7)) {
-    btn->lo=-1; // Hats report a value outside the declared range for "none", which is annoying.
-    btn->hi=8; // Annoying but well within spec (see USB-HID HUT)
-    btn->value=8; // Start out of range, ie (0,0)
-  }
+  btn->value=v;
 
   return 0;
 }
@@ -247,7 +235,6 @@ static int mn_machid_dev_apply_IOHIDElement(struct mn_machid_dev *dev,IOHIDEleme
   int v=0;
   if (IOHIDDeviceGetValue(dev->obj,element,&value)==kIOReturnSuccess) {
     v=IOHIDValueGetIntegerValue(value);
-    if (v<lo) v=lo; else if (v>hi) v=hi;
   }
 
   mn_machid_dev_define_button(dev,cookie,(usagepage<<16)|usage,lo,hi,v);
@@ -355,8 +342,6 @@ static void mn_machid_cb_InputValue(void *context,IOReturn result,void *sender,I
 
   /* Clamp value and confirm it actually changed. */
   CFIndex v=IOHIDValueGetIntegerValue(value);
-  if (v<btn->lo) v=btn->lo;
-  else if (v>btn->hi) v=btn->hi;
   if (v==btn->value) return;
   int ov=btn->value;
   btn->value=v;

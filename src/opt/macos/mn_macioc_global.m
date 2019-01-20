@@ -146,20 +146,7 @@ void mn_macioc_call_quit() {
 
 -(void)mainLoop:(id)ignore {
 
-  struct mn_clockassist clockassist={0};
-  if (mn_clockassist_setup(&clockassist,MN_FRAME_RATE)<0) {
-    mn_macioc_abort("Failed to initialize clock.");
-  }
- 
   while (1) {
-
-    if (mn_macioc.terminate) break;
-
-    /*
-    if (mn_clockassist_update(&clockassist)<0) {
-      mn_macioc_abort("Failed to update clock.");
-    }
-    */
 
     if (mn_macioc.terminate) break;
 

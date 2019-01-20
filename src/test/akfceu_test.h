@@ -1,7 +1,7 @@
 #ifndef AKFCEU_TEST_H
 #define AKFCEU_TEST_H
 
-#include "akfceu.h"
+#include <stdio.h>
 
 #define AKFCEU_UNIT_TEST(name) int name()
 #define XXX_AKFCEU_UNIT_TEST(name) int name()

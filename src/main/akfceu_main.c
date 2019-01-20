@@ -1,18 +1,24 @@
 #include "akfceu_video.h"
 #include "akfceu_input_map.h"
+#include "akfceu_input.h"
 #include "fceu/driver.h"
 #include "fceu/fceu.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+
 #if USE_macos
-  #include "opt/macos/mn_machid.h"
   #include "opt/macos/mn_macaudio.h"
   #include "opt/macos/mn_macwm.h"
   #include "opt/macos/mn_macioc.h"
 #else
   #error "The interface layer is currently only for MacOS. Set 'USE_macos=1' or write a new interface."
+#endif
+
+#if USE_romassist
+  #include "opt/romassist/ra_client.h"
+  static romassist_t romassist=0;
 #endif
 
 /* Globals.
@@ -21,7 +27,7 @@
 static uint8_t framebuffer[256*240]={0};
 static uint8_t palette[768]={0};
 static int vmrunning=0;
-static uint32_t input_state=0;
+static char *current_rom_path=0;
 
 /* FCEUD hooks.
  */
@@ -40,53 +46,6 @@ void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
   *b=palette[p];
 }
 
-/* Input callbacks (MacHID).
- */
-
-static int connect_machid(int devid) {
-  printf("machid connect %d\n",devid);
-  int vid=mn_machid_dev_get_vendor_id(devid);
-  int pid=mn_machid_dev_get_product_id(devid);
-  struct akfceu_input_map *map=akfceu_input_map_find(vid,pid);
-  if (map) {
-    printf("...found map for %04x:%04x\n",vid,pid);
-  } else {
-    printf("No input map for %04x:%04x. Dumping details...\n",vid,pid);
-    int btnix=0,srcbtnid,usage,lo,hi,value;
-    for (;mn_machid_dev_get_button_info(&srcbtnid,&usage,&lo,&hi,&value,devid,btnix)>=0;btnix++) {
-      printf("  %3d: id=0x%08x usage=0x%08x range=(%d..%d) value=%d\n",btnix,srcbtnid,usage,lo,hi,value);
-    }
-  }
-  return 0;
-}
-
-static int disconnect_machid(int devid) {
-  printf("machid disconnect %d\n",devid);
-  return 0;
-}
-
-static int button_machid_digested(int btnid,int value,void *userdata) {
-  int devid=*(int*)userdata;
-  if (!btnid) return 0;
-  int mask=btnid<<((devid&1)?0:8);
-  if (value) {
-    input_state|=mask;
-  } else {
-    input_state&=~mask;
-  }
-  return 0;
-}
-
-static int button_machid(int devid,int srcbtnid,int value) {
-  //printf("machid button %d.%d=%d\n",devid,srcbtnid,value);
-  int vid=mn_machid_dev_get_vendor_id(devid);
-  int pid=mn_machid_dev_get_product_id(devid);
-  const struct akfceu_input_map *map=akfceu_input_map_find(vid,pid);
-  if (!map) return 0;
-  if (akfceu_input_map_update(map,srcbtnid,value,button_machid_digested,&devid)<0) return -1;
-  return 0;
-}
-
 /* Window manager callbacks.
  */
 
@@ -94,6 +53,7 @@ static int key_macwm(int keycode,int value) {
   //printf("key %d=%d\n",keycode,value);
   // Static key mapping, all assigned to player one:
   switch (keycode) {
+  #if 0//XXX must manage via akfceu_input
     case 0x00070052: if (value) input_state|=JOY_UP; else input_state&=~JOY_UP; break; // up
     case 0x00070051: if (value) input_state|=JOY_DOWN; else input_state&=~JOY_DOWN; break; // down
     case 0x00070050: if (value) input_state|=JOY_LEFT; else input_state&=~JOY_LEFT; break; // left
@@ -102,6 +62,7 @@ static int key_macwm(int keycode,int value) {
     case 0x0007001b: if (value) input_state|=JOY_B; else input_state&=~JOY_B; break; // x
     case 0x0007002b: if (value) input_state|=JOY_SELECT; else input_state&=~JOY_SELECT; break; // tab
     case 0x00070028: if (value) input_state|=JOY_START; else input_state&=~JOY_START; break; // enter
+  #endif
   }
   return 0;
 }
@@ -128,13 +89,48 @@ static int load_rom_file(const char *path) {
     return -1;
   }
 
-  /* From fceu/drivers/pc/main.c:
-  CurGame=tmp;
-  ParseGI(tmp);
-  RefreshThrottleFPS();
-  if (!DriverInitialize(tmp)) return -1;
-  FCEUD_NetworkConnect();
-  */
+  vmrunning=1;
+  printf("Loaded.\n");
+
+  FCEUI_PowerNES();
+  printf("Power on.\n");
+  
+  // 20190106: Had a mysterious freeze here, launching a game via Romassist after several restarts.
+  // This is right after adding Romassist Restart.
+  // I don't know what caused it, and can't reproduce it. Leaving new logging in place for next time.
+
+  if (akfceu_input_register_with_fceu()<0) return -1;
+
+  #if USE_romassist
+    if (romassist) {
+      printf("Notifying Romassist of launch...\n");
+      if (romassist_launched_file(romassist,path)<0) {
+        romassist_del(romassist);
+        romassist=0;
+      }
+    }
+  #endif
+
+  if (current_rom_path) free(current_rom_path);
+  if (!(current_rom_path=strdup(path))) return -1;
+
+  printf("Launch complete.\n");
+  return 0;
+}
+
+static int restart_vm() {
+  if (!current_rom_path) return 0;
+
+  if (vmrunning) {
+    FCEUI_CloseGame();
+    vmrunning=0;
+  }
+
+  FCEUGI *fceugi=FCEUI_LoadGame(current_rom_path);
+  if (!fceugi) {
+    printf("%s: FCEUI_LoadGame failed\n",current_rom_path);
+    return -1;
+  }
 
   vmrunning=1;
   printf("Loaded.\n");
@@ -142,9 +138,8 @@ static int load_rom_file(const char *path) {
   FCEUI_PowerNES();
   printf("Power on.\n");
 
-  FCEUI_SetInput(0,SI_GAMEPAD,&input_state,0);
-  FCEUI_SetInput(1,SI_GAMEPAD,&input_state,0);
- 
+  if (akfceu_input_register_with_fceu()<0) return -1;
+
   return 0;
 }
 
@@ -207,45 +202,12 @@ static int receive_audio_from_vm(const int32_t *src,int srcc) {
  */
 
 static void make_default_palette() {
-  FCEUD_SetPalette(0x00,0x00,0x00,0x00);
-  FCEUD_SetPalette(0x01,0xff,0xff,0xff);
-  FCEUD_SetPalette(0x02,0xff,0x00,0x00);
-  FCEUD_SetPalette(0x03,0x00,0xff,0x00);
-  FCEUD_SetPalette(0x04,0x00,0x00,0xff);
-  FCEUD_SetPalette(0x05,0xff,0xff,0x00);
-  FCEUD_SetPalette(0x06,0xff,0x00,0xff);
-  FCEUD_SetPalette(0x07,0x00,0xff,0xff);
-  FCEUD_SetPalette(0x08,0xff,0x80,0x00);
-  FCEUD_SetPalette(0x09,0xff,0x00,0x80);
-  FCEUD_SetPalette(0x0a,0x80,0xff,0x00);
-  FCEUD_SetPalette(0x0b,0x00,0xff,0x80);
-  FCEUD_SetPalette(0x0c,0x80,0x00,0xff);
-  FCEUD_SetPalette(0x0d,0x00,0x80,0xff);
-  FCEUD_SetPalette(0x0e,0xff,0x80,0x80);
-  FCEUD_SetPalette(0x0f,0x80,0x80,0xff);
-  int i=16; for (;i<256;i++) {
+  int i=0; for (;i<256;i++) {
     FCEUD_SetPalette(i,i,i,i);
   }
 }
 
 static void draw_test_pattern() {
-  int x=0,y=0,p=0;
-  for (;y<240;y++) {
-    for (x=0;x<256;x++,p++) {
-      if ((y<16)||(y>=224)) {
-        framebuffer[p]=x>>4;
-      } else if ((x==0)&&!(y&1)) {
-        framebuffer[p]=0x02;
-      } else if ((x==255)&&(y&1)) {
-        framebuffer[p]=0x04;
-      } else {
-        int sum=(y-16)+x;
-        int index=16+(sum*240)/464;
-        framebuffer[p]=index;
-      }
-    }
-  }
-
   // See script etc/readpixels.py:
   framebuffer[29263]=0xff;
   framebuffer[29269]=0xff;
@@ -369,12 +331,42 @@ static int determine_and_register_home_directory() {
   return 0;
 }
 
+/* Callbacks from Romassist.
+ */
+#if USE_romassist
+
+static int akfceu_romassist_launch_file(romassist_t client,const char *path,int pathlen) {
+  if (load_rom_file(path)<0) {
+    return -1;
+  }
+  return 0;
+}
+
+static int akfceu_romassist_command(romassist_t client,const char *src,int srcc) {
+
+  if ((srcc==4)&&!memcmp(src,"quit",4)) {
+    printf("akfceu: Quitting due to request from Romassist.\n");
+    mn_macioc_quit();
+    return 0;
+  }
+
+  if ((srcc==7)&&!memcmp(src,"restart",7)) {
+    printf("akfceu: Restart per Romassist.\n");
+    return restart_vm();
+  }
+
+  printf("akfceu: Unexpected command from Romassist: '%.*s'\n",srcc,src);
+  return 0;
+}
+
+#endif
+
 /* Initialize.
  */
 
 static int init(const char *rompath) {
 
-  if (akfceu_define_andys_devices()<0) {
+  if (determine_and_register_home_directory()<0) {
     return -1;
   }
 
@@ -401,12 +393,7 @@ static int init(const char *rompath) {
     return -1;
   }
 
-  struct mn_machid_delegate machid_delegate={
-    .connect=connect_machid,
-    .disconnect=disconnect_machid,
-    .button=button_machid,
-  };
-  if (mn_machid_init(&machid_delegate)<0) {
+  if (akfceu_input_init()<0) {
     return -1;
   }
 
@@ -414,19 +401,28 @@ static int init(const char *rompath) {
     return -1;
   }
 
-  if (determine_and_register_home_directory()<0) {
-    return -1;
-  }
-
   if (!FCEUI_Initialize()) {
     return -1;
   }
 
-  // Before or after FCEUI_Initialize()?
   FCEUI_SetSoundVolume(100);
   FCEUI_SetSoundQuality(0);
   FCEUI_Sound(22050);
   FCEUI_DisableSpriteLimitation(1);
+
+  #if USE_romassist
+    struct romassist_delegate romassist_delegate={
+      .client_name="akfceu",
+      .platforms="nes",
+      .launch_file=akfceu_romassist_launch_file,
+      .command=akfceu_romassist_command,
+    };
+    if (romassist=romassist_new(0,0,&romassist_delegate)) {
+      printf("Connected to Romassist server.\n");
+    } else {
+      printf("Failed to connect to Romassist.\n");
+    }
+  #endif
 
   if (rompath&&rompath[0]) {
     if (load_rom_file(rompath)<0) return -1;
@@ -448,16 +444,31 @@ static void quit() {
     vmrunning=0;
   }
   akfceu_video_quit();
+  akfceu_input_quit();
   mn_macaudio_quit();
-  mn_machid_quit();
   mn_macwm_quit();
+  #if USE_romassist
+    romassist_del(romassist);
+    romassist=0;
+  #endif
 }
 
 /* Update.
  */
 
 static int update() {
-  if (mn_machid_update()<0) {
+
+  #if USE_romassist
+    if (romassist) {
+      if (romassist_update(romassist)<0) {
+        printf("Error updating Romassist client. Dropping.\n");
+        romassist_del(romassist);
+        romassist=0;
+      }
+    }
+  #endif
+
+  if (akfceu_input_update()<0) {
     return -1;
   }
 

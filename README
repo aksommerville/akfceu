@@ -149,4 +149,10 @@ src/fceu/mappers/69.c:246: SetWriteHandler(0xe000,0xffff,Mapper69_SWH); <-- this
 Mmmmmm, might need a few hours more.
 But first I'll start reviewing FCEU code for things we don't need.
 
+---------------------------------
+28 December 2018
+Things are working. Reviewing 4-player games...
 
+[ ] This happened when unplugging headphones. What can we do?
+Audio timing panic.
+macioc:FATAL: Error -1 updating application.
