@@ -14,7 +14,7 @@ MIDDIR:=mid
 OUTDIR:=out
 
 # GCC toolchain.
-CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses
+CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
 CCINCLUDE:=-Isrc -I$(MIDDIR)
 CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DUSE_romassist=1 -DLSB_FIRST=1
 CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
@@ -61,8 +61,8 @@ GENERATED_FILES:= \
 
 OPTAVAILABLE:=$(notdir $(wildcard src/opt/*))
 OPTIGNORE:=$(filter-out $(OPT),$(OPTAVAILABLE))
-MIDOPTIGNORE:=$(addprefix $(MIDDIR)/,$(addsuffix /%,$(OPTIGNORE)))
-SRCOPTIGNORE:=$(addprefix src/,$(addsuffix /%,$(OPTIGNORE)))
+MIDOPTIGNORE:=$(addprefix $(MIDDIR)/opt/,$(addsuffix /%,$(OPTIGNORE)))
+SRCOPTIGNORE:=$(addprefix src/opt/,$(addsuffix /%,$(OPTIGNORE)))
 
 SRCCFILES:=$(filter-out $(SRCOPTIGNORE),$(shell find src -name '*.[cm]'))
 OPTCFILES:=$(filter src/opt/%,$(SRCCFILES))
