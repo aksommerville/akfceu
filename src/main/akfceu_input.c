@@ -324,12 +324,40 @@ static int akfceu_input_generic_event_mapped(int btnid,int value,void *userdata)
   return 0;
 }
 
-static int akfceu_input_generic_event(int devid,int btnid,int value) {
+int akfceu_input_generic_event(int devid,int btnid,int value) {
   int p=akfceu_input_assignmentv_search(devid);
   if (p<0) return 0;
   struct akfceu_input_assignment *assignment=akfceu_input.assignmentv+p;
   if (!assignment->map) return 0;
   if (akfceu_input_map_update(assignment->map,btnid,value,akfceu_input_generic_event_mapped,assignment)<0) return -1;
+  return 0;
+}
+
+/* Setup system keyboard.
+ */
+
+static int akfceu_input_init_system_keyboard() {
+
+  struct akfceu_input_map *map=akfceu_input_map_new(-1,-1);
+  if (!map) return -1;
+
+  if (akfceu_input_map_add_button(map,0,0x0007001b,1,INT_MAX,JOY_B)<0) return -1; // x
+  if (akfceu_input_map_add_button(map,1,0x0007001d,1,INT_MAX,JOY_A)<0) return -1; // z
+  if (akfceu_input_map_add_button(map,2,0x00070028,1,INT_MAX,JOY_START)<0) return -1; // enter
+  if (akfceu_input_map_add_button(map,3,0x0007002b,1,INT_MAX,JOY_SELECT)<0) return -1; // tab
+  if (akfceu_input_map_add_button(map,4,0x0007004f,1,INT_MAX,JOY_RIGHT)<0) return -1; // right
+  if (akfceu_input_map_add_button(map,5,0x00070050,1,INT_MAX,JOY_LEFT)<0) return -1; // left
+  if (akfceu_input_map_add_button(map,6,0x00070051,1,INT_MAX,JOY_DOWN)<0) return -1; // down
+  if (akfceu_input_map_add_button(map,7,0x00070052,1,INT_MAX,JOY_UP)<0) return -1; // up
+
+  // TODO Probably need to flag this assignment "passive" or something so the first joystick will also go to player 1.
+  struct akfceu_input_assignment *assignment=akfceu_input_assignment_new(-1,-1);
+  if (!assignment) return -1;
+  assignment->map=map;
+  assignment->type=SI_GAMEPAD;
+  assignment->playerid=1;
+  fprintf(stderr,"Assigned system keyboard to player %d.\n",assignment->playerid);
+
   return 0;
 }
 
@@ -358,6 +386,10 @@ int akfceu_input_init() {
       return -1;
     }
   #endif
+
+  if (akfceu_input_init_system_keyboard()<0) {
+    return -1;
+  }
 
   return 0;
 }

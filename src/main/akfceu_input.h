@@ -12,4 +12,6 @@ int akfceu_input_update();
 
 int akfceu_input_register_with_fceu();
 
+int akfceu_input_generic_event(int devid,int btnid,int value);
+
 #endif

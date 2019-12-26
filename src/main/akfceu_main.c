@@ -50,20 +50,8 @@ void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
  */
 
 static int key_macwm(int keycode,int value) {
-  //fprintf(stderr,"key %d=%d\n",keycode,value);
-  // Static key mapping, all assigned to player one:
-  switch (keycode) {
-  #if 0//XXX must manage via akfceu_input
-    case 0x00070052: if (value) input_state|=JOY_UP; else input_state&=~JOY_UP; break; // up
-    case 0x00070051: if (value) input_state|=JOY_DOWN; else input_state&=~JOY_DOWN; break; // down
-    case 0x00070050: if (value) input_state|=JOY_LEFT; else input_state&=~JOY_LEFT; break; // left
-    case 0x0007004f: if (value) input_state|=JOY_RIGHT; else input_state&=~JOY_RIGHT; break; // right
-    case 0x0007001d: if (value) input_state|=JOY_A; else input_state&=~JOY_A; break; // z
-    case 0x0007001b: if (value) input_state|=JOY_B; else input_state&=~JOY_B; break; // x
-    case 0x0007002b: if (value) input_state|=JOY_SELECT; else input_state&=~JOY_SELECT; break; // tab
-    case 0x00070028: if (value) input_state|=JOY_START; else input_state&=~JOY_START; break; // enter
-  #endif
-  }
+  //fprintf(stderr,"key 0x%08x=%d\n",keycode,value);
+  if (akfceu_input_generic_event(-1,keycode,value)<0) return -1;
   return 0;
 }
 
