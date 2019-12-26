@@ -326,19 +326,19 @@ static int akfceu_input_map_load_configuration_text(const char *src,int srcc,con
         map=0;
       } else {
         if (akfceu_input_map_load_configuration_line(map,reader.line,reader.linec)<0) {
-          printf("%s:%d: Failed to process input configuration.\n",path,reader.lineno);
+          fprintf(stderr,"%s:%d: Failed to process input configuration.\n",path,reader.lineno);
           return -1;
         }
       }
     } else if ((reader.linec>=7)&&!memcmp(reader.line,"device ",7)) {
       if (!(map=akfceu_input_map_load_configuration_introducer(reader.line,reader.linec))) {
-        printf("%s:%d: Failed to process device introducer.\n",path,reader.lineno);
+        fprintf(stderr,"%s:%d: Failed to process device introducer.\n",path,reader.lineno);
         return -1;
       }
     }
   }
   if (map) {
-    printf("%s: Unterminated device config block.\n",path);
+    fprintf(stderr,"%s: Unterminated device config block.\n",path);
     return -1;
   }
   return 0;
@@ -348,7 +348,7 @@ static int akfceu_input_map_load_configuration_text(const char *src,int srcc,con
  */
  
 int akfceu_input_map_load_configuration(const char *path) {
-  printf("Read input configuration from '%s'...\n",path);
+  fprintf(stderr,"Read input configuration from '%s'...\n",path);
   char *src=0;
   int srcc=akfceu_file_read(&src,path);
   if (srcc<0) return 0;

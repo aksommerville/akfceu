@@ -153,6 +153,47 @@ But first I'll start reviewing FCEU code for things we don't need.
 28 December 2018
 Things are working. Reviewing 4-player games...
 
-[ ] This happened when unplugging headphones. What can we do?
+[x] This happened when unplugging headphones. What can we do?
 Audio timing panic.
 macioc:FATAL: Error -1 updating application.
+  ...changed "panic" in sleep_until_audio_available.
+    At (10), launch failed 10 of 10 times.
+    At (1000), launch succeeded 10 of 10 times.
+    At its previous value (100), got 1 of 2.
+    Left at (1000), ie 1 second.
+
+---------------------------------------
+26 December 2019
+Picking up again after about a year away.
+
+[x] Launching a new game via Romassist reliably freezes akfceu.
+  I've worked around it by always terminating before launching a new one -- good policy anyway -- but can we fix this?
+  [x] What's the simplest way to replicate it?
+    make && src/test/auto/20191226-double-launch-freeze.sh 
+    Uses romassist via curl
+  Add some logs around romassist_update() in akfceu_main.c and it goes away. Must be some timing thing then.
+  - ra_client.c was older than the one in romassist. Updated but still broken.
+  [x] Launch in some way that we can see the logs.
+    Launch first with "open" and --redirect-tty=REGULAR_FILE
+  [x] It fails when I do two curl launches but not when I launch with 'open' first.
+    Add "--reopen-tty=/dev/ttys000" to the Romassist launch command and it does not fail.
+    Must be blocking on stdin or stdout somewhere.
+    Does /dev/null work? NO it freezes
+  After changing printf to fprintf(stderr), I can't make it happen anymore.
+  So.... didn't really fix anything, but change all printf() to fprintf(stderr,...).
+
+[ ] Revisit the Romassist IPC protocol, clean up whatever needs it.
+  [ ] Screen capture
+  [ ] Pause, resume, step.
+  [ ] Debugger controls. Dump registers and RAM generically. Poke them too.
+  [ ] Generic controls deliverable via Romassist UI, defined by emulator.
+    eg from emulator [{ "key":123, "name":"Frame skip", "min":0, "max":60, "default":0, "value":0, "desc":"Skip frames." }]
+  [ ] Logging
+
+[ ] Long-term plan is to move all the high-level into shared libraries owned by Romassist. Are we positioned to support that?
+  Everything in src/opt should move to RA libs. Easy.
+  Most of src/main should go too. About 2k lines, will be hairy.
+
+[ ] Better test scaffold, like ffutil and romassist. Can we share some of this via Romassist?
+
+[ ] Enable keyboard input

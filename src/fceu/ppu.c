@@ -90,7 +90,7 @@ static void makeppulut(void)
       shiftr*=2;
       ppulut3[xo|(cc<<3)]|=(( cc>>shiftr )&3)<<(2+pixel*4);
     }
-//    printf("%08x\n",ppulut3[xo|(cc<<3)]);
+//    fprintf(stderr,"%08x\n",ppulut3[xo|(cc<<3)]);
    }
   }
 
@@ -185,13 +185,13 @@ static DECLFR(A2004)
                   }
                   else
                   {
-                   //printf("$%02x:$%02x\n",PPUSPL,V);
+                   //fprintf(stderr,"$%02x:$%02x\n",PPUSPL,V);
                    ret = SPRAM[PPUSPL];
                   }
                   PPU[3]++;
                   PPUSPL++;
       PPUGenLatch = ret;
-      printf("%d, %02x\n",scanline,ret);
+      fprintf(stderr,"%d, %02x\n",scanline,ret);
       return(ret);
 }
 */
@@ -229,12 +229,12 @@ static DECLFR(A2007)
 
 static DECLFW(B2000)
 {
-    //printf("%04x:$%02x, %d\n",A,V&0x38,scanline);
+    //fprintf(stderr,"%04x:$%02x, %d\n",A,V&0x38,scanline);
 
     FCEUPPU_LineUpdate();
     PPUGenLatch=V;
     if (!(PPU[0]&0x80) && (V&0x80) && (PPU_status&0x80)) {
-      //printf("Trigger NMI, %d, %d\n",timestamp,ppudead);
+      //fprintf(stderr,"Trigger NMI, %d, %d\n",timestamp,ppudead);
       TriggerNMI2();
     }
     PPU[0]=V;
@@ -244,7 +244,7 @@ static DECLFW(B2000)
 
 static DECLFW(B2001)
 {
-    //printf("%04x:$%02x, %d\n",A,V,scanline);
+    //fprintf(stderr,"%04x:$%02x, %d\n",A,V,scanline);
     FCEUPPU_LineUpdate();
     PPUGenLatch=V;
     PPU[1]=V;
@@ -256,7 +256,7 @@ static DECLFW(B2002) {
 }
 
 static DECLFW(B2003) {
-  //printf("$%04x:$%02x, %d, %d\n",A,V,timestamp,scanline);
+  //fprintf(stderr,"$%04x:$%02x, %d, %d\n",A,V,timestamp,scanline);
   PPUGenLatch=V;
   PPU[3]=V;
   PPUSPL=V&0x7;
@@ -264,7 +264,7 @@ static DECLFW(B2003) {
 
 static DECLFW(B2004)
 {
-    //printf("Wr: %04x:$%02x\n",A,V);
+    //fprintf(stderr,"Wr: %04x:$%02x\n",A,V);
 
                 PPUGenLatch=V;
                 if (PPUSPL>=8)
@@ -274,7 +274,7 @@ static DECLFW(B2004)
                 }
                 else
                 {  
-                 //printf("$%02x:$%02x\n",PPUSPL,V);
+                 //fprintf(stderr,"$%02x:$%02x\n",PPUSPL,V);
                  SPRAM[PPUSPL]=V;
                 }
                 PPU[3]++;
@@ -314,7 +314,7 @@ static DECLFW(B2006)
       TempAddr|=V;
       RefreshAddr=TempAddr;
       if (PPU_hook) PPU_hook(RefreshAddr);
-      //printf("%d, %04x\n",scanline,RefreshAddr);
+      //fprintf(stderr,"%d, %04x\n",scanline,RefreshAddr);
     }
     vtoggle^=1;
 }
@@ -400,7 +400,7 @@ void FCEUI_ToggleTileView(void)
 
 void FCEUI_SetRenderDisable(int sprites, int bg)
 {
- //printf("%d, %d\n",sprites,bg);
+ //fprintf(stderr,"%d, %d\n",sprites,bg);
  if (sprites >= 0)
  {
   if (sprites == 2) rendis ^= 1;
@@ -431,7 +431,7 @@ static void TileView(void)
   //C= ROM+vadr+turt*8192;
   C = VRAMADR(vadr);
   //if((vadr+turt*8192)>=524288)
-  //printf("%d ",vadr+turt*8192);
+  //fprintf(stderr,"%d ",vadr+turt*8192);
   cc=0;
   //#include "pputile.h"
  }
@@ -463,10 +463,10 @@ static void CheckSpriteHit(int p)
    if ((sphitdata&(0x80>>(x-sphitx))) && !(Plinef[x]&64))
    {
     PPU_status|=0x40;
-    //printf("Ha:  %d, %d, Hita: %d, %d, %d, %d, %d\n",p,p&~7,scanline,GETLASTPIXEL-16,&Plinef[x],Pline,Pline-Plinef);
-    //printf("%d\n",GETLASTPIXEL-16);
+    //fprintf(stderr,"Ha:  %d, %d, Hita: %d, %d, %d, %d, %d\n",p,p&~7,scanline,GETLASTPIXEL-16,&Plinef[x],Pline,Pline-Plinef);
+    //fprintf(stderr,"%d\n",GETLASTPIXEL-16);
     //if(Plinef[x] == 0xFF)
-    //printf("PL: %d, %02x\n",scanline, Plinef[x]);
+    //fprintf(stderr,"PL: %d, %02x\n",scanline, Plinef[x]);
     sphitx=0x100;
     break;
    }
@@ -502,7 +502,7 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
         {
    if ((sphitx < (lastpixel-16)) && !(sphitx < ((lasttile - 2)*8)))
    {
-    //printf("OK: %d\n",scanline);
+    //fprintf(stderr,"OK: %d\n",scanline);
     lasttile++;
    }
 
@@ -842,7 +842,7 @@ static void FetchSpriteData(void)
          for (n=63;n>=0;n--,spr++)
          {
                 if ((unsigned int)(scanline-spr->y)>=H) continue;
-                //printf("%d, %u\n",scanline,(unsigned int)(scanline-spr->y));
+                //fprintf(stderr,"%d, %u\n",scanline,(unsigned int)(scanline-spr->y));
                 if (ns<maxsprites)
                 {
                  if (n==63) sb=1;
@@ -954,7 +954,7 @@ static void FetchSpriteData(void)
                 }
          }
         //if(ns>=7)
-        //printf("%d %d\n",scanline,ns);
+        //fprintf(stderr,"%d %d\n",scanline,ns);
         if (ns>8) PPU_status|=0x20;  /* Handle case when >8 sprites per
              scanline option is enabled. */
   else if (PPU_hook)

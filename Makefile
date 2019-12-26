@@ -47,7 +47,7 @@ $(NIB_MAIN):src/opt/macos/Main.xib;$(PRECMD) ibtool --compile $@ $<
 INPUT_ICONS:=$(wildcard src/opt/macos/appicon.iconset/*)
 $(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ src/opt/macos/appicon.iconset
 
-RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd)
+RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
 
 #------------------------------------------------------------------------------
 # Generated source files.

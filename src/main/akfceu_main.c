@@ -50,7 +50,7 @@ void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
  */
 
 static int key_macwm(int keycode,int value) {
-  //printf("key %d=%d\n",keycode,value);
+  //fprintf(stderr,"key %d=%d\n",keycode,value);
   // Static key mapping, all assigned to player one:
   switch (keycode) {
   #if 0//XXX must manage via akfceu_input
@@ -76,7 +76,7 @@ static int resize_macwm(int w,int h) {
  */
 
 static int load_rom_file(const char *path) {
-  printf("Load ROM: %s\n",path);
+  fprintf(stderr,"Load ROM: %s\n",path);
 
   if (vmrunning) {
     FCEUI_CloseGame();
@@ -85,15 +85,15 @@ static int load_rom_file(const char *path) {
 
   FCEUGI *fceugi=FCEUI_LoadGame(path);
   if (!fceugi) {
-    printf("%s: FCEUI_LoadGame failed\n",path);
+    fprintf(stderr,"%s: FCEUI_LoadGame failed\n",path);
     return -1;
   }
 
   vmrunning=1;
-  printf("Loaded.\n");
+  fprintf(stderr,"Loaded.\n");
 
   FCEUI_PowerNES();
-  printf("Power on.\n");
+  fprintf(stderr,"Power on.\n");
   
   // 20190106: Had a mysterious freeze here, launching a game via Romassist after several restarts.
   // This is right after adding Romassist Restart.
@@ -103,7 +103,7 @@ static int load_rom_file(const char *path) {
 
   #if USE_romassist
     if (romassist) {
-      printf("Notifying Romassist of launch...\n");
+      fprintf(stderr,"Notifying Romassist of launch...\n");
       if (romassist_launched_file(romassist,path)<0) {
         romassist_del(romassist);
         romassist=0;
@@ -114,7 +114,7 @@ static int load_rom_file(const char *path) {
   if (current_rom_path) free(current_rom_path);
   if (!(current_rom_path=strdup(path))) return -1;
 
-  printf("Launch complete.\n");
+  fprintf(stderr,"Launch complete.\n");
   return 0;
 }
 
@@ -128,15 +128,15 @@ static int restart_vm() {
 
   FCEUGI *fceugi=FCEUI_LoadGame(current_rom_path);
   if (!fceugi) {
-    printf("%s: FCEUI_LoadGame failed\n",current_rom_path);
+    fprintf(stderr,"%s: FCEUI_LoadGame failed\n",current_rom_path);
     return -1;
   }
 
   vmrunning=1;
-  printf("Loaded.\n");
+  fprintf(stderr,"Loaded.\n");
 
   FCEUI_PowerNES();
-  printf("Power on.\n");
+  fprintf(stderr,"Power on.\n");
 
   if (akfceu_input_register_with_fceu()<0) return -1;
 
@@ -176,7 +176,7 @@ static int count_available_audio_frames() {
 
 // It's kind of dirty, but this is where our main timing happens: We let the audio backend drive it.
 static int sleep_until_audio_available(int srcc) {
-  int panic=100;
+  int panic=1000;
   while (panic-->0) {
     if (mn_macaudio_lock()<0) return -1;
     int available=count_available_audio_frames();
@@ -185,7 +185,7 @@ static int sleep_until_audio_available(int srcc) {
     if (ok) return 0;
     usleep(1000);
   }
-  printf("Audio timing panic.\n");
+  fprintf(stderr,"Audio timing panic.\n");
   return -1;
 }
 
@@ -345,17 +345,17 @@ static int akfceu_romassist_launch_file(romassist_t client,const char *path,int 
 static int akfceu_romassist_command(romassist_t client,const char *src,int srcc) {
 
   if ((srcc==4)&&!memcmp(src,"quit",4)) {
-    printf("akfceu: Quitting due to request from Romassist.\n");
+    fprintf(stderr,"akfceu: Quitting due to request from Romassist.\n");
     mn_macioc_quit();
     return 0;
   }
 
   if ((srcc==7)&&!memcmp(src,"restart",7)) {
-    printf("akfceu: Restart per Romassist.\n");
+    fprintf(stderr,"akfceu: Restart per Romassist.\n");
     return restart_vm();
   }
 
-  printf("akfceu: Unexpected command from Romassist: '%.*s'\n",srcc,src);
+  fprintf(stderr,"akfceu: Unexpected command from Romassist: '%.*s'\n",srcc,src);
   return 0;
 }
 
@@ -381,7 +381,7 @@ static int init(const char *rompath) {
   if (mn_macwm_init(winw,winh,0,"akfceu",&macwm_delegate)<0) {
     return -1;
   }
-  mn_macwm_show_cursor(0);
+  //mn_macwm_show_cursor(0);
 
   if (akfceu_video_init()<0) {
     return -1;
@@ -418,9 +418,9 @@ static int init(const char *rompath) {
       .command=akfceu_romassist_command,
     };
     if (romassist=romassist_new(0,0,&romassist_delegate)) {
-      printf("Connected to Romassist server.\n");
+      fprintf(stderr,"Connected to Romassist server.\n");
     } else {
-      printf("Failed to connect to Romassist.\n");
+      fprintf(stderr,"Failed to connect to Romassist.\n");
     }
   #endif
 
@@ -461,7 +461,7 @@ static int update() {
   #if USE_romassist
     if (romassist) {
       if (romassist_update(romassist)<0) {
-        printf("Error updating Romassist client. Dropping.\n");
+        fprintf(stderr,"Error updating Romassist client. Dropping.\n");
         romassist_del(romassist);
         romassist=0;
       }

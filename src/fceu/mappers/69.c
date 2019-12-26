@@ -53,7 +53,7 @@ static DECLFW(Mapper69_SWH)
              GameExpSound.Fill=AYSound;
        GameExpSound.HiFill=AYSoundHQ;
        //if(FSettings.SndRate); // aks: intention of this no-op statement was unclear
-       printf("SndRate: %d, sunindex: %d\n",FSettings.SndRate,sunindex);
+       fprintf(stderr,"SndRate: %d, sunindex: %d\n",FSettings.SndRate,sunindex);
              switch (sunindex)
              {
               case 0:

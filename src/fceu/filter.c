@@ -23,7 +23,7 @@ void SexyFilter2(int32_t *in, int32_t count)
  p=((double)2-cos(x)) - sqrt(pow((double)2-cos(x),2) -1 );
 
  c=p*0x100000;
- //printf("%f\n",(double)c/0x100000);
+ //fprintf(stderr,"%f\n",(double)c/0x100000);
  #endif
  static int64_t acc=0;
 
@@ -61,7 +61,7 @@ void SexyFilter(int32_t *in, int32_t *out, int32_t count)
   *in=0; 
   {
    int32_t t=(acc1-ino+acc2)>>16;
-   //if(t>32767 || t<-32768) printf("Flow: %d\n",t);
+   //if(t>32767 || t<-32768) fprintf(stderr,"Flow: %d\n",t);
    if (t>32767) t=32767;
    if (t<-32768) t=-32768;  
    *out=t;
@@ -93,7 +93,7 @@ int32_t NeoFilterSound(int32_t *in, int32_t *out, uint32_t inlen, int32_t *lefto
 
 //  for (x=0;x<inlen;x++)
 //  {
-//   if (in[x]>mva){ mva=in[x]; printf("%ld\n",in[x]);}
+//   if (in[x]>mva){ mva=in[x]; fprintf(stderr,"%ld\n",in[x]);}
 //  }
         max=(inlen-1)<<16;
 
@@ -194,7 +194,7 @@ void MakeFilters(int32_t rate)
   int x;
   for (x=0;x<SQ2NCOEFFS;x++)
    acc+=(int64_t)32767*sq2coeffs[x];
-  printf("Foo: %lld\n",acc);
+  fprintf(stderr,"Foo: %lld\n",acc);
  }
  #endif
 }

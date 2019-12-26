@@ -54,6 +54,7 @@ static inline int ra_queue_available(const struct ra_queue *q) {
 static inline void ra_queue_consume(struct ra_queue *q,int c) {
   if (c>q->c) c=q->c;
   if (!(q->c-=c)) q->p=0;
+  else q->p+=c;
 }
 
 /* Object definition.

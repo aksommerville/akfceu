@@ -255,7 +255,7 @@ void mn_macioc_call_quit() {
 -(BOOL)application:(NSApplication*)application openFile:(NSString*)pathString {
   const char *path=[pathString UTF8String];
   if (!path||!path[0]) return 0;
-  printf("application:openFile:%s\n",path);
+  fprintf(stderr,"application:openFile:%s\n",path);
 
   // If (delegate.init) is still set, it means we're not done starting up.
   // Record this path so it will be opened at that time.

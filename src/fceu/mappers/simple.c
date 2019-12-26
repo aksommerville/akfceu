@@ -178,7 +178,7 @@ void Mapper70_init(void)
 /* Should be two separate emulation functions for this "mapper".  Sigh.  URGE TO KILL RISING. */
 static DECLFW(Mapper78_write)
 {
- //printf("$%04x:$%02x\n",A,V&0x8);
+ //fprintf(stderr,"$%04x:$%02x\n",A,V&0x8);
  ROM_BANK16(0x8000,V&0x7);
  VROM_BANK8(V>>4);
  onemir((V>>3)&1);
@@ -287,7 +287,7 @@ static void M185Sync(int version)
 {
  int x;
 
- //printf("%02x\n",mapbyte1[0]);
+ //fprintf(stderr,"%02x\n",mapbyte1[0]);
  //if((mapbyte1[0]&3)==3)
  if (VROM_size == 1)
  {
@@ -307,7 +307,7 @@ static DECLFW(Mapper185_write)
 {
  mapbyte1[0]=V;
  M185Sync(0);
- //printf("Wr: $%04x:$%02x, $%04x\n",A,V,X.PC);
+ //fprintf(stderr,"Wr: $%04x:$%02x, $%04x\n",A,V,X.PC);
 }
 
 void Mapper185_init(void)
@@ -331,7 +331,7 @@ static DECLFW(M156Write)
  else if (A>=0xc008 &&  A<=0xc00b)
   VROM_BANK1(0x1000+(A&3)*1024,V);
  if (A==0xc010) ROM_BANK16(0x8000,V);
-// printf("$%04x:$%02x\n",A,V);
+// fprintf(stderr,"$%04x:$%02x\n",A,V);
 }
 
 void Mapper156_init(void)
@@ -342,13 +342,13 @@ void Mapper156_init(void)
 #ifdef moo
 static DECLFW(Mapper157_write)
 {
- printf("$%04x:$%02x\n",A,V);
+ fprintf(stderr,"$%04x:$%02x\n",A,V);
  if (A<0xc000)
  setprg16(0xc000,V);
 }
 static DECLFR(m157rd)
 {
- printf("Rd: $%04x\n",A);
+ fprintf(stderr,"Rd: $%04x\n",A);
 }
 
 void Mapper157_init(void)

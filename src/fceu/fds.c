@@ -183,8 +183,8 @@ static void FP_FASTAPASS(1) FDSFix(int a)
     IRQCount=IRQLatch;
    //IRQCount=IRQLatch; //0xFFFF;
    X6502_IRQBegin(FCEU_IQEXT);
-   //printf("IRQ: %d\n",timestamp);
-//   printf("IRQ: %d\n",scanline);
+   //fprintf(stderr,"IRQ: %d\n",timestamp);
+//   fprintf(stderr,"IRQ: %d\n",scanline);
   }
  }
  if (DiskSeekIRQ>0)
@@ -333,20 +333,20 @@ static DECLFW(FDSSWrite)
   case 0x4: if (V&0x80)
        amplitude[(A&0xF)>>2]=V&0x3F; //)>0x20?0x20:(V&0x3F);
       break;
-  case 0x5://printf("$%04x:$%02x\n",A,V);
+  case 0x5://fprintf(stderr,"$%04x:$%02x\n",A,V);
     break;
-  case 0x7: b17latch76=0;SPSG[0x5]=0;//printf("$%04x:$%02x\n",A,V);
+  case 0x7: b17latch76=0;SPSG[0x5]=0;//fprintf(stderr,"$%04x:$%02x\n",A,V);
     break;
   case 0x8:
      b17latch76=0;
-  //   printf("%d:$%02x, $%02x\n",SPSG[0x5],V,b17latch76);
+  //   fprintf(stderr,"%d:$%02x, $%02x\n",SPSG[0x5],V,b17latch76);
      fdso.mwave[SPSG[0x5]&0x1F]=V&0x7;
            SPSG[0x5]=(SPSG[0x5]+1)&0x1F;
      break;
  }
  //if(A>=0x7 && A!=0x8 && A<=0xF)
  //if(A==0xA || A==0x9)
- //printf("$%04x:$%02x\n",A,V);
+ //fprintf(stderr,"$%04x:$%02x\n",A,V);
  SPSG[A]=V;
 }
 
@@ -397,7 +397,7 @@ static DECLFR(FDSWaveRead)
 
 static DECLFW(FDSWaveWrite)
 {
- //printf("$%04x:$%02x, %d\n",A,V,SPSG[0x9]&0x80);
+ //fprintf(stderr,"$%04x:$%02x, %d\n",A,V,SPSG[0x9]&0x80);
  if (SPSG[0x9]&0x80)
   fdso.cwave[A&0x3f]=V&0x3F;
 }
@@ -428,7 +428,7 @@ static INLINE void ClockRise(void)
    adj *= 2;
    if (adj > 0x7F) adj = 0x7F;
    if (adj < -0x80) adj = -0x80;
-   //if(adj) printf("%d ",adj);
+   //if(adj) fprintf(stderr,"%d ",adj);
    b8shiftreg88=0x80 + adj;
   }
   else
@@ -590,19 +590,19 @@ static DECLFW(FDSWrite)
   X6502_IRQEnd(FCEU_IQEXT);
   IRQLatch&=0xFF00;
   IRQLatch|=V;
-//  printf("$%04x:$%02x\n",A,V);
+//  fprintf(stderr,"$%04x:$%02x\n",A,V);
         break;
   case 0x4021:
         X6502_IRQEnd(FCEU_IQEXT);
   IRQLatch&=0xFF;
   IRQLatch|=V<<8;
-//  printf("$%04x:$%02x\n",A,V);
+//  fprintf(stderr,"$%04x:$%02x\n",A,V);
         break;
   case 0x4022:
   X6502_IRQEnd(FCEU_IQEXT);
   IRQCount=IRQLatch;
   IRQa=V&3;
-//  printf("$%04x:$%02x\n",A,V);
+//  fprintf(stderr,"$%04x:$%02x\n",A,V);
         break;
   case 0x4023:break;
   case 0x4024:

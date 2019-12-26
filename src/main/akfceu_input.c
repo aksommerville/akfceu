@@ -104,7 +104,7 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
   #if USE_macos
     const char *mfrname=mn_machid_dev_get_manufacturer_name(devid);
     const char *prodname=mn_machid_dev_get_product_name(devid);
-    printf("Generating map for device \"%s %s\"...\n",mfrname,prodname);
+    fprintf(stderr,"Generating map for device \"%s %s\"...\n",mfrname,prodname);
     int p=0; while (1) {
       int btnid,usage,lo,hi,value;
       if (mn_machid_dev_get_button_info(&btnid,&usage,&lo,&hi,&value,devid,p)<0) break;
@@ -116,7 +116,7 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
     }
 
   #else
-    printf("Input driver does not support generic device description... Sorry, can't map this device.\n");
+    fprintf(stderr,"Input driver does not support generic device description... Sorry, can't map this device.\n");
     akfceu_input_automapper_cleanup(&mapper);
     return 0;
   #endif
@@ -132,11 +132,11 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
    */
   int result=akfceu_input_automapper_compile(&mapper);
   if (!result) {
-    printf("WARNING: Input map is incomplete, this device is not usable as-is.\n");
+    fprintf(stderr,"WARNING: Input map is incomplete, this device is not usable as-is.\n");
   }
   if (result>=0) {
-    printf("----- Add the following text to %s to make this input device configuration permanent. -----\n",inputcfgpath);
-    printf("device 0x%04x 0x%04x\n",vid,pid);
+    fprintf(stderr,"----- Add the following text to %s to make this input device configuration permanent. -----\n",inputcfgpath);
+    fprintf(stderr,"device 0x%04x 0x%04x\n",vid,pid);
     const struct akfceu_input_automapper_field *field=mapper.fieldv;
     int i=mapper.fieldc;
     for (;i-->0;field++) {
@@ -151,7 +151,7 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
       switch (field->target) {
       
         case AKFCEU_INPUT_AUTOMAPPER_TARGET_HAT: {
-            printf("  %d DPAD %d %d\n",field->btnid,field->lo,field->hi);
+            fprintf(stderr,"  %d DPAD %d %d\n",field->btnid,field->lo,field->hi);
             if (akfceu_input_map_add_hat(map,-1,field->btnid,field->lo,field->hi)<0) FAIL
           } break;
           
@@ -164,7 +164,7 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
               threshlo=field->lo;
               threshhi=field->hi;
             }
-            printf("  %d HORZ %d %d\n",field->btnid,threshlo,threshhi);
+            fprintf(stderr,"  %d HORZ %d %d\n",field->btnid,threshlo,threshhi);
             if (akfceu_input_map_add_button(map,-1,field->btnid,INT_MIN,threshlo,JOY_LEFT)<0) FAIL
             if (akfceu_input_map_add_button(map,-1,field->btnid,threshhi,INT_MAX,JOY_RIGHT)<0) FAIL
           } break;
@@ -178,7 +178,7 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
               threshlo=field->lo;
               threshhi=field->hi;
             }
-            printf("  %d VERT %d %d\n",field->btnid,threshlo,threshhi);
+            fprintf(stderr,"  %d VERT %d %d\n",field->btnid,threshlo,threshhi);
             if (akfceu_input_map_add_button(map,-1,field->btnid,INT_MIN,threshlo,JOY_UP)<0) FAIL
             if (akfceu_input_map_add_button(map,-1,field->btnid,threshhi,INT_MAX,JOY_DOWN)<0) FAIL
           } break;
@@ -194,21 +194,21 @@ static int akfceu_input_populate_default_map(struct akfceu_input_map *map,int de
         _two_state_: {
             if ((field->lo!=0)||(field->hi<1)||(field->hi>2)) {
               int thresh=(field->lo+field->hi)>>1;
-              printf("  %d %s %d %d\n",field->btnid,btnname,thresh,field->hi);
+              fprintf(stderr,"  %d %s %d %d\n",field->btnid,btnname,thresh,field->hi);
               if (akfceu_input_map_add_button(map,-1,field->btnid,thresh,field->hi,dstbtnid)<0) return -1;
             } else {
-              printf("  %d %s\n",field->btnid,btnname);
+              fprintf(stderr,"  %d %s\n",field->btnid,btnname);
               if (akfceu_input_map_add_button(map,-1,field->btnid,1,INT_MAX,dstbtnid)<0) return -1;
             }
           } break;
         
-        default: printf("  # %d unused, usage=0x%08x, range=(%d..%d)\n",field->btnid,field->usage,field->lo,field->hi); break;
+        default: fprintf(stderr,"  # %d unused, usage=0x%08x, range=(%d..%d)\n",field->btnid,field->usage,field->lo,field->hi); break;
       }
       #undef FAIL
 
     }
-    printf("end device\n");
-    printf("----- End of input device configuration. -----\n");
+    fprintf(stderr,"end device\n");
+    fprintf(stderr,"----- End of input device configuration. -----\n");
   }
   
   akfceu_input_automapper_cleanup(&mapper);
@@ -261,12 +261,12 @@ static int akfceu_input_generic_connect(int devid) {
     int pid=0;
   #endif
 
-  printf("Connected input device %d [%04x:%04x]\n",devid,vid,pid);
+  fprintf(stderr,"Connected input device %d [%04x:%04x]\n",devid,vid,pid);
   struct akfceu_input_map *map=akfceu_input_map_find(vid,pid);
   if (map) {
-    printf("Located input mappings.\n");
+    fprintf(stderr,"Located input mappings.\n");
   } else {
-    printf("Input mappings not found, will attempt to synthesize defaults...\n");
+    fprintf(stderr,"Input mappings not found, will attempt to synthesize defaults...\n");
     if (!(map=akfceu_input_map_new(vid,pid))) return -1;
     if (akfceu_input_populate_default_map(map,devid,vid,pid)<0) return -1;
   }
@@ -277,9 +277,9 @@ static int akfceu_input_generic_connect(int devid) {
     assignment->map=map;
     assignment->type=SI_GAMEPAD;
     assignment->playerid=akfceu_input_select_playerid_for_new_device();
-    printf("Assigned to player %d.\n",assignment->playerid);
+    fprintf(stderr,"Assigned to player %d.\n",assignment->playerid);
   } else {
-    printf("Unable to map this device to a gamepad.\n");
+    fprintf(stderr,"Unable to map this device to a gamepad.\n");
   }
 
   return 0;
@@ -289,7 +289,7 @@ static int akfceu_input_generic_connect(int devid) {
  */
 
 static int akfceu_input_generic_disconnect(int devid) {
-  printf("Disconnect device %d.\n",devid);
+  fprintf(stderr,"Disconnect device %d.\n",devid);
   int p=akfceu_input_assignmentv_search(devid);
   if (p>=0) {
     struct akfceu_input_assignment *assignment=akfceu_input.assignmentv+p;
@@ -320,7 +320,7 @@ static int akfceu_input_generic_event_mapped(int btnid,int value,void *userdata)
     if (!(mask&akfceu_input.gamepad_state)) return 0;
     akfceu_input.gamepad_state&=~mask;
   }
-  //printf("INPUT: %d.%02x=%d\n",assignment->playerid,btnid,value);
+  //fprintf(stderr,"INPUT: %d.%02x=%d\n",assignment->playerid,btnid,value);
   return 0;
 }
 

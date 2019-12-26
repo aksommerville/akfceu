@@ -570,7 +570,7 @@ static INLINE void RDoSQ(int x)
     amp=EnvUnits[x].Speed;
    else
     amp=EnvUnits[x].decvolume;
-//   printf("%d\n",amp);
+//   fprintf(stderr,"%d\n",amp);
    amp<<=24;
 
    rthresh=RectDuties[(PSG[(x<<2)]&0xC0)>>6];
