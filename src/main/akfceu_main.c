@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#define AKFCEU_LAUNCH_FULLSCREEN 0
+
 #if USE_macos
   #include "opt/macos/mn_macaudio.h"
   #include "opt/macos/mn_macwm.h"
@@ -379,6 +381,9 @@ static int init(const char *rompath) {
     (akfceu_video_set_input_size(256,228)<0) // Dropping 11 rows from the top and 1 from the bottom
   ) {
     return -1;
+  }
+  if (AKFCEU_LAUNCH_FULLSCREEN) {
+    mn_macwm_toggle_fullscreen();
   }
 
   if (akfceu_input_init()<0) {

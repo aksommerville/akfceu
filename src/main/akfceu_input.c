@@ -24,6 +24,7 @@ struct akfceu_input_assignment {
   int playerid; // 1,2,3,4
   int type; // SI_GAMEPAD; we may support others in the future
   struct akfceu_input_map *map; // WEAK, OPTIONAL
+  int ignore_for_mapping; // For system keyboard. Map it but also give the next device to player one.
 };
 
 static struct {
@@ -228,6 +229,7 @@ static int akfceu_input_select_playerid_for_new_device() {
   const struct akfceu_input_assignment *assignment=akfceu_input.assignmentv;
   int i=akfceu_input.assignmentc;
   for (;i-->0;assignment++) {
+    if (assignment->ignore_for_mapping) continue;
     if ((assignment->playerid>=1)&&(assignment->playerid<=4)) {
       count_by_playerid[assignment->playerid]++;
     }
@@ -350,12 +352,12 @@ static int akfceu_input_init_system_keyboard() {
   if (akfceu_input_map_add_button(map,6,0x00070051,1,INT_MAX,JOY_DOWN)<0) return -1; // down
   if (akfceu_input_map_add_button(map,7,0x00070052,1,INT_MAX,JOY_UP)<0) return -1; // up
 
-  // TODO Probably need to flag this assignment "passive" or something so the first joystick will also go to player 1.
   struct akfceu_input_assignment *assignment=akfceu_input_assignment_new(-1,-1);
   if (!assignment) return -1;
   assignment->map=map;
   assignment->type=SI_GAMEPAD;
   assignment->playerid=1;
+  assignment->ignore_for_mapping=1;
   fprintf(stderr,"Assigned system keyboard to player %d.\n",assignment->playerid);
 
   return 0;
