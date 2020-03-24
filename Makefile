@@ -15,12 +15,12 @@ OUTDIR:=out
 
 # GCC toolchain.
 CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
-CCINCLUDE:=-Isrc -I$(MIDDIR)
+CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
 CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DUSE_romassist=1 -DLSB_FIRST=1
 CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
 OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
 LD:=gcc
-LDPOST:=-lz -framework AudioUnit -framework IOKit -framework Cocoa -framework OpenGL
+LDPOST:=../romassist/out/libromassist.a -lz -framework AudioUnit -framework IOKit -framework Cocoa -framework OpenGL
 
 # Main and unit-test executables.
 #EXE:=$(OUTDIR)/fceu

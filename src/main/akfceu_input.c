@@ -1,3 +1,6 @@
+int akfceu_input_dummy=0;
+#if 0 // XXX before emuhost
+
 #include "akfceu_input.h"
 #include "akfceu_input_map.h"
 #include "akfceu_input_automapper.h"
@@ -469,3 +472,4 @@ int akfceu_input_register_with_fceu() {
 
   return 0;
 }
+#endif

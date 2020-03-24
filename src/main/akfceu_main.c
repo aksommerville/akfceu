@@ -3,35 +3,23 @@
 #include "akfceu_input.h"
 #include "fceu/driver.h"
 #include "fceu/fceu.h"
+#include <emuhost/emuhost.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 
-#define AKFCEU_LAUNCH_FULLSCREEN 1
-
-#if USE_macos
-  #include "opt/macos/mn_macaudio.h"
-  #include "opt/macos/mn_macwm.h"
-  #include "opt/macos/mn_macioc.h"
-#else
-  #error "The interface layer is currently only for MacOS. Set 'USE_macos=1' or write a new interface."
-#endif
-
-#if USE_romassist
-  #include "opt/romassist/ra_client.h"
-  static romassist_t romassist=0;
-#endif
-
 /* Globals.
  */
-
-static uint8_t framebuffer[256*240]={0};
+ 
 static uint8_t palette[768]={0};
 static int vmrunning=0;
 static char *current_rom_path=0;
+static uint32_t gamepad_state=0;
+static int16_t *samplev=0;
+static int samplea=0;
 
-/* FCEUD hooks.
+/* FCEU palette.
  */
 
 void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
@@ -48,17 +36,16 @@ void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
   *b=palette[p];
 }
 
-/* Window manager callbacks.
+/* Audio sample buffer.
  */
-
-static int key_macwm(int keycode,int value) {
-  //fprintf(stderr,"key 0x%08x=%d\n",keycode,value);
-  if (akfceu_input_generic_event(-1,keycode,value)<0) return -1;
-  return 0;
-}
-
-static int resize_macwm(int w,int h) {
-  if (akfceu_video_set_output_size(w,h)<0) return -1;
+ 
+static int akfceu_samplev_require(int c) {
+  if (c<=samplea) return 0;
+  int na=(c+1024)&~1023;
+  void *nv=realloc(samplev,na<<1);
+  if (!nv) return -1;
+  samplev=nv;
+  samplea=na;
   return 0;
 }
 
@@ -85,21 +72,9 @@ static int load_rom_file(const char *path) {
   FCEUI_PowerNES();
   fprintf(stderr,"Power on.\n");
   
-  // 20190106: Had a mysterious freeze here, launching a game via Romassist after several restarts.
-  // This is right after adding Romassist Restart.
-  // I don't know what caused it, and can't reproduce it. Leaving new logging in place for next time.
-
-  if (akfceu_input_register_with_fceu()<0) return -1;
-
-  #if USE_romassist
-    if (romassist) {
-      fprintf(stderr,"Notifying Romassist of launch...\n");
-      if (romassist_launched_file(romassist,path)<0) {
-        romassist_del(romassist);
-        romassist=0;
-      }
-    }
-  #endif
+  FCEUI_DisableFourScore(0);
+  FCEUI_SetInput(0,SI_GAMEPAD,&gamepad_state,0);
+  FCEUI_SetInput(1,SI_GAMEPAD,&gamepad_state,0);
 
   if (current_rom_path) free(current_rom_path);
   if (!(current_rom_path=strdup(path))) return -1;
@@ -108,291 +83,84 @@ static int load_rom_file(const char *path) {
   return 0;
 }
 
-static int restart_vm() {
-  if (!current_rom_path) return 0;
+/* Logging, accessible to emuhost.
+ */
+ 
+static void akfceu_main_log(int level,const char *msg,int msgc) {
+  printf("%s: %.*s\n",__func__,msgc,msg);
+}
 
+/* Load rom.
+ */
+ 
+static int akfceu_main_load_rom(const char *path,const void *src,int srcc) {
+  fprintf(stderr,"%s '%s', %d bytes\n",__func__,path,srcc);
+  //TODO Can we provide the serial to FCEU? As is we are reading the file twice.
+  if (load_rom_file(path)<0) return -1;
+  return 0;
+}
+
+/* Input event.
+ */
+ 
+static uint8_t akfceu_fceu_input_state_from_emuhost(uint16_t in) {
+  return (
+    ((in&EMUHOST_BTNID_UP)?JOY_UP:0)|
+    ((in&EMUHOST_BTNID_DOWN)?JOY_DOWN:0)|
+    ((in&EMUHOST_BTNID_LEFT)?JOY_LEFT:0)|
+    ((in&EMUHOST_BTNID_RIGHT)?JOY_RIGHT:0)|
+    ((in&EMUHOST_BTNID_PRIMARY)?JOY_A:0)|
+    ((in&EMUHOST_BTNID_SECONDARY)?JOY_B:0)|
+    ((in&EMUHOST_BTNID_AUX2)?JOY_SELECT:0)|
+    ((in&EMUHOST_BTNID_AUX1)?JOY_START:0)|
+  0);
+}
+ 
+static int akfceu_main_event(int playerid,int btnid,int value,int state) {
+  fprintf(stderr,"%s %d.%d=%d [0x%04x]\n",__func__,playerid,btnid,value,state);
+  if ((playerid>=1)&&(playerid<=4)) {
+    int shift=(playerid-1)<<3;
+    uint32_t mask=~(0xff<<shift);
+    uint8_t fceustate=akfceu_fceu_input_state_from_emuhost(state);
+    gamepad_state=(gamepad_state&mask)|(fceustate<<shift);
+  }
+  return 0;
+}
+
+/* Update.
+ */
+ 
+static int akfceu_main_update() {
+  
+  uint8_t *vmfb=0;
+  int32_t *vmab=0;
+  int32_t vmabc=0;
   if (vmrunning) {
-    FCEUI_CloseGame();
-    vmrunning=0;
+    FCEUI_Emulate(&vmfb,&vmab,&vmabc,0);
   }
-
-  FCEUGI *fceugi=FCEUI_LoadGame(current_rom_path);
-  if (!fceugi) {
-    fprintf(stderr,"%s: FCEUI_LoadGame failed\n",current_rom_path);
-    return -1;
+  
+  if (akfceu_samplev_require(vmabc)<0) return -1;
+  
+  if (vmabc>0) {
+    // VM is running and we got audio from it -- update emuhost normally.
+    const int32_t *src=vmab; // Seriously, fceu, why 32-bit? TODO Can we change that?
+    int16_t *dst=samplev;
+    int i=vmabc; for (;i-->0;src++,dst++) *dst=*src;
+    if (emuhost_app_provide_frame(vmfb,samplev,vmabc)<0) return -1;
+  } else {
+    // Not running or not producing audio. Send a little silence to keep things running steady.
+    if (akfceu_samplev_require(1024)<0) return -1;
+    memset(samplev,0,1024<<1);
+    if (emuhost_app_provide_frame(vmfb,samplev,1024)<0) return -1;
   }
-
-  vmrunning=1;
-  fprintf(stderr,"Loaded.\n");
-
-  FCEUI_PowerNES();
-  fprintf(stderr,"Power on.\n");
-
-  if (akfceu_input_register_with_fceu()<0) return -1;
-
+  
   return 0;
 }
-
-/* Audio callback.
- */
-
-// At 44100 Hz, about 734 samples are emitted per update (ie per video frame).
-#define AUDIO_BUFFER_SIZE 2048
-static int16_t audiobuf[AUDIO_BUFFER_SIZE]={0};
-static int audiorp=0;
-static int audiowp=0;
-
-static void cb_audio(int16_t *dst,int dstc) {
-  while (dstc>0) {
-    int cpc=AUDIO_BUFFER_SIZE-audiorp;
-    if (cpc>dstc) cpc=dstc;
-    memcpy(dst,audiobuf+audiorp,cpc<<1);
-    dst+=cpc;
-    dstc-=cpc;
-    audiorp+=cpc;
-    if (audiorp>=AUDIO_BUFFER_SIZE) audiorp=0;
-  }
-}
-
-static void nix_audio_output() {
-  memset(audiobuf,0,sizeof(audiobuf));
-}
-
-static int count_available_audio_frames() {
-  if (audiowp<=audiorp) return audiorp-audiowp;
-  int rp=audiorp+AUDIO_BUFFER_SIZE;
-  return rp-audiowp;
-}
-
-// It's kind of dirty, but this is where our main timing happens: We let the audio backend drive it.
-static int sleep_until_audio_available(int srcc) {
-  int panic=1000;
-  while (panic-->0) {
-    if (mn_macaudio_lock()<0) return -1;
-    int available=count_available_audio_frames();
-    int ok=(available>=srcc);
-    if (mn_macaudio_unlock()<0) return -1;
-    if (ok) return 0;
-    usleep(1000);
-  }
-  fprintf(stderr,"Audio timing panic.\n");
-  return -1;
-}
-
-static int receive_audio_from_vm(const int32_t *src,int srcc) {
-  if (sleep_until_audio_available(srcc)<0) return -1;
-  for (;srcc-->0;src++) {
-    audiobuf[audiowp++]=*src;
-    if (audiowp>=AUDIO_BUFFER_SIZE) audiowp=0;
-  }
-  return 0;
-}
-
-/* Fill framebuffer and palette with some data to ensure everything's hooked up right.
- */
-
-static void make_default_palette() {
-  int i=0; for (;i<256;i++) {
-    FCEUD_SetPalette(i,i,i,i);
-  }
-}
-
-static void draw_test_pattern() {
-  // See script etc/readpixels.py:
-  framebuffer[29263]=0xff;
-  framebuffer[29269]=0xff;
-  framebuffer[29281]=0xff;
-  framebuffer[29282]=0xff;
-  framebuffer[29283]=0xff;
-  framebuffer[29287]=0xff;
-  framebuffer[29288]=0xff;
-  framebuffer[29291]=0xff;
-  framebuffer[29297]=0xff;
-  framebuffer[29519]=0xff;
-  framebuffer[29520]=0xff;
-  framebuffer[29525]=0xff;
-  framebuffer[29537]=0xff;
-  framebuffer[29540]=0xff;
-  framebuffer[29542]=0xff;
-  framebuffer[29545]=0xff;
-  framebuffer[29547]=0xff;
-  framebuffer[29548]=0xff;
-  framebuffer[29552]=0xff;
-  framebuffer[29553]=0xff;
-  framebuffer[29775]=0xff;
-  framebuffer[29777]=0xff;
-  framebuffer[29781]=0xff;
-  framebuffer[29793]=0xff;
-  framebuffer[29796]=0xff;
-  framebuffer[29798]=0xff;
-  framebuffer[29801]=0xff;
-  framebuffer[29803]=0xff;
-  framebuffer[29805]=0xff;
-  framebuffer[29807]=0xff;
-  framebuffer[29809]=0xff;
-  framebuffer[30031]=0xff;
-  framebuffer[30034]=0xff;
-  framebuffer[30037]=0xff;
-  framebuffer[30040]=0xff;
-  framebuffer[30041]=0xff;
-  framebuffer[30049]=0xff;
-  framebuffer[30050]=0xff;
-  framebuffer[30051]=0xff;
-  framebuffer[30054]=0xff;
-  framebuffer[30057]=0xff;
-  framebuffer[30059]=0xff;
-  framebuffer[30062]=0xff;
-  framebuffer[30065]=0xff;
-  framebuffer[30287]=0xff;
-  framebuffer[30291]=0xff;
-  framebuffer[30293]=0xff;
-  framebuffer[30295]=0xff;
-  framebuffer[30298]=0xff;
-  framebuffer[30305]=0xff;
-  framebuffer[30308]=0xff;
-  framebuffer[30310]=0xff;
-  framebuffer[30313]=0xff;
-  framebuffer[30315]=0xff;
-  framebuffer[30321]=0xff;
-  framebuffer[30543]=0xff;
-  framebuffer[30548]=0xff;
-  framebuffer[30549]=0xff;
-  framebuffer[30551]=0xff;
-  framebuffer[30554]=0xff;
-  framebuffer[30561]=0xff;
-  framebuffer[30564]=0xff;
-  framebuffer[30566]=0xff;
-  framebuffer[30569]=0xff;
-  framebuffer[30571]=0xff;
-  framebuffer[30577]=0xff;
-  framebuffer[30799]=0xff;
-  framebuffer[30805]=0xff;
-  framebuffer[30808]=0xff;
-  framebuffer[30809]=0xff;
-  framebuffer[30817]=0xff;
-  framebuffer[30820]=0xff;
-  framebuffer[30823]=0xff;
-  framebuffer[30824]=0xff;
-  framebuffer[30827]=0xff;
-  framebuffer[30833]=0xff;
-}
-
-/* Find the directory for storing FCEU artifacts (saves, etc), and register it with FCEU.
- */
-
-static int determine_and_register_home_directory() {
-
-  /* 1: Allow the user to set it explicitly via FCEU_HOME.
-   */
-  const char *FCEU_HOME=getenv("FCEU_HOME");
-  if (FCEU_HOME&&FCEU_HOME[0]) {
-    FCEUI_SetBaseDirectory((char*)FCEU_HOME);
-    return 0;
-  }
-
-  /* 2: If there is a HOME in the environment, append "/.fceultra" to it.
-   */
-  const char *HOME=getenv("HOME");
-  if (HOME&&HOME[0]) {
-    char path[1024];
-    int pathc=snprintf(path,sizeof(path),"%s/.fceultra",HOME);
-    if ((pathc>0)&&(pathc<sizeof(path))) {
-      FCEUI_SetBaseDirectory(path);
-      return 0;
-    }
-  }
-
-  /* 3: If there is a USER in the environment, use "/home/$USER/.fceultra".
-   */
-  const char *USER=getenv("USER");
-  if (USER&&USER[0]) {
-    char path[1024];
-    int pathc=snprintf(path,sizeof(path),"/home/%s/.fceultra",USER);
-    if ((pathc>0)&&(pathc<sizeof(path))) {
-      FCEUI_SetBaseDirectory(path);
-      return 0;
-    }
-  }
-
-  /* 4: Oh whatever, use the working directory.
-   * This is almost certainly not what anyone wants.
-   */
-  FCEUI_SetBaseDirectory(".");
-  return 0;
-}
-
-/* Callbacks from Romassist.
- */
-#if USE_romassist
-
-static int akfceu_romassist_launch_file(romassist_t client,const char *path,int pathlen) {
-  if (load_rom_file(path)<0) {
-    return -1;
-  }
-  return 0;
-}
-
-static int akfceu_romassist_command(romassist_t client,const char *src,int srcc) {
-
-  if ((srcc==4)&&!memcmp(src,"quit",4)) {
-    fprintf(stderr,"akfceu: Quitting due to request from Romassist.\n");
-    mn_macioc_quit();
-    return 0;
-  }
-
-  if ((srcc==7)&&!memcmp(src,"restart",7)) {
-    fprintf(stderr,"akfceu: Restart per Romassist.\n");
-    return restart_vm();
-  }
-
-  fprintf(stderr,"akfceu: Unexpected command from Romassist: '%.*s'\n",srcc,src);
-  return 0;
-}
-
-#endif
 
 /* Initialize.
  */
-
-static int init(const char *rompath) {
-
-  if (determine_and_register_home_directory()<0) {
-    return -1;
-  }
-
-  int winw=281*3;
-  int winh=228*3;
-
-  struct mn_macwm_delegate macwm_delegate={
-    .key=key_macwm,
-    .resize=resize_macwm,
-    .receive_dragged_file=load_rom_file,
-  };
-  if (mn_macwm_init(winw,winh,0,"akfceu",&macwm_delegate)<0) {
-    return -1;
-  }
-  //mn_macwm_show_cursor(0);
-
-  if (akfceu_video_init()<0) {
-    return -1;
-  }
-  if (
-    (akfceu_video_set_output_size(winw,winh)<0)||
-    (akfceu_video_set_input_size(256,228)<0) // Dropping 11 rows from the top and 1 from the bottom
-  ) {
-    return -1;
-  }
-  if (AKFCEU_LAUNCH_FULLSCREEN) {
-    mn_macwm_toggle_fullscreen();
-  }
-
-  if (akfceu_input_init()<0) {
-    return -1;
-  }
-
-  if (mn_macaudio_init(22050,1,cb_audio)<0) {
-    return -1;
-  }
+ 
+static int akfceu_main_init() {
 
   if (!FCEUI_Initialize()) {
     return -1;
@@ -402,95 +170,15 @@ static int init(const char *rompath) {
   FCEUI_SetSoundQuality(0);
   FCEUI_Sound(22050);
   FCEUI_DisableSpriteLimitation(1);
-
-  #if USE_romassist
-    struct romassist_delegate romassist_delegate={
-      .client_name="akfceu",
-      .platforms="nes",
-      .launch_file=akfceu_romassist_launch_file,
-      .command=akfceu_romassist_command,
-    };
-    if (romassist=romassist_new(0,0,&romassist_delegate)) {
-      fprintf(stderr,"Connected to Romassist server.\n");
-    } else {
-      fprintf(stderr,"Failed to connect to Romassist.\n");
-    }
-  #endif
-
-  if (rompath&&rompath[0]) {
-    if (load_rom_file(rompath)<0) return -1;
-  } else {
-    make_default_palette();
-    draw_test_pattern();
-  }
-
+  
   return 0;
 }
 
-/* Quit.
+/* Receive command-line option.
  */
-
-static void quit() {
-  if (vmrunning) {
-    FCEUI_Sound(0);
-    FCEUI_CloseGame();
-    vmrunning=0;
-  }
-  akfceu_video_quit();
-  akfceu_input_quit();
-  mn_macaudio_quit();
-  mn_macwm_quit();
-  #if USE_romassist
-    romassist_del(romassist);
-    romassist=0;
-  #endif
-}
-
-/* Update.
- */
-
-static int update() {
-
-  #if USE_romassist
-    if (romassist) {
-      if (romassist_update(romassist)<0) {
-        fprintf(stderr,"Error updating Romassist client. Dropping.\n");
-        romassist_del(romassist);
-        romassist=0;
-      }
-    }
-  #endif
-
-  if (akfceu_input_update()<0) {
-    return -1;
-  }
-
-  uint8_t *real_framebuffer=framebuffer;
-  if (vmrunning) {
-    uint8_t *vmfb=0;
-    int32_t *vmab=0;
-    int32_t vmabc=0;
-    FCEUI_Emulate(&vmfb,&vmab,&vmabc,0);
-    if (vmfb) real_framebuffer=vmfb;
-    if (vmabc) {
-      if (receive_audio_from_vm(vmab,vmabc)<0) return -1;
-    } else {
-      usleep(15000);
-    }
-   
-  } else {
-    // With no VM running, no one is minding the timing.
-    nix_audio_output();
-    usleep(16000);
-  }
-
-  if (akfceu_video_render(real_framebuffer+256*11,palette)<0) {
-    return -1;
-  }
  
-  if (mn_macwm_swap()<0) {
-    return -1;
-  }
+static int akfceu_main_option(const char *k,int kc,const char *v,int vc) {
+  fprintf(stderr,"%s: '%.*s' = '%.*s'\n",__func__,kc,k,vc,v);
   return 0;
 }
 
@@ -498,11 +186,21 @@ static int update() {
  */
 
 int main(int argc,char **argv) {
-  struct mn_ioc_delegate delegate={
-    .init=init,
-    .quit=quit,
-    .update=update,
-    .open_file=load_rom_file,
+  struct emuhost_app_delegate appdelegate={
+  
+    .fbw=256,
+    .fbh=240,
+    .fbdepth=8,
+    .audiorate=22050,
+    .audiochanc=1,
+  
+    .option=akfceu_main_option,
+    .log=akfceu_main_log,
+    .load_rom=akfceu_main_load_rom,
+    .event=akfceu_main_event,
+    .init=akfceu_main_init,
+    .update=akfceu_main_update,
+    
   };
-  return mn_macioc_main(argc,argv,&delegate);
+  return emuhost_app_main(argc,argv,&appdelegate);
 }
