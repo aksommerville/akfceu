@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define AKFCEU_LAUNCH_FULLSCREEN 0
+#define AKFCEU_LAUNCH_FULLSCREEN 1
 
 #if USE_macos
   #include "opt/macos/mn_macaudio.h"
