@@ -20,6 +20,7 @@ static int16_t *samplev=0;
 static int samplea=0;
 
 /* FCEU palette.
+ * TODO do we really need to cache the palette here? Either eliminate it (if GetPalette unnecessary), or provide a getter from emuhost.
  */
 
 void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
@@ -27,6 +28,8 @@ void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
   palette[p++]=r;
   palette[p++]=g;
   palette[p]=b;
+  uint8_t tmp[3]={r,g,b};
+  emuhost_wm_set_palette(tmp,index,1);
 }
 
 void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
@@ -117,7 +120,7 @@ static uint8_t akfceu_fceu_input_state_from_emuhost(uint16_t in) {
 }
  
 static int akfceu_main_event(int playerid,int btnid,int value,int state) {
-  fprintf(stderr,"%s %d.%d=%d [0x%04x]\n",__func__,playerid,btnid,value,state);
+  //fprintf(stderr,"%s %d.%d=%d [0x%04x]\n",__func__,playerid,btnid,value,state);
   if ((playerid>=1)&&(playerid<=4)) {
     int shift=(playerid-1)<<3;
     uint32_t mask=~(0xff<<shift);
@@ -157,10 +160,56 @@ static int akfceu_main_update() {
   return 0;
 }
 
+/* Find the directory for storing FCEU artifacts (saves, etc), and register it with FCEU.
+ */
+
+static int determine_and_register_home_directory() {
+
+  /* 1: Allow the user to set it explicitly via FCEU_HOME.
+   */
+  const char *FCEU_HOME=getenv("FCEU_HOME");
+  if (FCEU_HOME&&FCEU_HOME[0]) {
+    FCEUI_SetBaseDirectory((char*)FCEU_HOME);
+    return 0;
+  }
+
+  /* 2: If there is a HOME in the environment, append "/.fceultra" to it.
+   */
+  const char *HOME=getenv("HOME");
+  if (HOME&&HOME[0]) {
+    char path[1024];
+    int pathc=snprintf(path,sizeof(path),"%s/.fceultra",HOME);
+    if ((pathc>0)&&(pathc<sizeof(path))) {
+      FCEUI_SetBaseDirectory(path);
+      return 0;
+    }
+  }
+
+  /* 3: If there is a USER in the environment, use "/home/$USER/.fceultra".
+   */
+  const char *USER=getenv("USER");
+  if (USER&&USER[0]) {
+    char path[1024];
+    int pathc=snprintf(path,sizeof(path),"/home/%s/.fceultra",USER);
+    if ((pathc>0)&&(pathc<sizeof(path))) {
+      FCEUI_SetBaseDirectory(path);
+      return 0;
+    }
+  }
+
+  /* 4: Oh whatever, use the working directory.
+   * This is almost certainly not what anyone wants.
+   */
+  FCEUI_SetBaseDirectory(".");
+  return 0;
+}
+
 /* Initialize.
  */
  
 static int akfceu_main_init() {
+
+  if (determine_and_register_home_directory()<0) return -1;
 
   if (!FCEUI_Initialize()) {
     return -1;
@@ -172,6 +221,17 @@ static int akfceu_main_init() {
   FCEUI_DisableSpriteLimitation(1);
   
   return 0;
+}
+
+/* Quit.
+ */
+ 
+static void akfceu_main_quit() {
+  if (vmrunning) {
+    FCEUI_Sound(0);
+    FCEUI_CloseGame();
+    vmrunning=0;
+  }
 }
 
 /* Receive command-line option.
@@ -190,7 +250,9 @@ int main(int argc,char **argv) {
   
     .fbw=256,
     .fbh=240,
-    .fbdepth=8,
+    .fbformat=EMUHOST_TEXFMT_I8,
+    .fullscreen=1,
+    .window_title="akfceu",
     .audiorate=22050,
     .audiochanc=1,
   
@@ -199,6 +261,7 @@ int main(int argc,char **argv) {
     .load_rom=akfceu_main_load_rom,
     .event=akfceu_main_event,
     .init=akfceu_main_init,
+    .quit=akfceu_main_quit,
     .update=akfceu_main_update,
     
   };

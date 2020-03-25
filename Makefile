@@ -48,6 +48,7 @@ INPUT_ICONS:=$(wildcard src/opt/macos/appicon.iconset/*)
 $(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ src/opt/macos/appicon.iconset
 
 RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
+#RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/s/super_mario_bros_1.nes
 
 #------------------------------------------------------------------------------
 # Generated source files.
