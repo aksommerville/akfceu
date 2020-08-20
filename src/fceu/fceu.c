@@ -40,8 +40,6 @@
 #include "cheat.h"
 #include "palette.h"
 #include "state.h"
-#include "movie.h"
-#include "video.h"
 #include "input.h"
 #include "file.h"
 #include "crc32.h"
@@ -260,7 +258,6 @@ FCEUGI *FCEUI_LoadGame(const char *name) {
 
   PowerNES();
   FCEUSS_CheckStates();
-  FCEUMOV_CheckMovies();
 
   if (FCEUGameInfo->type!=GIT_NSF) {
     FCEU_LoadGamePalette();
@@ -268,11 +265,19 @@ FCEUGI *FCEUI_LoadGame(const char *name) {
   }
        
   FCEU_ResetPalette();
-  FCEU_ResetMessages();  // Save state, status messages, etc.
 
   return FCEUGameInfo;
 }
 
+// Yoinked from video.c, which i plan to delete -aks
+uint8_t *XBuf=NULL;
+static int FCEU_InitVirtualVideo() {
+  if (!XBuf) {
+    if (!(XBuf=malloc(256*256))) return 0;
+  }
+  memset(XBuf,0x80,256*256);
+  return 1;
+}
 
 int FCEUI_Initialize(void) {
   if (!FCEU_InitVirtualVideo()) return 0;
@@ -288,7 +293,6 @@ int FCEUI_Initialize(void) {
 }
 
 void FCEUI_Kill(void) {
-  FCEU_KillVirtualVideo();
   FCEU_KillGenie();
 }
 
@@ -315,7 +319,6 @@ void FCEUI_CloseGame(void) {
 }
 
 void ResetNES(void) {
-  FCEUMOV_AddCommand(FCEUNPCMD_RESET);
   if (!FCEUGameInfo) return;
   GameInterface(GI_RESETM2);
   FCEUSND_Reset();
@@ -337,7 +340,6 @@ void hand(X6502 *X, int type, unsigned int A) {
 }
 
 void PowerNES(void) {
-  FCEUMOV_AddCommand(FCEUNPCMD_POWER);
   if (!FCEUGameInfo) return;
 
   FCEU_CheatResetRAM();

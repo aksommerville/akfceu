@@ -35,7 +35,6 @@
 #include "cart.h"
 #include "palette.h"
 #include "state.h"
-#include "video.h" 
 #include "input.h" 
 
 #define VBlankON        (PPU[0]&0x80)   /* Generate VBlank NMI */
@@ -1365,8 +1364,6 @@ int FCEUPPU_Loop(int skip)
   else
   #endif
   {
-   //if(tileview) TileView();
-   FCEU_PutImage();    
    return(1);
   }  
 }

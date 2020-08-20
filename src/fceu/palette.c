@@ -328,38 +328,3 @@ void FCEUI_NTSCSELTINT(void)
  if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL && FCEUGameInfo->type!=GIT_NSF){controlselect=2;controllength=360;}
 }
 
-void FCEU_DrawNTSCControlBars(uint8_t *XBuf)
-{
- uint8_t *XBaf;
- int which=0;
- int x,x2;
-
- if (!controllength) return;
- controllength--;
- if (!XBuf) return;
-
- if (controlselect==1)
- {
-  DrawTextTrans(XBuf+128-12+180*256, 256, (uint8_t *)"Hue", 0x85);
-  which=ntschue<<1;
- }
- else if (controlselect==2)
- {
-  DrawTextTrans(XBuf+128-16+180*256, 256, (uint8_t *)"Tint", 0x85);
-  which=ntsctint<<1;
- }
-
- XBaf=XBuf+200*256;
- for (x=0;x<which;x+=2)
- {
-  for (x2=6;x2>=-6;x2--)
-  {
-   XBaf[x-256*x2]=0x85;
-  }
- }
- for (;x<256;x+=2)
- {
-  for (x2=2;x2>=-2;x2--)
-   XBaf[x-256*x2]=0x85;  
- }
-}

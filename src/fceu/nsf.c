@@ -26,7 +26,6 @@
 #include "types.h"
 #include "x6502.h"
 #include "fceu.h"
-#include "video.h"
 #include "sound.h"
 #include "nsf.h"
 #include "general.h"
@@ -484,6 +483,7 @@ void DrawNSF(uint8_t *XBuf)
   }
  }
 
+ /*
  DrawTextTrans(XBuf+10*256+4+(((31-strlen((char*)NSFHeader.SongName))<<2)), 256, NSFHeader.SongName, 6);
  DrawTextTrans(XBuf+26*256+4+(((31-strlen((char*)NSFHeader.Artist))<<2)), 256,NSFHeader.Artist, 6);
  DrawTextTrans(XBuf+42*256+4+(((31-strlen((char*)NSFHeader.Copyright))<<2)), 256,NSFHeader.Copyright, 6);
@@ -491,6 +491,7 @@ void DrawNSF(uint8_t *XBuf)
  DrawTextTrans(XBuf+70*256+4+(((31-strlen("Song:"))<<2)), 256, (uint8_t*)"Song:", 6);
  sprintf(snbuf,"<%d/%d>",CurrentSong,NSFHeader.TotalSongs);
  DrawTextTrans(XBuf+82*256+4+(((31-strlen(snbuf))<<2)), 256, (uint8_t*)snbuf, 6);
+ */
 
  {
   static uint8_t last=0;

@@ -30,7 +30,6 @@
 #include "fceu.h"
 #include "general.h"
 #include "state.h"
-#include "movie.h"
 #include "driver.h"
 #include "md5.h"
 
@@ -87,8 +86,6 @@ void FCEUI_SetDirOverride(int which, char *n) {
   if (FCEUGameInfo) { /* Rebuild cache of present states/movies. */
     if (which==FCEUIOD_STATE) {
       FCEUSS_CheckStates();
-    } else if (which == FCEUIOD_MOVIE) {
-      FCEUMOV_CheckMovies();
     }
   }
 }
@@ -101,22 +98,6 @@ char *FCEU_MakeFName(int type, int id1, char *cd1) {
   
     case FCEUMKF_NPTEMP: {
         asprintf(&ret,"%s"PSS"m590plqd94fo.tmp",BaseDirectory);
-      } break;
-      
-    case FCEUMKF_MOVIE: {
-        if (odirs[FCEUIOD_STATE]) {
-          asprintf(&ret,"%s"PSS"%s.%d.fcm",odirs[FCEUIOD_STATE],FileBase,id1);
-        } else {
-          asprintf(&ret,"%s"PSS"fcs"PSS"%s.%d.fcm",BaseDirectory,FileBase,id1);
-        }
-        if (stat(ret,&tmpstat)==-1) {
-          free(ret);
-          if (odirs[FCEUIOD_STATE]) {
-            asprintf(&ret,"%s"PSS"%s.%s.%d.fcm",odirs[FCEUIOD_STATE],FileBase,md5_asciistr(FCEUGameInfo->MD5),id1);
-          } else {
-            asprintf(&ret,"%s"PSS"fcs"PSS"%s.%s.%d.fcm",BaseDirectory,FileBase,md5_asciistr(FCEUGameInfo->MD5),id1);
-          }
-        }
       } break;
       
     case FCEUMKF_STATE: {

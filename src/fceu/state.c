@@ -34,11 +34,9 @@
 #include "fds.h"
 #include "general.h"
 #include "state.h"
-#include "movie.h"
 #include "memory.h"
 #include "ppu.h"
 #include "netplay.h"
-#include "video.h"
 
 //aks: Taking a guess that this is supposed to be 53, from "fcs.txt" in the original documentation.
 #define FCEU_VERSION_NUMERIC 53
@@ -258,121 +256,106 @@ void FCEUSS_Save(char *fname)
   FILE *st=NULL;
   char *fn;
 
-  if (geniestage==1)
-  {
-   FCEU_DispMessage("Cannot save FCS in GG screen.");
-   return;
-        }
+  if (geniestage==1) {
+    //FCEU_DispMessage("Cannot save FCS in GG screen.");
+    return;
+  }
         
-  if (fname)
-   st=FCEUD_UTF8fopen(fname, "wb");
-  else
-  {
-         st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
-   free(fn);
+  if (fname) {
+    st=FCEUD_UTF8fopen(fname, "wb");
+  } else {
+    st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
+    free(fn);
   }
 
-  if (st == NULL)
-  {
-         FCEU_DispMessage("State %d save error.",CurrentState);
-   return;
+  if (st == NULL) {
+    //FCEU_DispMessage("State %d save error.",CurrentState);
+    return;
   }
 
   FCEUSS_SaveFP(st);
 
   SaveStateStatus[CurrentState]=1;
   fclose(st);
-  FCEU_DispMessage("State %d saved.",CurrentState);
+  //FCEU_DispMessage("State %d saved.",CurrentState);
 }
 
-int FCEUSS_LoadFP(FILE *st)
-{
+int FCEUSS_LoadFP(FILE *st) {
   int x;
-        uint8_t header[16];
+  uint8_t header[16];
   int stateversion;
 
-        fread(&header,1,16,st);
-        if (memcmp(header,"FCS",3))
-         return(0);
+  fread(&header,1,16,st);
+  if (memcmp(header,"FCS",3)) return(0);
 
-  if (header[3] == 0xFF)
-   stateversion = FCEU_de32lsb(header + 8);
-        else
-         stateversion=header[3] * 100;
+  if (header[3] == 0xFF) {
+    stateversion = FCEU_de32lsb(header + 8);
+  } else {
+    stateversion=header[3] * 100;
+  }
 
-        x=ReadStateChunks(st,*(uint32_t*)(header+4));
-        if (stateversion<9500) X.IRQlow=0;
+  x=ReadStateChunks(st,*(uint32_t*)(header+4));
+  if (stateversion<9500) X.IRQlow=0;
          
-        if (GameStateRestore) GameStateRestore(stateversion);
-        if (x)
-        {
-         FCEUPPU_LoadState(stateversion);
-         FCEUSND_LoadState(stateversion); 
-        }
-  return(x);
+  if (GameStateRestore) GameStateRestore(stateversion);
+  if (x) {
+    FCEUPPU_LoadState(stateversion);
+    FCEUSND_LoadState(stateversion); 
+  }
+  return x;
 }
 
-int FCEUSS_Load(char *fname)
-{
+int FCEUSS_Load(char *fname) {
   FILE *st;
   char *fn;
 
-        if (geniestage==1)
-        {
-         FCEU_DispMessage("Cannot load FCS in GG screen.");
-         return(0);
-        }
-
-        if (fname)
-         st=FCEUD_UTF8fopen(fname, "rb");
-        else
-        {
-         st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
-   free(fn);
+  if (geniestage==1) {
+    //FCEU_DispMessage("Cannot load FCS in GG screen.");
+    return(0);
   }
 
-  if (st == NULL)
-  {
-         FCEU_DispMessage("State %d load error.",CurrentState);
-         SaveStateStatus[CurrentState]=0;
-   return(0);
+  if (fname) {
+    st=FCEUD_UTF8fopen(fname, "rb");
+  } else {
+    st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
+    free(fn);
   }
 
-  if (FCEUSS_LoadFP(st))
-  {
-         SaveStateStatus[CurrentState]=1;
-         FCEU_DispMessage("State %d loaded.",CurrentState);
-         SaveStateStatus[CurrentState]=1;
-   fclose(st);
-         return(1);
-        }  
-        else
-        {
-         SaveStateStatus[CurrentState]=1;
-         FCEU_DispMessage("Error(s) reading state %d!",CurrentState);
-   fclose(st);
-         return(0);
-        }
+  if (st == NULL) {
+    //FCEU_DispMessage("State %d load error.",CurrentState);
+    SaveStateStatus[CurrentState]=0;
+    return(0);
+  }
+
+  if (FCEUSS_LoadFP(st)) {
+    SaveStateStatus[CurrentState]=1;
+    //FCEU_DispMessage("State %d loaded.",CurrentState);
+    SaveStateStatus[CurrentState]=1;
+    fclose(st);
+    return(1);
+  } else {
+    SaveStateStatus[CurrentState]=1;
+    //FCEU_DispMessage("Error(s) reading state %d!",CurrentState);
+    fclose(st);
+    return(0);
+  }
 }
 
-void FCEUSS_CheckStates(void)
-{
-        FILE *st=NULL;
-        char *fn;
-        int ssel;
+void FCEUSS_CheckStates(void) {
+  FILE *st=NULL;
+  char *fn;
+  int ssel;
 
-        for (ssel=0;ssel<10;ssel++)
-        {
-         st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
-         free(fn);
-         if (st)
-         {
-          SaveStateStatus[ssel]=1;
-          fclose(st);
-         }
-         else
-          SaveStateStatus[ssel]=0;
-        }
+  for (ssel=0;ssel<10;ssel++) {
+    st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
+    free(fn);
+    if (st) {
+      SaveStateStatus[ssel]=1;
+      fclose(st);
+    } else {
+      SaveStateStatus[ssel]=0;
+    }
+  }
 
   CurrentState=0;
   StateShow=0;
@@ -407,14 +390,12 @@ void AddExState(void *v, uint32_t s, int type, char *desc)
  SFMDATA[SFEXINDEX].v=0;    // End marker.
 }
 
-void FCEUI_SelectState(int w)
-{
- if (w == -1) { StateShow = 0; return; }
- FCEUI_SelectMovie(-1);
+void FCEUI_SelectState(int w) {
+  if (w == -1) { StateShow = 0; return; }
 
- CurrentState=w;
- StateShow=180;
- FCEU_DispMessage("-select state-");
+  CurrentState=w;
+  StateShow=180;
+  //FCEU_DispMessage("-select state-");
 } 
 
 void FCEUI_SaveState(char *fname)
@@ -426,8 +407,6 @@ void FCEUI_SaveState(char *fname)
 void FCEUI_LoadState(char *fname)
 {
  StateShow=0;
-
- FCEUMOV_Stop();
 
  /* For network play, be load the state locally, and then save the state to a temporary file,
     and send that.  This insures that if an older state is loaded that is missing some
@@ -453,13 +432,5 @@ void FCEUI_LoadState(char *fname)
    free(fn);
   }
 
-}
-
-void FCEU_DrawSaveStates(uint8_t *XBuf)
-{
- if (!StateShow) return;
-
- FCEU_DrawNumberRow(XBuf,SaveStateStatus,CurrentState);
- StateShow--;
 }
 

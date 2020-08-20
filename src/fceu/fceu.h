@@ -33,6 +33,7 @@ void ResetMapping(void);
 void ResetNES(void);
 void PowerNES(void);
 
+extern uint8_t *XBuf;
 extern uint64_t timestampbase;
 extern uint32_t MMC5HackVROMMask;
 extern uint8_t *MMC5HackExNTARAMPtr;
@@ -86,14 +87,8 @@ extern FCEUS FSettings;
 
 void FCEU_PrintError(char *format, ...);
 void FCEU_printf(char *format, ...);
-void FCEU_DispMessage(char *format, ...);
 
 void SetNESDeemph(uint8_t d, int force);
-void DrawTextTrans(uint8_t *dest, uint32_t width, uint8_t *textmsg, uint8_t fgcolor);
-void FCEU_PutImage(void);
-#ifdef FRAMESKIP
-void FCEU_PutImageDummy(void);
-#endif
 
 extern uint8_t Exit;
 extern uint8_t pale;

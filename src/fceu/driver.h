@@ -162,14 +162,7 @@ void FCEUI_SelectState(int);
 void FCEUI_SaveState(char *fname);
 void FCEUI_LoadState(char *fname);
 
-void FCEUI_SelectMovie(int);
-void FCEUI_SaveMovie(char *fname);
-void FCEUI_LoadMovie(char *fname);
-
 int32_t FCEUI_GetDesiredFPS(void);
-void FCEUI_SaveSnapshot(void);
-void FCEU_DispMessage(char *format, ...);
-#define FCEUI_DispMessage FCEU_DispMessage
 
 int FCEUI_DecodePAR(const char *code, uint16_t *a, uint8_t *v, int *c, int *type);
 int FCEUI_DecodeGG(const char *str, uint16_t *a, uint8_t *v, int *c);
