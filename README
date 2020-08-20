@@ -221,3 +221,4 @@ Picking up again, on Linux this time.
   [ ] Remove everything that prints to the framebuffer. All of our OOB UI will be thru config files, command line, or remote comm.
   [ ] Consistent formatting? Probly not worth a lot of effort
   [ ] Unit tests.
+  [ ] Why is the audio buffer out of FCEUI_Emulate() 32-bit? Can we drop it to 16?
