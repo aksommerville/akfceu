@@ -202,5 +202,21 @@ Picking up again after about a year away.
 18 August 2020
 Picking up again, on Linux this time.
 
-[ ] Compiles and everything, and the emulator is running (partially?). Black screen and no audio.
-  [ ] Tried -m32 in both Romassist and akfceu as a test; no difference. Left it that way for now -- revert if it wasn't needed.
+[x] Compiles and everything, and the emulator is running (partially?). Black screen and no audio.
+  [x] Tried -m32 in both Romassist and akfceu as a test; no difference. Left it that way for now -- revert if it wasn't needed.
+  Same build for MacOS works.
+  Tracing PC in x6502.c. Mac goes 0000,ff51. Linux goes 0000,fff0.
+  At the very first instruction (x6502.c:680), Mac pbackus=ff50 b1=78. Linux pbackus=0000 b1=00.
+  First cycle, Mac _IRQlow=32, Linux _IRQlow=0
+  FCEU_IQRESET=0x020, set only at X6502_Reset() -- we're hot on the trail!
+    x6502.c:451
+      X6502_Power()
+        fceu.c:374
+          ...at the end of PowerNES(), X.IRQlow is indeed 32 on Linux.
+          Linux is making a call to X6502_Init() that Mac doesn't make, after "Launch complete."
+          ...FCEUI_Initialize()
+    fceu.c:323
+      ResetNES() -- not called
+  ...Mac is calling akfceu_main_init() then akfceu_main_load_rom(), which makes sense.
+  ...Linux is calling akfceu_main_load_rom() first. *************** This is wrong! Don't do anything before init!
+  Fixed in Romassist -- initial rom file will be delivered only after init.

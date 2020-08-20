@@ -47,9 +47,9 @@ else ifeq ($(UNAMES),Linux)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
   CCDECL:=-DPSS_STYLE=1 -DUSE_linux=1 -DUSE_romassist=1 -DLSB_FIRST=1
-  CC:=gcc -m32 -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
+  CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
-  LD:=gcc -m32
+  LD:=gcc
   LDPOST:=../romassist/out/libromassist.a -lz -lGL -lX11 -lasound -lpthread -lm
   
   OPT:=linux romassist

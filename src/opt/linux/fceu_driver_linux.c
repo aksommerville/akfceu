@@ -10,7 +10,7 @@ FILE *FCEUD_UTF8fopen(const char *fn, const char *mode) {
     return 0;
   }
 
-  fprintf(stderr,"FCEUD_UTF8fopen(%s): %s\n",mode,fn);
+  //fprintf(stderr,"FCEUD_UTF8fopen(%s): %s\n",mode,fn);
   return fopen(fn,mode);
 }
 

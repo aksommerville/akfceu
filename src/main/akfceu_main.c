@@ -75,11 +75,6 @@ static int load_rom_file(const char *path) {
   FCEUI_PowerNES();
   fprintf(stderr,"Power on.\n");
   
-  //XXX Stabbing blindly...
-  //FCEUI_ResetNES();
-  //FCEUI_SetRenderDisable(0,0);
-  //FCEUI_SetVidSystem(0);
-  
   FCEUI_DisableFourScore(0);
   FCEUI_SetInput(0,SI_GAMEPAD,&gamepad_state,0);
   FCEUI_SetInput(1,SI_GAMEPAD,&gamepad_state,0);
@@ -222,7 +217,7 @@ static int akfceu_main_init() {
       emuhost_wm_set_palette(rgb,i,1);
     }
   }
-
+  
   if (!FCEUI_Initialize()) {
     fprintf(stderr,"FCEUI_Initialize failed\n");
     return -1;

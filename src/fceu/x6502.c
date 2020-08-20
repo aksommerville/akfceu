@@ -607,7 +607,7 @@ void X6502_Run(int32_t cycles)
   {
    int32_t temp;
    uint8_t b1;
-   
+  
 //   XI.PC=pbackus;
    if (_IRQlow)
    {
