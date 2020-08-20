@@ -65,8 +65,8 @@ void FASTAPASS(3) FCEU_memmove(void *d, void *s, uint32_t l)
  int t;
 
  /* Type really doesn't matter. */
- t=(int)d;
- t|=(int)s;
+ t=(uintptr_t)d;
+ t|=(uintptr_t)s;
  t|=(int)l;
 
  if (t&3)          // Not 4-byte aligned and/or length is not a multiple of 4.

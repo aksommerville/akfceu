@@ -9,46 +9,75 @@ PRECMD=echo "  $(@F)" ; mkdir -p $(@D) ;
 # Nothing outside this section should need to be changed.
 # We try to assume as little as possible: No autoconf, no incoming environment variables, etc.
 
+UNAMES:=$(shell uname -s)
+
 # Output directories. Must begin with 'mid' and 'out'.
 MIDDIR:=mid
 OUTDIR:=out
 
-# GCC toolchain.
-CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
-CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DUSE_romassist=1 -DLSB_FIRST=1
-CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
-OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
-LD:=gcc
-LDPOST:=../romassist/out/libromassist.a -lz -framework AudioUnit -framework IOKit -framework Cocoa -framework OpenGL
+ifeq ($(UNAMES),Darwin)
+  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
+  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
+  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DUSE_romassist=1 -DLSB_FIRST=1
+  CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
+  OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
+  LD:=gcc
+  LDPOST:=../romassist/out/libromassist.a -lz -framework AudioUnit -framework IOKit -framework Cocoa -framework OpenGL
 
-# Main and unit-test executables.
-#EXE:=$(OUTDIR)/fceu
-TEST:=$(OUTDIR)/test
+  OPT:=macos romassist
+  
+  # Macs are kind of a pain in the ass... This bit is Mac-only
+  BUNDLE_MAIN:=$(OUTDIR)/akfceu.app
+  EXE:=$(BUNDLE_MAIN)/Contents/MacOS/akfceu
+  PLIST_MAIN:=$(BUNDLE_MAIN)/Contents/Info.plist
+  NIB_MAIN:=$(BUNDLE_MAIN)/Contents/Resources/Main.nib
+  ICON_MAIN:=$(BUNDLE_MAIN)/Contents/Resources/appicon.icns
+
+  TEST:=$(OUTDIR)/test
+  $(EXE):$(PLIST_MAIN) $(NIB_MAIN)
+  $(PLIST_MAIN):src/opt/macos/Info.plist;$(PRECMD) cp $< $@
+  $(NIB_MAIN):src/opt/macos/Main.xib;$(PRECMD) ibtool --compile $@ $<
+
+  INPUT_ICONS:=$(wildcard src/opt/macos/appicon.iconset/*)
+  $(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ src/opt/macos/appicon.iconset
+
+  RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
+
+else ifeq ($(UNAMES),Linux)
+  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow
+  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
+  CCDECL:=-DPSS_STYLE=1 -DUSE_linux=1 -DUSE_romassist=1 -DLSB_FIRST=1
+  CC:=gcc -m32 -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
+  OBJC:=
+  LD:=gcc -m32
+  LDPOST:=../romassist/out/libromassist.a -lz -lGL -lX11 -lasound -lpthread -lm
+  
+  OPT:=linux romassist
+
+  EXE:=$(OUTDIR)/akfceu
+  TEST:=$(OUTDIR)/test
+  
+  RUNCMD:=$(EXE) ~/rom/nes/z/zelda.nes
+  
+else
+  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
+  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
+  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_romassist=1 -DLSB_FIRST=1
+  CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
+  OBJC:=
+  LD:=gcc
+  LDPOST:=../romassist/out/libromassist.a -lz
+  
+  OPT:=romassist
+
+  EXE:=$(OUTDIR)/akfceu
+  TEST:=$(OUTDIR)/test
+  
+  RUNCMD:=$(EXE) ~/rom/nes/z/zelda.nes
+endif
 
 # How to launch the main program.
 #RUNCMD:=$(EXE)
-
-# Directories immediately under <src/opt> to include in the build.
-# You should also declare each of these to the C compiler, eg "-DUSE_macos=1"
-OPT:=macos romassist
-
-# Only relevant for MacOS:
-BUNDLE_MAIN:=$(OUTDIR)/akfceu.app
-EXE:=$(BUNDLE_MAIN)/Contents/MacOS/akfceu
-PLIST_MAIN:=$(BUNDLE_MAIN)/Contents/Info.plist
-NIB_MAIN:=$(BUNDLE_MAIN)/Contents/Resources/Main.nib
-ICON_MAIN:=$(BUNDLE_MAIN)/Contents/Resources/appicon.icns
-
-$(EXE):$(PLIST_MAIN) $(NIB_MAIN)
-$(PLIST_MAIN):src/opt/macos/Info.plist;$(PRECMD) cp $< $@
-$(NIB_MAIN):src/opt/macos/Main.xib;$(PRECMD) ibtool --compile $@ $<
-
-INPUT_ICONS:=$(wildcard src/opt/macos/appicon.iconset/*)
-$(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ src/opt/macos/appicon.iconset
-
-RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
-#RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/s/super_mario_bros_1.nes
 
 #------------------------------------------------------------------------------
 # Generated source files.

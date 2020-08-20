@@ -197,3 +197,10 @@ Picking up again after about a year away.
 [ ] Better test scaffold, like ffutil and romassist. Can we share some of this via Romassist?
 
 [x] Enable keyboard input
+
+--------------------------------------
+18 August 2020
+Picking up again, on Linux this time.
+
+[ ] Compiles and everything, and the emulator is running (partially?). Black screen and no audio.
+  [ ] Tried -m32 in both Romassist and akfceu as a test; no difference. Left it that way for now -- revert if it wasn't needed.

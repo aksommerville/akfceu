@@ -65,7 +65,7 @@ int FCEUI_EndWaveRecord(void)
 int FCEUI_BeginWaveRecord(char *fn)
 {
  int r;
-
+ 
  if (!(soundlog=FCEUD_UTF8fopen(fn,"wb")))
   return 0;
  wsize=0;

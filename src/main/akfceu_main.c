@@ -75,6 +75,11 @@ static int load_rom_file(const char *path) {
   FCEUI_PowerNES();
   fprintf(stderr,"Power on.\n");
   
+  //XXX Stabbing blindly...
+  //FCEUI_ResetNES();
+  //FCEUI_SetRenderDisable(0,0);
+  //FCEUI_SetVidSystem(0);
+  
   FCEUI_DisableFourScore(0);
   FCEUI_SetInput(0,SI_GAMEPAD,&gamepad_state,0);
   FCEUI_SetInput(1,SI_GAMEPAD,&gamepad_state,0);
@@ -210,8 +215,16 @@ static int determine_and_register_home_directory() {
 static int akfceu_main_init() {
 
   if (determine_and_register_home_directory()<0) return -1;
+  
+  if (1) { //XXX initialize color table
+    int i=0; for (;i<256;i++) {
+      uint8_t rgb[3]={i,i,i};
+      emuhost_wm_set_palette(rgb,i,1);
+    }
+  }
 
   if (!FCEUI_Initialize()) {
+    fprintf(stderr,"FCEUI_Initialize failed\n");
     return -1;
   }
 
@@ -230,6 +243,7 @@ static void akfceu_main_quit() {
   if (vmrunning) {
     FCEUI_Sound(0);
     FCEUI_CloseGame();
+    FCEUI_Kill();
     vmrunning=0;
   }
 }
@@ -251,11 +265,11 @@ int main(int argc,char **argv) {
     .fbw=256,
     .fbh=240,
     .fbformat=EMUHOST_TEXFMT_I8,
-    .fullscreen=1,
+    .fullscreen=0,
     .window_title="akfceu",
     .audiorate=22050,
     .audiochanc=1,
-    .romassist_port=8111,
+    .romassist_port=0,//8111,
     .appname="akfceu",
     .platform="nes",
   

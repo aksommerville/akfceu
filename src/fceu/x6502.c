@@ -602,12 +602,12 @@ void X6502_Run(int32_t cycles)
    cycles*=16;          // 16*4=64
 
   _count+=cycles;
- 
+  
   while (_count>0)
   {
    int32_t temp;
    uint8_t b1;
-
+   
 //   XI.PC=pbackus;
    if (_IRQlow)
    {

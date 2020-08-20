@@ -22,7 +22,7 @@
 #include "share.h"
 
 static int seq,ptr,bit,cnt,have;
-static uint8_t bdata[20];
+static uint8_t bdata[21];
 
 
 static uint8_t FP_FASTAPASS(2) Read(int w, uint8_t ret)

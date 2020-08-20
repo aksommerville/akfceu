@@ -836,7 +836,7 @@ void FDSClose(void)
  char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
 
  if (!DiskWritten) return;
-
+ 
  if (!(fp=FCEUD_UTF8fopen(fn,"wb")))
  {
   free(fn);

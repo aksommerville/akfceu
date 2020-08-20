@@ -304,7 +304,7 @@ void FCEUI_Emulate(uint8_t **pXBuf, int32_t **SoundBuf, int32_t *SoundBufSize, i
   timestampbase += timestamp;
 
   timestamp = 0;
-
+  
   *pXBuf=skip?0:XBuf;
   *SoundBuf=WaveFinal;
   *SoundBufSize=ssize;

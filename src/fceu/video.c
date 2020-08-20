@@ -60,8 +60,8 @@ int FCEU_InitVirtualVideo(void)
 
  if (sizeof(uint8_t*)==4)
  {
-  uint32_t m;
-  m=(uint32_t)XBuf;
+  uintptr_t m;
+  m=(uintptr_t)XBuf;
   m=(4-m)&3;
   XBuf+=m;
  }
@@ -215,7 +215,7 @@ int SaveSnapshot(void)
  }
 
  lastu=u;
-
+ 
  if (!(pp=FCEUD_UTF8fopen(fn,"wb")))
  {
   free(fn);

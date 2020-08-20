@@ -40,6 +40,21 @@ static char FileExt[2048];  /* Includes the . character, as in ".nes" */
 
 static char FileBaseDirectory[2048];
 
+#ifndef HAVE_ASPRINTF
+  // bloody obnoxious. TODO don't use asprintf
+  static inline void asprintf(char **dst,const char *fmt,...) {
+    va_list vargs;
+    va_start(vargs,fmt);
+    char tmp[256];
+    int tmpc=vsnprintf(tmp,sizeof(tmp),fmt,vargs);
+    if ((tmpc>=0)&&(tmpc<sizeof(tmp))) {
+      if (*dst=malloc(tmpc+1)) memcpy(*dst,tmp,tmpc+1);
+    } else {
+      *dst=strdup("");
+    }
+  }
+#endif
+
 static void mkdir_if_needed(const char *dir,const char *base) {
   if (base) {
     char sub[1024];

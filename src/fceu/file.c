@@ -320,7 +320,7 @@ FCEUFILE * FCEU_fopen(const char *path, const char *ipsfn, char *mode, char *ext
   }
 
  }
-
+ 
   if ((t=FCEUD_UTF8fopen(path,mode)))
   {
    fseek((FILE *)t,0,SEEK_SET);

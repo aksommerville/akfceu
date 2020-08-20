@@ -54,7 +54,7 @@ void FCEUI_SaveMovie(char *fname)
  }
 
  current=CurrentMovie;
-
+ 
  if (fname)
   fp = FCEUD_UTF8fopen(fname, "wb");
  else

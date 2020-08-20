@@ -263,7 +263,7 @@ void FCEUSS_Save(char *fname)
    FCEU_DispMessage("Cannot save FCS in GG screen.");
    return;
         }
-
+        
   if (fname)
    st=FCEUD_UTF8fopen(fname, "wb");
   else

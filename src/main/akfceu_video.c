@@ -4,7 +4,11 @@
 #include <stdio.h>
 
 //TODO: This includes <gl.h> for MacOS. How can we get the right header location for others?
-#include <OpenGL/gl.h>
+#if USE_macos
+  #include <OpenGL/gl.h>
+#elif USE_linux
+  #include <GL/gl.h>
+#endif
 
 /* Globals.
  */
