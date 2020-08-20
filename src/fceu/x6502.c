@@ -47,76 +47,58 @@ void FP_FASTAPASS(1) (*MapIRQHook)(int a);
 #define _IRQlow          X.IRQlow
 #define _jammed          X.jammed
 
-#define ADDCYC(x)       \
-{       \
- int __x=x;     \
- _tcount+=__x;  \
- _count-=__x*48;        \
- timestamp+=__x;        \
+#define ADDCYC(x) \
+{ \
+ int __x=x; \
+ _tcount+=__x; \
+ _count-=__x*48; \
+ timestamp+=__x; \
 }
 
-static INLINE uint8_t RdMemNorm(unsigned int A)
-{
+static INLINE uint8_t RdMemNorm(unsigned int A) {
  return(_DB=ARead[A](A));
 }
 
-static INLINE void WrMemNorm(unsigned int A, uint8_t V)
-{
+static INLINE void WrMemNorm(unsigned int A, uint8_t V) {
  BWrite[A](A,V);
 }
 
 #ifdef FCEUDEF_DEBUGGER
 X6502 XSave;     /* This is getting ugly. */
-//#define RdMemHook(A)  ( X.ReadHook?(_DB=X.ReadHook(&X,A)):(_DB=ARead[A](A)) )
-//#define WrMemHook(A,V)  { if (X.WriteHook) X.WriteHook(&X,A,V); else BWrite[A](A,V); }
 
-static INLINE uint8_t RdMemHook(unsigned int A)
-{
- if (X.ReadHook)
-  return(_DB = X.ReadHook(&X,A) );
- else
-  return(_DB=ARead[A](A));
+static INLINE uint8_t RdMemHook(unsigned int A) {
+  if (X.ReadHook) return (_DB=X.ReadHook(&X,A));
+  else return (_DB=ARead[A](A));
 }
 
-static INLINE void WrMemHook(unsigned int A, uint8_t V)
-{
- if (X.WriteHook)
-  X.WriteHook(&X,A,V);
- else
-  BWrite[A](A,V);
+static INLINE void WrMemHook(unsigned int A, uint8_t V) {
+  if (X.WriteHook) X.WriteHook(&X,A,V);
+  else BWrite[A](A,V);
 }
 #endif
 
-//#define RdRAMFast(A) (_DB=RAM[(A)])
-//#define WrRAMFast(A,V) RAM[(A)]=(V)
-
-static INLINE uint8_t RdRAMFast(unsigned int A)
-{
- return(_DB=RAM[A]);
+static INLINE uint8_t RdRAMFast(unsigned int A) {
+  return (_DB=RAM[A]);
 }
 
-static INLINE void WrRAMFast(unsigned int A, uint8_t V)
-{
- RAM[A]=V;
+static INLINE void WrRAMFast(unsigned int A, uint8_t V) {
+  RAM[A]=V;
 }
 
-uint8_t FASTAPASS(1) X6502_DMR(uint32_t A)
-{
- ADDCYC(1);
- return(X.DB=ARead[A](A));
+uint8_t FASTAPASS(1) X6502_DMR(uint32_t A) {
+  ADDCYC(1);
+  return (X.DB=ARead[A](A));
 }
 
-void FASTAPASS(2) X6502_DMW(uint32_t A, uint8_t V)
-{
- ADDCYC(1);
- BWrite[A](A,V);
+void FASTAPASS(2) X6502_DMW(uint32_t A, uint8_t V) {
+  ADDCYC(1);
+  BWrite[A](A,V);
 }
 
-#define PUSH(V) \
-{       \
- uint8_t VTMP=V;  \
- WrRAM(0x100+_S,VTMP);  \
- _S--;  \
+#define PUSH(V) { \
+  uint8_t VTMP=V; \
+  WrRAM(0x100+_S,VTMP); \
+  _S--; \
 }      
 
 #define POP() RdRAM(0x100+(++_S))
@@ -125,8 +107,8 @@ static uint8_t ZNTable[256];
 /* Some of these operations will only make sense if you know what the flag
    constants are. */
 
-#define X_ZN(zort)      _P&=~(Z_FLAG|N_FLAG);_P|=ZNTable[zort]
-#define X_ZNT(zort)  _P|=ZNTable[zort]
+#define X_ZN(zort) _P&=~(Z_FLAG|N_FLAG);_P|=ZNTable[zort]
+#define X_ZNT(zort) _P|=ZNTable[zort]
 
 #define JR(cond);  \
 {    \
@@ -146,180 +128,171 @@ static uint8_t ZNTable[256];
 }
 
 
-#define LDA     _A=x;X_ZN(_A)
-#define LDX     _X=x;X_ZN(_X)
-#define LDY        _Y=x;X_ZN(_Y)
+#define LDA _A=x;X_ZN(_A)
+#define LDX _X=x;X_ZN(_X)
+#define LDY _Y=x;X_ZN(_Y)
 
-/*  All of the freaky arithmetic operations. */
-#define AND        _A&=x;X_ZN(_A)
-#define BIT        _P&=~(Z_FLAG|V_FLAG|N_FLAG);_P|=ZNTable[x&_A]&Z_FLAG;_P|=x&(V_FLAG|N_FLAG)
-#define EOR        _A^=x;X_ZN(_A)
-#define ORA        _A|=x;X_ZN(_A)
+/* All of the freaky arithmetic operations. */
+#define AND _A&=x;X_ZN(_A)
+#define BIT _P&=~(Z_FLAG|V_FLAG|N_FLAG);_P|=ZNTable[x&_A]&Z_FLAG;_P|=x&(V_FLAG|N_FLAG)
+#define EOR _A^=x;X_ZN(_A)
+#define ORA _A|=x;X_ZN(_A)
 
-#define ADC  {  \
-        uint32_t l=_A+x+(_P&1);  \
-        _P&=~(Z_FLAG|C_FLAG|N_FLAG|V_FLAG);  \
-              _P|=((((_A^x)&0x80)^0x80) & ((_A^l)&0x80))>>1;  \
-              _P|=(l>>8)&C_FLAG;  \
-        _A=l;  \
-        X_ZNT(_A);  \
-       }
+#define ADC { \
+  uint32_t l=_A+x+(_P&1); \
+  _P&=~(Z_FLAG|C_FLAG|N_FLAG|V_FLAG); \
+  _P|=((((_A^x)&0x80)^0x80) & ((_A^l)&0x80))>>1; \
+  _P|=(l>>8)&C_FLAG; \
+  _A=l; \
+  X_ZNT(_A); \
+}
 
-#define SBC  {  \
-        uint32_t l=_A-x-((_P&1)^1);  \
-        _P&=~(Z_FLAG|C_FLAG|N_FLAG|V_FLAG);  \
-        _P|=((_A^l)&(_A^x)&0x80)>>1;  \
-        _P|=((l>>8)&C_FLAG)^C_FLAG;  \
-        _A=l;  \
-        X_ZNT(_A);  \
-       }
+#define SBC { \
+  uint32_t l=_A-x-((_P&1)^1); \
+  _P&=~(Z_FLAG|C_FLAG|N_FLAG|V_FLAG); \
+  _P|=((_A^l)&(_A^x)&0x80)>>1; \
+  _P|=((l>>8)&C_FLAG)^C_FLAG; \
+  _A=l; \
+  X_ZNT(_A); \
+}
 
-#define CMPL(a1,a2) {  \
-         uint32_t t=a1-a2;  \
-         X_ZN(t&0xFF);  \
-         _P&=~C_FLAG;  \
-         _P|=((t>>8)&C_FLAG)^C_FLAG;  \
-        }
+#define CMPL(a1,a2) { \
+  uint32_t t=a1-a2; \
+  X_ZN(t&0xFF); \
+  _P&=~C_FLAG; \
+  _P|=((t>>8)&C_FLAG)^C_FLAG; \
+}
 
 /* Special undocumented operation.  Very similar to CMP. */
-#define AXS      {  \
-                     uint32_t t=(_A&_X)-x;    \
-                     X_ZN(t&0xFF);      \
-                     _P&=~C_FLAG;       \
-                     _P|=((t>>8)&C_FLAG)^C_FLAG;        \
-         _X=t;  \
-                    }
+#define AXS { \
+  uint32_t t=(_A&_X)-x; \
+  X_ZN(t&0xFF); \
+  _P&=~C_FLAG; \
+  _P|=((t>>8)&C_FLAG)^C_FLAG; \
+  _X=t; \
+}
 
-#define CMP    CMPL(_A,x)
-#define CPX    CMPL(_X,x)
-#define CPY          CMPL(_Y,x)
+#define CMP CMPL(_A,x)
+#define CPX CMPL(_X,x)
+#define CPY CMPL(_Y,x)
 
 /* The following operations modify the byte being worked on. */
-#define DEC         x--;X_ZN(x)
-#define INC    x++;X_ZN(x)
+#define DEC x--;X_ZN(x)
+#define INC x++;X_ZN(x)
 
-#define ASL        _P&=~C_FLAG;_P|=x>>7;x<<=1;X_ZN(x)
-#define LSR  _P&=~(C_FLAG|N_FLAG|Z_FLAG);_P|=x&1;x>>=1;X_ZNT(x)
+#define ASL _P&=~C_FLAG;_P|=x>>7;x<<=1;X_ZN(x)
+#define LSR _P&=~(C_FLAG|N_FLAG|Z_FLAG);_P|=x&1;x>>=1;X_ZNT(x)
 
 /* For undocumented instructions, maybe for other things later... */
-#define LSRA  _P&=~(C_FLAG|N_FLAG|Z_FLAG);_P|=_A&1;_A>>=1;X_ZNT(_A)
+#define LSRA _P&=~(C_FLAG|N_FLAG|Z_FLAG);_P|=_A&1;_A>>=1;X_ZNT(_A)
 
-#define ROL  {  \
-     uint8_t l=x>>7;  \
-     x<<=1;  \
-     x|=_P&C_FLAG;  \
-     _P&=~(Z_FLAG|N_FLAG|C_FLAG);  \
-     _P|=l;  \
-     X_ZNT(x);  \
-    }
-#define ROR  {  \
-     uint8_t l=x&1;  \
-     x>>=1;  \
-     x|=(_P&C_FLAG)<<7;  \
-     _P&=~(Z_FLAG|N_FLAG|C_FLAG);  \
-     _P|=l;  \
-     X_ZNT(x);  \
-    }
+#define ROL { \
+  uint8_t l=x>>7; \
+  x<<=1; \
+  x|=_P&C_FLAG; \
+  _P&=~(Z_FLAG|N_FLAG|C_FLAG); \
+  _P|=l; \
+  X_ZNT(x); \
+}
+
+#define ROR { \
+  uint8_t l=x&1; \
+  x>>=1; \
+  x|=(_P&C_FLAG)<<7; \
+  _P&=~(Z_FLAG|N_FLAG|C_FLAG); \
+  _P|=l; \
+  X_ZNT(x); \
+}
     
 /* Icky icky thing for some undocumented instructions.  Can easily be
    broken if names of local variables are changed.
 */
 
 /* Absolute */
-#define GetAB(target)   \
-{  \
- target=RdMem(_PC);  \
- _PC++;  \
- target|=RdMem(_PC)<<8;  \
- _PC++;  \
+#define GetAB(target) { \
+  target=RdMem(_PC); \
+  _PC++; \
+  target|=RdMem(_PC)<<8; \
+  _PC++; \
 }
 
-/* Absolute Indexed(for reads) */
-#define GetABIRD(target, i)  \
-{  \
- unsigned int tmp;  \
- GetAB(tmp);  \
- target=tmp;  \
- target+=i;  \
- if ((target^tmp)&0x100)  \
- {  \
-  target&=0xFFFF;  \
-  RdMem(target^0x100);  \
-  ADDCYC(1);  \
- }  \
+/* Absolute Indexed (for reads) */
+#define GetABIRD(target, i) { \
+  unsigned int tmp; \
+  GetAB(tmp); \
+  target=tmp; \
+  target+=i; \
+  if ((target^tmp)&0x100) { \
+    target&=0xFFFF; \
+    RdMem(target^0x100); \
+    ADDCYC(1); \
+  } \
 }
 
-/* Absolute Indexed(for writes and rmws) */
-#define GetABIWR(target, i)  \
-{  \
- unsigned int rt;  \
- GetAB(rt);  \
- target=rt;  \
- target+=i;  \
- target&=0xFFFF;  \
- RdMem((target&0x00FF)|(rt&0xFF00));  \
+/* Absolute Indexed (for writes and rmws) */
+#define GetABIWR(target, i) { \
+  unsigned int rt; \
+  GetAB(rt); \
+  target=rt; \
+  target+=i; \
+  target&=0xFFFF; \
+  RdMem((target&0x00FF)|(rt&0xFF00)); \
 }
 
 /* Zero Page */
-#define GetZP(target)  \
-{  \
- target=RdMem(_PC);   \
- _PC++;  \
+#define GetZP(target) { \
+  target=RdMem(_PC); \
+  _PC++; \
 }
 
 /* Zero Page Indexed */
-#define GetZPI(target,i)  \
-{  \
- target=i+RdMem(_PC);  \
- _PC++;  \
+#define GetZPI(target,i) { \
+  target=i+RdMem(_PC); \
+  _PC++; \
 }
 
 /* Indexed Indirect */
-#define GetIX(target)  \
-{  \
- uint8_t tmp;  \
- tmp=RdMem(_PC);  \
- _PC++;  \
- tmp+=_X;  \
- target=RdRAM(tmp);  \
- tmp++;    \
- target|=RdRAM(tmp)<<8;  \
+#define GetIX(target) { \
+  uint8_t tmp; \
+  tmp=RdMem(_PC); \
+  _PC++; \
+  tmp+=_X; \
+  target=RdRAM(tmp); \
+  tmp++; \
+  target|=RdRAM(tmp)<<8; \
 }
 
-/* Indirect Indexed(for reads) */
-#define GetIYRD(target)  \
-{  \
- unsigned int rt;  \
- uint8_t tmp;  \
- tmp=RdMem(_PC);  \
- _PC++;  \
- rt=RdRAM(tmp);  \
- tmp++;  \
- rt|=RdRAM(tmp)<<8;  \
- target=rt;  \
- target+=_Y;  \
- if ((target^rt)&0x100)  \
- {  \
-  target&=0xFFFF;  \
-  RdMem(target^0x100);  \
-  ADDCYC(1);  \
- }  \
+/* Indirect Indexed (for reads) */
+#define GetIYRD(target) { \
+  unsigned int rt; \
+  uint8_t tmp; \
+  tmp=RdMem(_PC); \
+  _PC++; \
+  rt=RdRAM(tmp); \
+  tmp++; \
+  rt|=RdRAM(tmp)<<8; \
+  target=rt; \
+  target+=_Y; \
+  if ((target^rt)&0x100) { \
+    target&=0xFFFF; \
+    RdMem(target^0x100); \
+    ADDCYC(1); \
+  } \
 }
 
-/* Indirect Indexed(for writes and rmws) */
-#define GetIYWR(target)  \
-{  \
- unsigned int rt;  \
- uint8_t tmp;  \
- tmp=RdMem(_PC);  \
- _PC++;  \
- rt=RdRAM(tmp);  \
- tmp++;  \
- rt|=RdRAM(tmp)<<8;  \
- target=rt;  \
- target+=_Y;  \
- target&=0xFFFF; \
- RdMem((target&0x00FF)|(rt&0xFF00));  \
+/* Indirect Indexed (for writes and rmws) */
+#define GetIYWR(target) { \
+  unsigned int rt; \
+  uint8_t tmp; \
+  tmp=RdMem(_PC); \
+  _PC++; \
+  rt=RdRAM(tmp); \
+  tmp++; \
+  rt|=RdRAM(tmp)<<8; \
+  target=rt; \
+  target+=_Y; \
+  target&=0xFFFF;\
+  RdMem((target&0x00FF)|(rt&0xFF00)); \
 }
 
 /* Now come the macros to wrap up all of the above stuff addressing mode functions
@@ -358,8 +331,7 @@ static uint8_t ZNTable[256];
 #define ST_IX(r)  {unsigned int A; GetIX(A); WrMem(A,r); break; }
 #define ST_IY(r)  {unsigned int A; GetIYWR(A); WrMem(A,r); break; }
 
-static uint8_t CycTable[256] =
-{                            
+static uint8_t CycTable[256] = {
 /*0x00*/ 7,6,2,8,3,3,5,5,3,2,2,2,4,4,6,6,
 /*0x10*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
 /*0x20*/ 6,6,2,8,3,3,5,5,4,2,2,2,4,4,6,6,
@@ -378,200 +350,177 @@ static uint8_t CycTable[256] =
 /*0xF0*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
 };
 
-void FASTAPASS(1) X6502_IRQBegin(int w)
-{
- _IRQlow|=w;
+void FASTAPASS(1) X6502_IRQBegin(int w) {
+  _IRQlow|=w;
 }
 
-void FASTAPASS(1) X6502_IRQEnd(int w)
-{
- _IRQlow&=~w;
+void FASTAPASS(1) X6502_IRQEnd(int w) {
+  _IRQlow&=~w;
 }
 
-void TriggerNMI(void)
-{
- _IRQlow|=FCEU_IQNMI;
+void TriggerNMI(void) {
+  _IRQlow|=FCEU_IQNMI;
 }
 
-void TriggerNMI2(void)
-{
- _IRQlow|=FCEU_IQNMI2;
+void TriggerNMI2(void) {
+  _IRQlow|=FCEU_IQNMI2;
 }
 
 #ifdef FCEUDEF_DEBUGGER
 /* Called from debugger. */
-void FCEUI_NMI(void)
-{
- _IRQlow|=FCEU_IQNMI;
+void FCEUI_NMI(void) {
+  _IRQlow|=FCEU_IQNMI;
 }
 
-void FCEUI_IRQ(void)
-{
- _IRQlow|=FCEU_IQTEMP;
+void FCEUI_IRQ(void) {
+  _IRQlow|=FCEU_IQTEMP;
 }
 
-void FCEUI_GetIVectors(uint16_t *reset, uint16_t *irq, uint16_t *nmi)
-{
- fceuindbg=1;
+void FCEUI_GetIVectors(uint16_t *reset, uint16_t *irq, uint16_t *nmi) {
+  fceuindbg=1;
 
- *reset=RdMemNorm(0xFFFC);
- *reset|=RdMemNorm(0xFFFD)<<8;
- *nmi=RdMemNorm(0xFFFA);
- *nmi|=RdMemNorm(0xFFFB)<<8;
- *irq=RdMemNorm(0xFFFE);
- *irq|=RdMemNorm(0xFFFF)<<8;
- fceuindbg=0;
+  *reset=RdMemNorm(0xFFFC);
+  *reset|=RdMemNorm(0xFFFD)<<8;
+  *nmi=RdMemNorm(0xFFFA);
+  *nmi|=RdMemNorm(0xFFFB)<<8;
+  *irq=RdMemNorm(0xFFFE);
+  *irq|=RdMemNorm(0xFFFF)<<8;
+  fceuindbg=0;
 }
+
 static int debugmode;
 #endif
 
-void X6502_Reset(void)
-{
+void X6502_Reset(void) {
  _IRQlow=FCEU_IQRESET;
 }
  
-void X6502_Init(void)
-{
+void X6502_Init(void) {
   int x;
 
   memset((void *)&X,0,sizeof(X));
-  for (x=0;x<256;x++)
-   if (!x) ZNTable[x]=Z_FLAG;
-   else if (x&0x80) ZNTable[x]=N_FLAG;
-   else ZNTable[x]=0;
-  #ifdef FCEUDEF_DEBUGGER
-  X6502_Debug(0,0,0);
-  #endif
+  for (x=0;x<256;x++) {
+    if (!x) ZNTable[x]=Z_FLAG;
+    else if (x&0x80) ZNTable[x]=N_FLAG;
+    else ZNTable[x]=0;
+    #ifdef FCEUDEF_DEBUGGER
+      X6502_Debug(0,0,0);
+    #endif
+  }
 }
 
-void X6502_Power(void)
-{
- _count=_tcount=_IRQlow=_PC=_A=_X=_Y=_S=_P=_PI=_DB=_jammed=0;
- timestamp=0;
- X6502_Reset();
+void X6502_Power(void) {
+  _count=_tcount=_IRQlow=_PC=_A=_X=_Y=_S=_P=_PI=_DB=_jammed=0;
+  timestamp=0;
+  X6502_Reset();
 }
 
 #ifdef FCEUDEF_DEBUGGER
-static void X6502_RunDebug(int32_t cycles)
-{
+static void X6502_RunDebug(int32_t cycles) {
   #define RdRAM RdMemHook
   #define WrRAM WrMemHook
   #define RdMem RdMemHook
   #define WrMem WrMemHook
 
-        if (PAL)
-         cycles*=15;          // 15*4=60
-        else
-         cycles*=16;          // 16*4=64
+  if (PAL) cycles*=15; // 15*4=60
+  else cycles*=16; // 16*4=64
 
-        _count+=cycles;
+  _count+=cycles;
 
-        while (_count>0)
-        {
-         int32_t temp;  
-         uint8_t b1;
+  while (_count>0) {
+    int32_t temp;  
+    uint8_t b1;
 
-         if (_IRQlow)
-         {
-          if (_IRQlow&FCEU_IQRESET)
-          {
-           _PC=RdMem(0xFFFC);
-           _PC|=RdMem(0xFFFD)<<8;
-           _jammed=0;
-           _PI=_P=I_FLAG;
-           _IRQlow&=~FCEU_IQRESET;
-          }
-          else if (_IRQlow&FCEU_IQNMI2)
-          {
-           _IRQlow&=~FCEU_IQNMI2;
-           _IRQlow|=FCEU_IQNMI;
-          }
-          else if (_IRQlow&FCEU_IQNMI)
-          {
-           if (!_jammed)
-           {
-            ADDCYC(7);
-            PUSH(_PC>>8);
-            PUSH(_PC);
-            PUSH((_P&~B_FLAG)|(U_FLAG));
-            _P|=I_FLAG;
-            _PC=RdMem(0xFFFA);
-            _PC|=RdMem(0xFFFB)<<8;
-            _IRQlow&=~FCEU_IQNMI;
-           }
-          }
-          else
-          {
-           if (!(_PI&I_FLAG) && !_jammed)
-           {
-            ADDCYC(7);
-            PUSH(_PC>>8);
-            PUSH(_PC);
-            PUSH((_P&~B_FLAG)|(U_FLAG));
-            _P|=I_FLAG;
-            _PC=RdMem(0xFFFE);
-            _PC|=RdMem(0xFFFF)<<8;
-           }
-          }
-          _IRQlow&=~(FCEU_IQTEMP);
-          if (_count<=0)
-          {
-           _PI=_P;
-           return;
-          } /* Should increase accuracy without a */
-             /* major speed hit. */
-         }
+    if (_IRQlow) {
+      if (_IRQlow&FCEU_IQRESET) {
+        _PC=RdMem(0xFFFC);
+        _PC|=RdMem(0xFFFD)<<8;
+        _jammed=0;
+        _PI=_P=I_FLAG;
+        _IRQlow&=~FCEU_IQRESET;
 
-         if (X.CPUHook) X.CPUHook(&X);
-   /* Ok, now the real fun starts. */
-   /* Do the pre-exec voodoo. */
-         if (X.ReadHook || X.WriteHook)
-   {
-    uint32_t tsave=timestamp;
-          XSave=X;
+      } else if (_IRQlow&FCEU_IQNMI2) {
+        _IRQlow&=~FCEU_IQNMI2;
+        _IRQlow|=FCEU_IQNMI;
 
-    fceuindbg=1;
-    X.preexec=1;
-          b1=RdMem(_PC);
-          _PC++;
-          switch (b1)
-          {  
-           #include "ops.h"
-          } 
-
-    timestamp=tsave;
-
-          /* In case an NMI/IRQ/RESET was triggered by the debugger. */
-          /* Should we also copy over the other hook variables? */
-          XSave.IRQlow=X.IRQlow;
-          XSave.ReadHook=X.ReadHook;
-          XSave.WriteHook=X.WriteHook;
-          XSave.CPUHook=X.CPUHook;
-    X=XSave;
-    fceuindbg=0;
-   }
-
-         _PI=_P;
-         b1=RdMem(_PC);
-         ADDCYC(CycTable[b1]);
-
-         temp=_tcount;
-         _tcount=0;
-         if (MapIRQHook) MapIRQHook(temp);
-
-   FCEU_SoundCPUHook(temp);
-
-         _PC++;
-         switch (b1)
-         {
-          #include "ops.h"
-         }
+      } else if (_IRQlow&FCEU_IQNMI) {
+        if (!_jammed) {
+          ADDCYC(7);
+          PUSH(_PC>>8);
+          PUSH(_PC);
+          PUSH((_P&~B_FLAG)|(U_FLAG));
+          _P|=I_FLAG;
+          _PC=RdMem(0xFFFA);
+          _PC|=RdMem(0xFFFB)<<8;
+          _IRQlow&=~FCEU_IQNMI;
         }
+        
+      } else {
+        if (!(_PI&I_FLAG) && !_jammed) {
+          ADDCYC(7);
+          PUSH(_PC>>8);
+          PUSH(_PC);
+          PUSH((_P&~B_FLAG)|(U_FLAG));
+          _P|=I_FLAG;
+          _PC=RdMem(0xFFFE);
+          _PC|=RdMem(0xFFFF)<<8;
+        }
+      }
+      _IRQlow&=~(FCEU_IQTEMP);
+      if (_count<=0) {
+        _PI=_P;
+        return;
+      } /* Should increase accuracy without a */
+        /* major speed hit. */
+    }
+
+    if (X.CPUHook) X.CPUHook(&X);
+
+    /* Ok, now the real fun starts. */
+    /* Do the pre-exec voodoo. */
+    if (X.ReadHook || X.WriteHook) {
+      uint32_t tsave=timestamp;
+      XSave=X;
+
+      fceuindbg=1;
+      X.preexec=1;
+      b1=RdMem(_PC);
+      _PC++;
+      switch (b1) {
+        #include "ops.h"
+      } 
+
+      timestamp=tsave;
+
+      /* In case an NMI/IRQ/RESET was triggered by the debugger. */
+      /* Should we also copy over the other hook variables? */
+      XSave.IRQlow=X.IRQlow;
+      XSave.ReadHook=X.ReadHook;
+      XSave.WriteHook=X.WriteHook;
+      XSave.CPUHook=X.CPUHook;
+      X=XSave;
+      fceuindbg=0;
+    }
+
+    _PI=_P;
+    b1=RdMem(_PC);
+    ADDCYC(CycTable[b1]);
+
+    temp=_tcount;
+    _tcount=0;
+    if (MapIRQHook) MapIRQHook(temp);
+
+    FCEU_SoundCPUHook(temp);
+
+    _PC++;
+    switch (b1) {
+      #include "ops.h"
+    }
+  }
   #undef RdRAM
   #undef WrRAM
-        #undef RdMem
-        #undef WrMem
-
+  #undef RdMem
+  #undef WrMem
 }
 
 static void X6502_RunNormal(int32_t cycles)
@@ -596,87 +545,73 @@ void X6502_Run(int32_t cycles)
   #undef _PC
   #define _PC pbackus
 
-  if (PAL)
-   cycles*=15;          // 15*4=60
-  else
-   cycles*=16;          // 16*4=64
+  if (PAL) cycles*=15; // 15*4=60
+  else cycles*=16; // 16*4=64
 
   _count+=cycles;
   
-  while (_count>0)
-  {
-   int32_t temp;
-   uint8_t b1;
+  while (_count>0) {
+    int32_t temp;
+    uint8_t b1;
   
-//   XI.PC=pbackus;
-   if (_IRQlow)
-   {
-    if (_IRQlow&FCEU_IQRESET)
-    {
-     _PC=RdMem(0xFFFC);
-     _PC|=RdMem(0xFFFD)<<8;
-     _jammed=0;
-     _PI=_P=I_FLAG;
-     _IRQlow&=~FCEU_IQRESET;
+    if (_IRQlow) {
+      if (_IRQlow&FCEU_IQRESET) {
+       _PC=RdMem(0xFFFC);
+       _PC|=RdMem(0xFFFD)<<8;
+       _jammed=0;
+       _PI=_P=I_FLAG;
+       _IRQlow&=~FCEU_IQRESET;
+       
+      } else if (_IRQlow&FCEU_IQNMI2) {
+        _IRQlow&=~FCEU_IQNMI2;
+        _IRQlow|=FCEU_IQNMI;
+  
+      } else if (_IRQlow&FCEU_IQNMI) {
+        if (!_jammed) {
+          ADDCYC(7);
+          PUSH(_PC>>8);
+          PUSH(_PC);
+          PUSH((_P&~B_FLAG)|(U_FLAG));
+          _P|=I_FLAG;   
+          _PC=RdMem(0xFFFA);
+          _PC|=RdMem(0xFFFB)<<8;
+          _IRQlow&=~FCEU_IQNMI;
+        }
+      } else {
+        if (!(_PI&I_FLAG) && !_jammed) {
+          ADDCYC(7);
+          PUSH(_PC>>8);
+          PUSH(_PC);
+          PUSH((_P&~B_FLAG)|(U_FLAG));
+          _P|=I_FLAG;
+          _PC=RdMem(0xFFFE);
+          _PC|=RdMem(0xFFFF)<<8;
+        }
+      }
+      _IRQlow&=~(FCEU_IQTEMP);
+      if (_count<=0) {
+        _PI=_P;
+        X.PC=pbackus;
+        return;
+      } /* Should increase accuracy without a */
+        /* major speed hit. */
     }
-    else if (_IRQlow&FCEU_IQNMI2)
-     {
-     _IRQlow&=~FCEU_IQNMI2;
-     _IRQlow|=FCEU_IQNMI;
-    }
-    else if (_IRQlow&FCEU_IQNMI)
-    {
-     if (!_jammed)
-     {
-      ADDCYC(7);
-      PUSH(_PC>>8);
-      PUSH(_PC);
-      PUSH((_P&~B_FLAG)|(U_FLAG));
-      _P|=I_FLAG;   
-      _PC=RdMem(0xFFFA);
-      _PC|=RdMem(0xFFFB)<<8;
-      _IRQlow&=~FCEU_IQNMI;
-     }
-    }
-    else
-    {
-     if (!(_PI&I_FLAG) && !_jammed)
-     {
-      ADDCYC(7);
-      PUSH(_PC>>8);
-      PUSH(_PC);
-      PUSH((_P&~B_FLAG)|(U_FLAG));
-      _P|=I_FLAG;
-      _PC=RdMem(0xFFFE);
-      _PC|=RdMem(0xFFFF)<<8;
-     }
-    }
-    _IRQlow&=~(FCEU_IQTEMP);
-    if (_count<=0)
-    {
-     _PI=_P;
-     X.PC=pbackus;
-     return;
-     } /* Should increase accuracy without a */
-                                      /* major speed hit. */
-   }
 
-   _PI=_P;
-   b1=RdMem(_PC);
+    _PI=_P;
+    b1=RdMem(_PC);
 
-   ADDCYC(CycTable[b1]);
+    ADDCYC(CycTable[b1]);
 
-   temp=_tcount;
-   _tcount=0;
-   if (MapIRQHook) MapIRQHook(temp);
-         FCEU_SoundCPUHook(temp);
-   //printf("%04x\n",X.PC);
-   X.PC=pbackus;
-   _PC++;
-         switch (b1)
-         {
-          #include "ops.h"
-         }
+    temp=_tcount;
+    _tcount=0;
+    if (MapIRQHook) MapIRQHook(temp);
+    FCEU_SoundCPUHook(temp);
+
+    X.PC=pbackus;
+    _PC++;
+    switch (b1) {
+      #include "ops.h"
+    }
   }
 
   #undef _PC
@@ -687,19 +622,17 @@ void X6502_Run(int32_t cycles)
 }
 
 #ifdef FCEUDEF_DEBUGGER
-void X6502_Debug(void (*CPUHook)(X6502 *),
-    uint8_t (*ReadHook)(X6502 *, unsigned int),
-    void (*WriteHook)(X6502 *, unsigned int, uint8_t))
-{
- debugmode=(ReadHook || WriteHook || CPUHook)?1:0;
- X.ReadHook=ReadHook;
- X.WriteHook=WriteHook;
- X.CPUHook=CPUHook;
+void X6502_Debug(
+  void (*CPUHook)(X6502 *),
+  uint8_t (*ReadHook)(X6502 *, unsigned int),
+  void (*WriteHook)(X6502 *, unsigned int, uint8_t)
+) {
+  debugmode=(ReadHook || WriteHook || CPUHook)?1:0;
+  X.ReadHook=ReadHook;
+  X.WriteHook=WriteHook;
+  X.CPUHook=CPUHook;
 
- if (!debugmode)
-  X6502_Run=X6502_RunNormal;
- else
-  X6502_Run=X6502_RunDebug;
+  if (!debugmode) X6502_Run=X6502_RunNormal;
+  else X6502_Run=X6502_RunDebug;
 }
-
 #endif
