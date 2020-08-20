@@ -1,6 +1,3 @@
-#include "akfceu_video.h"
-#include "akfceu_input_map.h"
-#include "akfceu_input.h"
 #include "fceu/driver.h"
 #include "fceu/fceu.h"
 #include <emuhost/emuhost.h>
@@ -37,6 +34,35 @@ void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
   *r=palette[p++];
   *g=palette[p++];
   *b=palette[p];
+}
+
+/* Other FCEU driver hooks.
+ */
+
+FILE *FCEUD_UTF8fopen(const char *fn, const char *mode) {
+  return fopen(fn,mode);
+}
+
+void FCEUD_PrintError(char *s) {
+  fprintf(stderr,"FCEUD_PrintError: %s\n",s);
+}
+
+void FCEUD_Message(char *s) {
+  fprintf(stderr,"%s",s);
+}
+
+int FCEUD_SendData(void *data, uint32_t len) {
+  return len;
+}
+
+int FCEUD_RecvData(void *data, uint32_t len) {
+  return 0;
+}
+
+void FCEUD_NetplayText(uint8_t *text) {
+}
+
+void FCEUD_NetworkClose(void) {
 }
 
 /* Audio sample buffer.
@@ -260,7 +286,7 @@ int main(int argc,char **argv) {
     .fbw=256,
     .fbh=240,
     .fbformat=EMUHOST_TEXFMT_I8,
-    .fullscreen=0,
+    .fullscreen=1,
     .window_title="akfceu",
     .audiorate=22050,
     .audiochanc=1,

@@ -1,5 +1,39 @@
 #include "test/akfceu_test.h"
 #include "test/akfceu_test_contents.h"
+#include <stdint.h>
+
+void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
+}
+
+void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
+  *r=*g=*b=0;
+}
+
+FILE *FCEUD_UTF8fopen(const char *fn, const char *mode) {
+  return fopen(fn,mode);
+}
+
+void FCEUD_PrintError(char *s) {
+  fprintf(stderr,"FCEUD_PrintError: %s\n",s);
+}
+
+void FCEUD_Message(char *s) {
+  fprintf(stderr,"%s",s);
+}
+
+int FCEUD_SendData(void *data, uint32_t len) {
+  return len;
+}
+
+int FCEUD_RecvData(void *data, uint32_t len) {
+  return 0;
+}
+
+void FCEUD_NetplayText(uint8_t *text) {
+}
+
+void FCEUD_NetworkClose(void) {
+}
 
 int main(int argc,char **argv) {
   int failc=0,passc=0;

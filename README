@@ -17,17 +17,6 @@ src/fceu/fds.c:649:21: error: comparison of unsigned expression < 0 is always fa
 src/fceu/fceu.c:190:4: error: implicit declaration of function 'FCEUD_NetworkClose' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
 src/fceu/fir/toh.c:5:1: error: type specifier missing, defaults to 'int' [-Werror,-Wimplicit-int]
 
-src/fceu/netplay.c:53:2: error: implicit declaration of function 'FCEUD_NetworkClose' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-src/fceu/netplay.c:102:15: error: passing 'uint8 *' (aka 'unsigned char *') to parameter of type 'const char *' converts between pointers to integer types with different sign
-src/fceu/netplay.c:106:6: error: implicit declaration of function 'FCEUD_SendData' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-src/fceu/netplay.c:127:15: error: passing 'char *' to parameter of type 'uint8 *' (aka 'unsigned char *') converts between pointers to integer types with different sign
-src/fceu/netplay.c:128:12: error: passing 'char *' to parameter of type 'Bytef *' (aka 'unsigned char *') converts between pointers to integer types with different sign
-src/fceu/netplay.c:128:29: error: passing 'char *' to parameter of type 'const Bytef *' (aka 'const unsigned char *') converts between pointers to integer types with different sign [-Werror,-Wpointer-sign]
-src/fceu/netplay.c:173:38: error: implicit declaration of function 'FCEUD_RecvData' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-src/fceu/netplay.c:183:53: error: passing 'char *' to parameter of type 'uint8 *' (aka 'unsigned char *') converts between pointers to integer types with different sign
-src/fceu/netplay.c:194:45: error: passing 'char *' to parameter of type 'Bytef *' (aka 'unsigned char *') converts between pointers to integer types with different sign
-src/fceu/netplay.c:194:56: error: passing 'char *' to parameter of type 'const Bytef *' (aka 'const unsigned char *') converts between pointers to integer types with different sign [-Werror,-Wpointer-sign]
-
 src/fceu/drivers/pc/dos-sound.c:24:10: fatal error: 'sys/farptr.h' file not found
 Deleted from drivers: sexyal, pc, win
 
@@ -183,14 +172,14 @@ Picking up again after about a year away.
   So.... didn't really fix anything, but change all printf() to fprintf(stderr,...).
 
 [ ] Revisit the Romassist IPC protocol, clean up whatever needs it.
-  [ ] Screen capture
+  [x] Screen capture
   [ ] Pause, resume, step.
   [ ] Debugger controls. Dump registers and RAM generically. Poke them too.
   [ ] Generic controls deliverable via Romassist UI, defined by emulator.
     eg from emulator [{ "key":123, "name":"Frame skip", "min":0, "max":60, "default":0, "value":0, "desc":"Skip frames." }]
   [ ] Logging
 
-[ ] Long-term plan is to move all the high-level into shared libraries owned by Romassist. Are we positioned to support that?
+[x] Long-term plan is to move all the high-level into shared libraries owned by Romassist. Are we positioned to support that?
   Everything in src/opt should move to RA libs. Easy.
   Most of src/main should go too. About 2k lines, will be hairy.
 
@@ -220,3 +209,15 @@ Picking up again, on Linux this time.
   ...Mac is calling akfceu_main_init() then akfceu_main_load_rom(), which makes sense.
   ...Linux is calling akfceu_main_load_rom() first. *************** This is wrong! Don't do anything before init!
   Fixed in Romassist -- initial rom file will be delivered only after init.
+[x] `make test` freezes the terminal to where I can't even abort.
+  ...now that's what i call a test failure!
+  It was linking MAINOFILES instead of TESTOFILES.
+  Works now, but there actually aren't any tests.
+  
+[ ] Big cleanup inside fceu.
+  With the main goal of better understanding how it all works.
+  [ ] Remove compression
+  [ ] Limit access to files -- none would be ideal.
+  [ ] Remove everything that prints to the framebuffer. All of our OOB UI will be thru config files, command line, or remote comm.
+  [ ] Consistent formatting? Probly not worth a lot of effort
+  [ ] Unit tests.

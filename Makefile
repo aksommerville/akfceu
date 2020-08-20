@@ -18,7 +18,7 @@ OUTDIR:=out
 ifeq ($(UNAMES),Darwin)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_macos=1 -DUSE_romassist=1 -DLSB_FIRST=1
+  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   LD:=gcc
@@ -35,18 +35,18 @@ ifeq ($(UNAMES),Darwin)
 
   TEST:=$(OUTDIR)/test
   $(EXE):$(PLIST_MAIN) $(NIB_MAIN)
-  $(PLIST_MAIN):src/opt/macos/Info.plist;$(PRECMD) cp $< $@
-  $(NIB_MAIN):src/opt/macos/Main.xib;$(PRECMD) ibtool --compile $@ $<
+  $(PLIST_MAIN):etc/macos/Info.plist;$(PRECMD) cp $< $@
+  $(NIB_MAIN):etc/macos/Main.xib;$(PRECMD) ibtool --compile $@ $<
 
-  INPUT_ICONS:=$(wildcard src/opt/macos/appicon.iconset/*)
-  $(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ src/opt/macos/appicon.iconset
+  INPUT_ICONS:=$(wildcard etc/macos/appicon.iconset/*)
+  $(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ etc/macos/appicon.iconset
 
   RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
 
 else ifeq ($(UNAMES),Linux)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DPSS_STYLE=1 -DUSE_linux=1 -DUSE_romassist=1 -DLSB_FIRST=1
+  CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
@@ -57,12 +57,20 @@ else ifeq ($(UNAMES),Linux)
   EXE:=$(OUTDIR)/akfceu
   TEST:=$(OUTDIR)/test
   
-  RUNCMD:=$(EXE) ~/rom/nes/z/zelda.nes
+  RUNCMD:=$(EXE) ~/rom/nes/n/ninja_gaiden.nes
+  
+  play-%:$(EXE); \
+    ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \
+    if [ -n "$$ROMPATH" ] ; then \
+      $(EXE) "$$ROMPATH" ; \
+    else \
+      echo "'$*' not found" ; \
+    fi
   
 else
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DUSE_romassist=1 -DLSB_FIRST=1
+  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
@@ -76,9 +84,6 @@ else
   RUNCMD:=$(EXE) ~/rom/nes/z/zelda.nes
 endif
 
-# How to launch the main program.
-#RUNCMD:=$(EXE)
-
 #------------------------------------------------------------------------------
 # Generated source files.
 # These must be located under $(MIDDIR), and you must provide a rule to generate them.
@@ -89,30 +94,22 @@ GENERATED_FILES:= \
 #------------------------------------------------------------------------------
 # Everything below this point should work for any target.
 
-OPTAVAILABLE:=$(notdir $(wildcard src/opt/*))
-OPTIGNORE:=$(filter-out $(OPT),$(OPTAVAILABLE))
-MIDOPTIGNORE:=$(addprefix $(MIDDIR)/opt/,$(addsuffix /%,$(OPTIGNORE)))
-SRCOPTIGNORE:=$(addprefix src/opt/,$(addsuffix /%,$(OPTIGNORE)))
-
-SRCCFILES:=$(filter-out $(SRCOPTIGNORE),$(shell find src -name '*.[cm]'))
-OPTCFILES:=$(filter src/opt/%,$(SRCCFILES))
+SRCCFILES:=$(shell find src -name '*.[cm]')
 MAINCFILES:=$(filter src/main/%,$(SRCCFILES))
 TESTCFILES:=$(filter src/test/%,$(SRCCFILES))
-CORECFILES:=$(filter-out $(OPTCFILES) $(MAINCFILES) $(TESTCFILES),$(SRCCFILES))
+CORECFILES:=$(filter-out $(MAINCFILES) $(TESTCFILES),$(SRCCFILES))
 
-GENERATED_FILES:=$(filter-out $(MIDOPTIGNORE),$(GENERATED_FILES))
+GENERATED_FILES:=$(GENERATED_FILES)
 GENHFILES:=$(filter %.h,$(GENERATED_FILES))
 GENCFILES:=$(filter %.c,$(GENERATED_FILES))
-GENOPTCFILES:=$(filter $(MIDDIR)/opt/%,$(GENCFILES))
 GENMAINCFILES:=$(filter $(MIDDIR)/main/%,$(GENCFILES))
 GENTESTCFILES:=$(filter $(MIDDIR)/test/%,$(GENCFILES))
-GENCORECFILES:=$(filter-out $(GENOPTCFILES) $(GENMAINCFILES) $(GENTESTCFILES),$(GENCFILES))
+GENCORECFILES:=$(filter-out $(GENMAINCFILES) $(GENTESTCFILES),$(GENCFILES))
 
 COREOFILES:=$(patsubst src/%,$(MIDDIR)/%.o,$(basename $(CORECFILES))) $(GENCOREOFILES:.c=.o)
 TESTOFILES:=$(patsubst src/%,$(MIDDIR)/%.o,$(basename $(TESTCFILES))) $(GENTESTCFILES:.c=.o)
 MAINOFILES:=$(patsubst src/%,$(MIDDIR)/%.o,$(basename $(MAINCFILES))) $(GENMAINCFILES:.c=.o)
-OPTOFILES:=$(patsubst src/%,$(MIDDIR)/%.o,$(basename $(OPTCFILES))) $(GENOPTCFILES:.c=.o)
-ALLOFILES:=$(COREOFILES) $(TESTOFILES) $(MAINOFILES) $(OPTOFILES)
+ALLOFILES:=$(COREOFILES) $(TESTOFILES) $(MAINOFILES)
 -include $(ALLOFILES:.o=.d)
 
 $(MIDDIR)/%.o:src/%.c|$(GENHFILES);$(PRECMD) $(CC) -o $@ $<
@@ -121,8 +118,8 @@ $(MIDDIR)/%.o:src/%.m|$(GENHFILES);$(PRECMD) $(OBJC) -o $@ $<
 $(MIDDIR)/%.o:$(MIDDIR)/%.m|$(GENHFILES);$(PRECMD) $(OBJC) -o $@ $<
 
 all:$(EXE) $(TEST)
-$(EXE):$(COREOFILES) $(MAINOFILES) $(OPTOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(OPTOFILES) $(LDPOST)
-$(TEST):$(COREOFILES) $(TESTOFILES) $(OPTOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(OPTOFILES) $(LDPOST)
+$(EXE):$(COREOFILES) $(MAINOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(LDPOST)
+$(TEST):$(COREOFILES) $(TESTOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(TESTOFILES) $(LDPOST)
 
 #------------------------------------------------------------------------------
 
