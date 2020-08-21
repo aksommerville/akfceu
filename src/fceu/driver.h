@@ -21,36 +21,6 @@ void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b);
 void FCEUD_PrintError(char *s);
 void FCEUD_Message(char *s);
 
-#ifdef NETWORK
-/* Network interface */
-
-/* Call only when a game is loaded. */
-int FCEUI_NetplayStart(int nlocal, int divisor);
-
-/* Call when network play needs to stop. */
-void FCEUI_NetplayStop(void);
-
-/* Note:  YOU MUST NOT CALL ANY FCEUI_* FUNCTIONS WHILE IN FCEUD_SendData() or
-   FCEUD_RecvData().
-*/
-
-/* Return 0 on failure, 1 on success. */
-int FCEUD_SendData(void *data, uint32_t len);
-int FCEUD_RecvData(void *data, uint32_t len);
-
-/* Display text received over the network. */
-void FCEUD_NetplayText(uint8_t *text);
-
-/* Encode and send text over the network. */
-void FCEUI_NetplayText(uint8_t *text);
-
-/* Called when a fatal error occurred and network play can't continue.  This function
-   should call FCEUI_NetplayStop() after it has deinitialized the network on the driver
-   side.
-*/
-void FCEUD_NetworkClose(void);
-#endif
-
 void FCEUI_ResetNES(void);
 void FCEUI_PowerNES(void);
 
@@ -118,9 +88,6 @@ void FCEUI_CloseGame(void);
 /* Deallocates all allocated memory.  Call after FCEUI_Emulate() returns. */
 void FCEUI_Kill(void);
 
-/* Enable/Disable game genie. a=0 disable, a=1 enable */
-void FCEUI_SetGameGenie(int a);
-
 /* Set video system a=0 NTSC, a=1 PAL */
 void FCEUI_SetVidSystem(int a);
 
@@ -164,35 +131,12 @@ void FCEUI_LoadState(char *fname);
 
 int32_t FCEUI_GetDesiredFPS(void);
 
-int FCEUI_DecodePAR(const char *code, uint16_t *a, uint8_t *v, int *c, int *type);
-int FCEUI_DecodeGG(const char *str, uint16_t *a, uint8_t *v, int *c);
-int FCEUI_AddCheat(const char *name, uint32_t addr, uint8_t val, int compare, int type);
-int FCEUI_DelCheat(uint32_t which);
-int FCEUI_ToggleCheat(uint32_t which);
-
-int32_t FCEUI_CheatSearchGetCount(void);
-void FCEUI_CheatSearchGetRange(uint32_t first, uint32_t last, int (*callb)(uint32_t a, uint8_t last, uint8_t current));
-void FCEUI_CheatSearchGet(int (*callb)(uint32_t a, uint8_t last, uint8_t current, void *data), void *data);
-void FCEUI_CheatSearchBegin(void);
-void FCEUI_CheatSearchEnd(int type, uint8_t v1, uint8_t v2);
-void FCEUI_ListCheats(int (*callb)(char *name, uint32_t a, uint8_t v, int compare, int s, int type, void *data), void *data);
-
-int FCEUI_GetCheat(uint32_t which, char **name, uint32_t *a, uint8_t *v, int *compare, int *s, int *type);
-int FCEUI_SetCheat(uint32_t which, const char *name, int32_t a, int32_t v, int compare,int s, int type);
-
-void FCEUI_CheatSearchShowExcluded(void);
-void FCEUI_CheatSearchSetCurrentAsOriginal(void);
-
 #define FCEUIOD_STATE   0
 #define FCEUIOD_SNAPS   1
 #define FCEUIOD_NV      2
-#define FCEUIOD_CHEATS  3
 #define FCEUIOD_MISC    4
-#define FCEUIOD_MOVIE  5
 
 #define FCEUIOD__COUNT  6
-
-void FCEUI_SetDirOverride(int which, char *n);
 
 void FCEUI_MemDump(uint16_t a, int32_t len, void (*callb)(uint16_t a, uint8_t v));
 uint8_t FCEUI_MemSafePeek(uint16_t A);

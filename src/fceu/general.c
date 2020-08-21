@@ -74,31 +74,16 @@ void FCEUI_SetBaseDirectory(const char *dir) {
   mkdir_if_needed(BaseDirectory,"fcs");
   mkdir_if_needed(BaseDirectory,"snaps");
   mkdir_if_needed(BaseDirectory,"sav");
-  mkdir_if_needed(BaseDirectory,"cheats");
   mkdir_if_needed(BaseDirectory,"gameinfo");
 }
 
 static char *odirs[FCEUIOD__COUNT]={0,0,0,0,0,0};     // odirs, odors. ^_^
-
-void FCEUI_SetDirOverride(int which, char *n) {
-  odirs[which]=n;
-
-  if (FCEUGameInfo) { /* Rebuild cache of present states/movies. */
-    if (which==FCEUIOD_STATE) {
-      FCEUSS_CheckStates();
-    }
-  }
-}
 
 char *FCEU_MakeFName(int type, int id1, char *cd1) {
   char *ret=0;
   struct stat tmpstat;
 
   switch (type) {
-  
-    case FCEUMKF_NPTEMP: {
-        asprintf(&ret,"%s"PSS"m590plqd94fo.tmp",BaseDirectory);
-      } break;
       
     case FCEUMKF_STATE: {
         if (odirs[FCEUIOD_STATE]) {
@@ -156,20 +141,8 @@ char *FCEU_MakeFName(int type, int id1, char *cd1) {
         }
       } break;
 
-    case FCEUMKF_CHEAT: {
-        if (odirs[FCEUIOD_CHEATS]) {
-          asprintf(&ret,"%s"PSS"%s.cht",odirs[FCEUIOD_CHEATS],FileBase);
-        } else {
-          asprintf(&ret,"%s"PSS"cheats"PSS"%s.cht",BaseDirectory,FileBase);
-        }
-      } break;
-
     case FCEUMKF_IPS: {
         asprintf(&ret,"%s"PSS"%s%s.ips",FileBaseDirectory,FileBase,FileExt);
-      } break;
-
-    case FCEUMKF_GGROM: {
-        asprintf(&ret,"%s"PSS"gg.rom",BaseDirectory);
       } break;
 
     case FCEUMKF_FDSROM: {

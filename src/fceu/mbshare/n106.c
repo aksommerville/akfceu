@@ -422,39 +422,36 @@ void NSFN106_Init(void)
 
 static int battery=0;
 
-static void N106_Power(void)
-{
+static void N106_Power(void) {
   int x;
 
-        SetReadHandler(0x8000,0xFFFF,CartBR);
-        SetWriteHandler(0x8000,0xffff,Mapper19_write);
-        SetWriteHandler(0x4020,0x5fff,Mapper19_write);
+  SetReadHandler(0x8000,0xFFFF,CartBR);
+  SetWriteHandler(0x8000,0xffff,Mapper19_write);
+  SetWriteHandler(0x4020,0x5fff,Mapper19_write);
  
-  if (!is210)
-  {
-         SetWriteHandler(0xc000,0xdfff,Mapper19C0D8_write);
-         SetReadHandler(0x4800,0x4fff,Namco_Read4800);
-         SetReadHandler(0x5000,0x57ff,Namco_Read5000);
-         SetReadHandler(0x5800,0x5fff,Namco_Read5800);
-   NTAPage[0]=NTAPage[1]=NTAPage[2]=NTAPage[3]=0xFF;
-   FixNTAR();
+  if (!is210) {
+    SetWriteHandler(0xc000,0xdfff,Mapper19C0D8_write);
+    SetReadHandler(0x4800,0x4fff,Namco_Read4800);
+    SetReadHandler(0x5000,0x57ff,Namco_Read5000);
+    SetReadHandler(0x5800,0x5fff,Namco_Read5800);
+    NTAPage[0]=NTAPage[1]=NTAPage[2]=NTAPage[3]=0xFF;
+    FixNTAR();
   }
 
-        SetReadHandler(0x6000,0x7FFF,AWRAM);
-        SetWriteHandler(0x6000,0x7FFF,BWRAM);
-        FCEU_CheatAddRAM(8,0x6000,WRAM);
+  SetReadHandler(0x6000,0x7FFF,AWRAM);
+  SetWriteHandler(0x6000,0x7FFF,BWRAM);
 
-        gorfus=0xFF;
+  gorfus=0xFF;
   SyncPRG();
   FixCRR();
 
-  if (!battery)
-  {
-   FCEU_dwmemset(WRAM,0,8192);
-   FCEU_dwmemset(IRAM,0,128);
+  if (!battery) {
+    FCEU_dwmemset(WRAM,0,8192);
+    FCEU_dwmemset(IRAM,0,128);
   }
-  for (x=0x40;x<0x80;x++)
-   FixCache(x,IRAM[x]);
+  for (x=0x40;x<0x80;x++) {
+    FixCache(x,IRAM[x]);
+  }
 }
 
 void Mapper19_Init(CartInfo *info)

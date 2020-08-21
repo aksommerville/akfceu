@@ -94,12 +94,4 @@ void FASTAPASS(3) setntamem(uint8_t *p, int ram, uint32_t b);
 #define MI_0 2
 #define MI_1 3
 
-extern int geniestage;
-
-void GeniePower(void);
-
-void OpenGenie(void);
-void CloseGenie(void);
-void FCEU_KillGenie(void);
-
 #endif

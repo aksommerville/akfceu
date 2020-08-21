@@ -555,7 +555,7 @@ static void FASTAPASS(1) RefreshLine(int lastpixel)
         */     
 
   #define PPUT_MMC5
-        if (MMC5Hack && geniestage!=1)
+        if (MMC5Hack)
         {
          if (MMC5HackCHRMode==0 && (MMC5HackSPMode&0x80))
          {
@@ -872,8 +872,7 @@ static void FetchSpriteData(void)
                         vadr+=t&8;
                   }
 
-                  /* Fix this geniestage hack */
-                  if (MMC5Hack && geniestage!=1) C = MMC5SPRVRAMADR(vadr);
+                  if (MMC5Hack) C = MMC5SPRVRAMADR(vadr);
                   else C = VRAMADR(vadr);
 
                  

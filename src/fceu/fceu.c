@@ -28,7 +28,6 @@
 #include "fceu.h"
 #include "ppu.h"
 #include "sound.h"
-#include "netplay.h"
 #include "general.h"
 #include "endian.h"
 #include "memory.h"
@@ -37,7 +36,6 @@
 #include "fds.h"
 #include "ines.h"
 #include "unif.h"
-#include "cheat.h"
 #include "palette.h"
 #include "state.h"
 #include "input.h"
@@ -65,33 +63,6 @@ static DECLFW(BNull) {
 
 static DECLFR(ANull) {
   return(X.DB);
-}
-
-int AllocGenieRW(void) {
-  if (!(AReadG=(readfunc *)FCEU_malloc(0x8000*sizeof(readfunc)))) {
-    return 0;
-  }
-  if (!(BWriteG=(writefunc *)FCEU_malloc(0x8000*sizeof(writefunc)))) {
-    return 0;
-  }
-  RWWrap=1;
-  return 1;
-}
-
-void FlushGenieRW(void) {
-  int32_t x;
-
-  if (RWWrap) {
-    for (x=0;x<0x8000;x++) {
-      ARead[x+0x8000]=AReadG[x];
-      BWrite[x+0x8000]=BWriteG[x];
-    }
-    free(AReadG);
-    free(BWriteG);
-    AReadG=0;
-    BWriteG=0;
-    RWWrap=0;
-  }
 }
 
 readfunc FASTAPASS(1) GetReadHandler(int32_t a) {
@@ -172,17 +143,12 @@ static DECLFR(ARAMH) {
 
 static void CloseGame(void) {
   if (FCEUGameInfo) {
-    if (FCEUnetplay) FCEUD_NetworkClose();
     if (FCEUGameInfo->name) {
       free(FCEUGameInfo->name);
       FCEUGameInfo->name=0;
     }
-    if (FCEUGameInfo->type!=GIT_NSF) {
-      FCEU_FlushGameCheats(0,0);
-    }
     GameInterface(GI_CLOSE);
     ResetExState(0,0);
-    CloseGenie();
     free(FCEUGameInfo);
     FCEUGameInfo = 0;
   }
@@ -250,18 +216,12 @@ FCEUGI *FCEUI_LoadGame(const char *name) {
   FCEU_fclose(fp);
 
   FCEU_ResetVidSys();
-  if (FCEUGameInfo->type!=GIT_NSF) {
-    if (FSettings.GameGenie) {
-      OpenGenie();
-    }
-  }
 
   PowerNES();
   FCEUSS_CheckStates();
 
   if (FCEUGameInfo->type!=GIT_NSF) {
     FCEU_LoadGamePalette();
-    FCEU_LoadGameCheats(0);
   }
        
   FCEU_ResetPalette();
@@ -293,14 +253,12 @@ int FCEUI_Initialize(void) {
 }
 
 void FCEUI_Kill(void) {
-  FCEU_KillGenie();
 }
 
 void FCEUI_Emulate(uint8_t **pXBuf, int32_t **SoundBuf, int32_t *SoundBufSize, int skip) {
   int r,ssize;
 
   FCEU_UpdateInput();
-  if (geniestage!=1) FCEU_ApplyPeriodicCheats();
   r=FCEUPPU_Loop(skip);
 
   ssize=FlushEmulateSound();
@@ -342,11 +300,6 @@ void hand(X6502 *X, int type, unsigned int A) {
 void PowerNES(void) {
   if (!FCEUGameInfo) return;
 
-  FCEU_CheatResetRAM();
-  FCEU_CheatAddRAM(2,0,RAM);
-
-  GeniePower();
-
   FCEU_MemoryRand(RAM,0x800);
   //memset(RAM,0xFF,0x800);
 
@@ -373,7 +326,6 @@ void PowerNES(void) {
 
   timestampbase=0;
   X6502_Power();
-  FCEU_PowerCheats();
 }
 
 void FCEU_ResetVidSys(void) {
@@ -440,10 +392,6 @@ int FCEUI_GetCurrentVidSystem(int *slstart, int *slend) {
   if (slstart) *slstart=FSettings.FirstSLine;
   if (slend) *slend=FSettings.LastSLine;
   return PAL;
-}
-
-void FCEUI_SetGameGenie(int a) {
-  FSettings.GameGenie=a?1:0;
 }
 
 void FCEUI_SetSnapName(int a) {

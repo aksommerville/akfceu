@@ -37,7 +37,6 @@
 #include "memory.h"
 #include "crc32.h"
 #include "md5.h"
-#include "cheat.h"
 #include "vsuni.h"
 
 extern SFORMAT FCEUVSUNI_STATEINFO[];
@@ -710,7 +709,6 @@ static void iNESPower(void) {
 
   SetReadHandler(0x6000,0x7FFF,AWRAM);
   SetWriteHandler(0x6000,0x7FFF,BWRAM);
-  FCEU_CheatAddRAM(8,0x6000,WRAM);
 
   /* This statement represents atrocious code.  I need to rewrite
      all of the iNES mapper code... */

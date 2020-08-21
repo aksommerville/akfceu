@@ -24,9 +24,6 @@ void FASTAPASS(3) SetWriteHandler(int32_t start, int32_t end, writefunc func);
 writefunc FASTAPASS(1) GetWriteHandler(int32_t a);
 readfunc FASTAPASS(1) GetReadHandler(int32_t a);
 
-int AllocGenieRW(void);
-void FlushGenieRW(void);
-
 void FCEU_ResetVidSys(void);
 
 void ResetMapping(void);

@@ -869,13 +869,11 @@ static void GenMMC3Power(void)
  {
   if (wrams==1024)
   {
-   FCEU_CheatAddRAM(1,0x7000,WRAM);
    SetReadHandler(0x7000,0x7FFF,MAWRAMMMC6);
    SetWriteHandler(0x7000,0x7FFF,MBWRAMMMC6);
   }
   else
   {
-   FCEU_CheatAddRAM(wrams/1024,0x6000,WRAM);
    SetReadHandler(0x6000,0x6000+wrams-1,MAWRAM);
    SetWriteHandler(0x6000,0x6000+wrams-1,MBWRAM);
   }

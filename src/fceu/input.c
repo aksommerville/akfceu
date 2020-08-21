@@ -25,7 +25,6 @@
 #include "x6502.h"
 #include "fceu.h"
 #include "sound.h"
-#include "netplay.h"
 #include "state.h"
 #include "input.h"
 #include "vsuni.h"
@@ -200,8 +199,6 @@ void FCEU_UpdateInput(void) {
     if (coinon) coinon--;
   }
 
-  if (FCEUnetplay) NetplayUpdate(joy);
-
   if (FCEUGameInfo->type==GIT_VSUNI) {
     FCEU_VSUniSwap(&joy[0],&joy[1]);
   }
@@ -347,61 +344,32 @@ SFORMAT FCEUCTRL_STATEINFO[]={
   { 0 }
 };
 
-
-void FCEU_DoSimpleCommand(int cmd) {
-  switch (cmd) {
-    case FCEUNPCMD_FDSINSERT: FCEU_FDSInsert(-1);break;
-    case FCEUNPCMD_FDSSELECT: FCEU_FDSSelect();break;
-    case FCEUNPCMD_FDSEJECT: FCEU_FDSEject();break;
-    case FCEUNPCMD_VSUNICOIN: FCEU_VSUniCoin(); break;
-    case FCEUNPCMD_VSUNIDIP0 ... (FCEUNPCMD_VSUNIDIP0 + 7): FCEU_VSUniToggleDIP(cmd - FCEUNPCMD_VSUNIDIP0);break;
-    case FCEUNPCMD_POWER: PowerNES();break;
-    case FCEUNPCMD_RESET: ResetNES();break;
-  }
+void FCEUI_FDSSelect(void) {
+  FCEU_FDSSelect();
 }
 
-void FCEU_QSimpleCommand(int cmd)
-{
- if (FCEUnetplay) {
-   FCEUNET_SendCommand(cmd, 0);
- } else {
-   FCEU_DoSimpleCommand(cmd);
- }
-}
-
-void FCEUI_FDSSelect(void)
-{
- FCEU_QSimpleCommand(FCEUNPCMD_FDSSELECT);
-}
-
-int FCEUI_FDSInsert(int oride)
-{
- FCEU_QSimpleCommand(FCEUNPCMD_FDSINSERT);
- return(1);
-}
-
-int FCEUI_FDSEject(void)
-{
-  FCEU_QSimpleCommand(FCEUNPCMD_FDSEJECT);
+int FCEUI_FDSInsert(int oride) {
+  FCEU_FDSInsert(-1);
   return(1);
 }
 
-void FCEUI_VSUniToggleDIP(int w)
-{
-  FCEU_QSimpleCommand(FCEUNPCMD_VSUNIDIP0 + w);
+int FCEUI_FDSEject(void) {
+  FCEU_FDSEject();
+  return(1);
 }
 
-void FCEUI_VSUniCoin(void)
-{
-  FCEU_QSimpleCommand(FCEUNPCMD_VSUNICOIN);
+void FCEUI_VSUniToggleDIP(int w) {
+  FCEU_VSUniToggleDIP(w);
 }
 
-void FCEUI_ResetNES(void)
-{
-  FCEU_QSimpleCommand(FCEUNPCMD_RESET);
+void FCEUI_VSUniCoin(void) {
+  FCEU_VSUniCoin();
+}
+
+void FCEUI_ResetNES(void) {
+  ResetNES();
 }
  
-void FCEUI_PowerNES(void)
-{
-  FCEU_QSimpleCommand(FCEUNPCMD_POWER);
+void FCEUI_PowerNES(void) {
+  PowerNES();
 }

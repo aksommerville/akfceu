@@ -36,7 +36,6 @@
 #include "state.h"
 #include "memory.h"
 #include "ppu.h"
-#include "netplay.h"
 
 //aks: Taking a guess that this is supposed to be 53, from "fcs.txt" in the original documentation.
 #define FCEU_VERSION_NUMERIC 53
@@ -361,33 +360,28 @@ void FCEUSS_CheckStates(void) {
   StateShow=0;
 }
 
-void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
-{
- int x;
- for (x=0;x<SFEXINDEX;x++)
- {
-  if (SFMDATA[x].desc)
-   free(SFMDATA[x].desc);
- }
- SPreSave = PreSave;
- SPostSave = PostSave;
- SFEXINDEX=0;
+void ResetExState(void (*PreSave)(void), void (*PostSave)(void)) {
+  int x;
+  for (x=0;x<SFEXINDEX;x++) {
+   if (SFMDATA[x].desc) free(SFMDATA[x].desc);
+  }
+  SPreSave = PreSave;
+  SPostSave = PostSave;
+  SFEXINDEX=0;
 }
 
-void AddExState(void *v, uint32_t s, int type, char *desc)
-{
- if (desc)
- {
-  SFMDATA[SFEXINDEX].desc=(char *)FCEU_malloc(5);
-  strcpy(SFMDATA[SFEXINDEX].desc,desc);
- }
- else
-  SFMDATA[SFEXINDEX].desc=0;
- SFMDATA[SFEXINDEX].v=v;
- SFMDATA[SFEXINDEX].s=s;
- if (type) SFMDATA[SFEXINDEX].s|=RLSB;
- if (SFEXINDEX<63) SFEXINDEX++;
- SFMDATA[SFEXINDEX].v=0;    // End marker.
+void AddExState(void *v, uint32_t s, int type, char *desc) {
+  if (desc) {
+    SFMDATA[SFEXINDEX].desc=(char *)FCEU_malloc(5);
+    strcpy(SFMDATA[SFEXINDEX].desc,desc);
+  } else {
+    SFMDATA[SFEXINDEX].desc=0;
+  }
+  SFMDATA[SFEXINDEX].v=v;
+  SFMDATA[SFEXINDEX].s=s;
+  if (type) SFMDATA[SFEXINDEX].s|=RLSB;
+  if (SFEXINDEX<63) SFEXINDEX++;
+  SFMDATA[SFEXINDEX].v=0;    // End marker.
 }
 
 void FCEUI_SelectState(int w) {
@@ -398,39 +392,13 @@ void FCEUI_SelectState(int w) {
   //FCEU_DispMessage("-select state-");
 } 
 
-void FCEUI_SaveState(char *fname)
-{
- StateShow=0;
- FCEUSS_Save(fname);
+void FCEUI_SaveState(char *fname) {
+  StateShow=0;
+  FCEUSS_Save(fname);
 }
 
-void FCEUI_LoadState(char *fname)
-{
- StateShow=0;
-
- /* For network play, be load the state locally, and then save the state to a temporary file,
-    and send that.  This insures that if an older state is loaded that is missing some
-    information expected in newer save states, desynchronization won't occur(at least not
-    from this ;)).
- */
- if (FCEUSS_Load(fname))
-  if (FCEUnetplay)
-  {
-   char *fn=FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
-   FILE *fp;
-
-   if ((fp=fopen(fn,"wb")))
-   {
-    if (FCEUSS_SaveFP(fp))
-    {
-     fclose(fp);
-     FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn);   
-    }
-    else fclose(fp);
-    unlink(fn);
-   }
-   free(fn);
-  }
-
+void FCEUI_LoadState(char *fname) {
+  StateShow=0;
+  FCEUSS_Load(fname);
 }
 

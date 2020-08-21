@@ -752,17 +752,13 @@ static void GenMMC5Reset(void)
  SetWriteHandler(0x5000,0x5015,Mapper5_SW);
  SetWriteHandler(0x5205,0x5206,Mapper5_write);
  SetReadHandler(0x5205,0x5206,MMC5_read);
-
- //GameHBIRQHook=MMC5_hb;
- FCEU_CheatAddRAM(8,0x6000,WRAM);
- FCEU_CheatAddRAM(1,0x5c00,ExRAM);
 }
 
 static SFORMAT MMC5_StateRegs[]={
-        { PRGBanks, 4, "PRGB"},
-        { CHRBanksA, 8, "CHRA"},
-        { CHRBanksB, 4, "CHRB"},
-        { &WRAMPage, 1, "WRMP"},
+  { PRGBanks, 4, "PRGB"},
+  { CHRBanksA, 8, "CHRA"},
+  { CHRBanksB, 4, "CHRB"},
+  { &WRAMPage, 1, "WRMP"},
   { WRAMMaskEnable, 2, "WRME"},
   { &ABMode, 1, "ABMD"},
   { &IRQScanline, 1, "IRQS"},
@@ -772,14 +768,14 @@ static SFORMAT MMC5_StateRegs[]={
   { &NTFill, 1, "NTFL"},
   { &ATFill, 1, "ATFL"},
 
-        { &MMC5Sound.wl[0], 2|FCEUSTATE_RLSB, "SDW0"},
-        { &MMC5Sound.wl[1], 2|FCEUSTATE_RLSB, "SDW1"},
-        { MMC5Sound.env, 2, "SDEV"},
-        { &MMC5Sound.enable, 1, "SDEN"},
+  { &MMC5Sound.wl[0], 2|FCEUSTATE_RLSB, "SDW0"},
+  { &MMC5Sound.wl[1], 2|FCEUSTATE_RLSB, "SDW1"},
+  { MMC5Sound.env, 2, "SDEV"},
+  { &MMC5Sound.enable, 1, "SDEN"},
   { &MMC5Sound.running, 1, "SDRU"},
-        { &MMC5Sound.raw, 1, "SDRW"},
-        { &MMC5Sound.rawcontrol, 1, "SDRC"},
-        {0}
+  { &MMC5Sound.raw, 1, "SDRW"},
+  { &MMC5Sound.rawcontrol, 1, "SDRC"},
+  {0}
 };
 
 static void GenMMC5_Init(CartInfo *info, int wsize, int battery)

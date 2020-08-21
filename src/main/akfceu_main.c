@@ -51,20 +51,6 @@ void FCEUD_Message(char *s) {
   fprintf(stderr,"%s",s);
 }
 
-int FCEUD_SendData(void *data, uint32_t len) {
-  return len;
-}
-
-int FCEUD_RecvData(void *data, uint32_t len) {
-  return 0;
-}
-
-void FCEUD_NetplayText(uint8_t *text) {
-}
-
-void FCEUD_NetworkClose(void) {
-}
-
 /* Audio sample buffer.
  */
  
