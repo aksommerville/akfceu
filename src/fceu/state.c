@@ -253,7 +253,6 @@ int FCEUSS_SaveFP(FILE *st)
 void FCEUSS_Save(char *fname)
 {
   FILE *st=NULL;
-  char *fn;
 
   if (geniestage==1) {
     //FCEU_DispMessage("Cannot save FCS in GG screen.");
@@ -263,8 +262,10 @@ void FCEUSS_Save(char *fname)
   if (fname) {
     st=FCEUD_UTF8fopen(fname, "wb");
   } else {
-    st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
-    free(fn);
+    char path[1024];
+    int pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_STATE,CurrentState,0);
+    if ((pathc<1)||(pathc>=sizeof(path))) return;
+    st=FCEUD_UTF8fopen(path,"wb");
   }
 
   if (st == NULL) {
@@ -306,7 +307,8 @@ int FCEUSS_LoadFP(FILE *st) {
 
 int FCEUSS_Load(char *fname) {
   FILE *st;
-  char *fn;
+  char path[1024];
+  int pathc;
 
   if (geniestage==1) {
     //FCEU_DispMessage("Cannot load FCS in GG screen.");
@@ -316,8 +318,9 @@ int FCEUSS_Load(char *fname) {
   if (fname) {
     st=FCEUD_UTF8fopen(fname, "rb");
   } else {
-    st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
-    free(fn);
+    pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_STATE,CurrentState,0);
+    if ((pathc<1)||(pathc>=sizeof(path))) return 0;
+    st=FCEUD_UTF8fopen(path,"rb");
   }
 
   if (st == NULL) {
@@ -342,12 +345,14 @@ int FCEUSS_Load(char *fname) {
 
 void FCEUSS_CheckStates(void) {
   FILE *st=NULL;
-  char *fn;
   int ssel;
+  char path[1024];
+  int pathc;
 
   for (ssel=0;ssel<10;ssel++) {
-    st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
-    free(fn);
+    pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_STATE,ssel,0);
+    if ((pathc<1)||(pathc>=sizeof(path))) continue;
+    st=FCEUD_UTF8fopen(path,"rb");
     if (st) {
       SaveStateStatus[ssel]=1;
       fclose(st);

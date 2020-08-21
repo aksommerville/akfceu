@@ -732,7 +732,8 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 {
  FILE *zp;
  int x;
- char *fn;
+ char path[1024];
+ int pathc;
 
  FCEU_fseek(fp,0,SEEK_SET);
 
@@ -740,17 +741,18 @@ int FDSLoad(const char *name, FCEUFILE *fp)
   return(0);
 
   
- fn = FCEU_MakeFName(FCEUMKF_FDSROM,0,0);
+ pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_FDSROM,0,0);
+ if ((pathc<1)||(pathc>=sizeof(path))) {
+   FreeFDSMemory();
+   return 0;
+ }
 
- if (!(zp=FCEUD_UTF8fopen(fn,"rb"))) 
+ if (!(zp=FCEUD_UTF8fopen(path,"rb"))) 
  {
   FCEU_PrintError("FDS BIOS ROM image missing!");
   FreeFDSMemory();
-  free(fn);
   return 0;
  }
-
- free(fn);
 
  if (fread(FDSBIOS,1,8192,zp)!=8192)
  {
@@ -765,7 +767,11 @@ int FDSLoad(const char *name, FCEUFILE *fp)
 
  {
   FCEUFILE *tp;
-  char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
+  pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_FDS,0,0);
+  if ((pathc<1)||(pathc>=sizeof(path))) {
+    FreeFDSMemory();
+    return 0;
+  }
 
   int x;
   for (x=0;x<TotalSides;x++)
@@ -774,19 +780,17 @@ int FDSLoad(const char *name, FCEUFILE *fp)
    memcpy(diskdatao[x],diskdata[x],65500);
   }
 
-  if ((tp=FCEU_fopen(fn,0,"rb",0)))
+  if ((tp=FCEU_fopen(path,0,"rb",0)))
   {
    FreeFDSMemory();
    if (!SubLoad(tp))
    {
     FCEU_PrintError("Error reading auxillary FDS file.");
-    free(fn);
     return(0);
    }
    FCEU_fclose(tp);
    DiskWritten=1;  /* For save state handling. */
   }
-  free(fn);
  }
 
  FCEUGameInfo->type=GIT_FDS;
@@ -832,16 +836,13 @@ void FDSClose(void)
 {
  FILE *fp;
  int x;
- char *fn=FCEU_MakeFName(FCEUMKF_FDS,0,0);
+ char fn[1024];
+ int fnc=FCEU_MakePath(fn,sizeof(fn),FCEUMKF_FDS,0,0);
+ if ((fnc<1)||(fnc>=sizeof(fn))) return;
 
  if (!DiskWritten) return;
  
- if (!(fp=FCEUD_UTF8fopen(fn,"wb")))
- {
-  free(fn);
-  return;
- }
- free(fn);
+ if (!(fp=FCEUD_UTF8fopen(fn,"wb"))) return;
 
  for (x=0;x<TotalSides;x++)
  {

@@ -394,11 +394,13 @@ void SetupCartMirroring(int m, int hard, uint8_t *extra) {
 void FCEU_SaveGameSave(CartInfo *LocalHWInfo) {
   if (LocalHWInfo->battery && LocalHWInfo->SaveGame[0]) {
     FILE *sp;
-    char *soot;
+    char path[1024];
+    int pathc;
 
-    soot=FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
-    if ((sp=FCEUD_UTF8fopen(soot,"wb"))==NULL) {
-      FCEU_PrintError("WRAM file \"%s\" cannot be written to.\n",soot);
+    pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_SAV,0,"sav");
+    if ((pathc<1)||(pathc>=sizeof(path))) return;
+    if ((sp=FCEUD_UTF8fopen(path,"wb"))==NULL) {
+      FCEU_PrintError("WRAM file \"%s\" cannot be written to.\n",path);
     } else {
       int x;
  
@@ -408,17 +410,18 @@ void FCEU_SaveGameSave(CartInfo *LocalHWInfo) {
         }
       }
     }
-    free(soot);
   }
 }
   
 void FCEU_LoadGameSave(CartInfo *LocalHWInfo) {
   if (LocalHWInfo->battery && LocalHWInfo->SaveGame[0]) {
     FILE *sp;
-    char *soot;
+    char path[1024];
+    int pathc;
  
-    soot=FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
-    sp=FCEUD_UTF8fopen(soot,"rb");
+    pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_SAV,0,"sav");
+    if ((pathc<1)||(pathc>=sizeof(path))) return;
+    sp=FCEUD_UTF8fopen(path,"rb");
     if (sp!=NULL) {
       int x;
       for (x=0;x<4;x++) {
@@ -427,6 +430,5 @@ void FCEU_LoadGameSave(CartInfo *LocalHWInfo) {
         }
       }
     }
-    free(soot);
   }
 }

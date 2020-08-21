@@ -199,13 +199,15 @@ void FCEU_LoadGamePalette(void)
 {
   uint8_t ptmp[192];
   FILE *fp;
-  char *fn;
+  char path[1024];
+  int pathc;
 
   ipalette=0;
 
-  fn=FCEU_MakeFName(FCEUMKF_PALETTE,0,0);
+  pathc=FCEU_MakePath(path,sizeof(path),FCEUMKF_PALETTE,0,0);
+  if ((pathc<1)||(pathc>=sizeof(path))) return;
 
-  if ((fp=FCEUD_UTF8fopen(fn,"rb")))
+  if ((fp=FCEUD_UTF8fopen(path,"rb")))
   {
    int x;
    fread(ptmp,1,192,fp);
@@ -218,7 +220,6 @@ void FCEU_LoadGamePalette(void)
    }
    ipalette=1;
   }
-  free(fn);
 }
 
 void FCEU_ResetPalette(void)
