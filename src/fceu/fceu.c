@@ -32,7 +32,6 @@
 #include "endian.h"
 #include "memory.h"
 #include "cart.h"
-#include "nsf.h"
 #include "fds.h"
 #include "ines.h"
 #include "unif.h"
@@ -170,7 +169,6 @@ void ResetGameLoaded(void) {
 int UNIFLoad(const char *name, FCEUFILE *fp);
 int iNESLoad(const char *name, FCEUFILE *fp);
 int FDSLoad(const char *name, FCEUFILE *fp);
-int NSFLoad(FCEUFILE *fp);
 
 FCEUGI *FCEUI_LoadGame(const char *name) {
   FCEUFILE *fp;
@@ -205,7 +203,6 @@ FCEUGI *FCEUI_LoadGame(const char *name) {
   }
 
   if (iNESLoad(name,fp)) goto endlseq;
-  if (NSFLoad(fp)) goto endlseq;
   if (UNIFLoad(name,fp)) goto endlseq;
   if (FDSLoad(name,fp)) goto endlseq;
 
@@ -221,9 +218,7 @@ FCEUGI *FCEUI_LoadGame(const char *name) {
   PowerNES();
   FCEUSS_CheckStates();
 
-  if (FCEUGameInfo->type!=GIT_NSF) {
-    FCEU_LoadGamePalette();
-  }
+  FCEU_LoadGamePalette();
        
   FCEU_ResetPalette();
 

@@ -18,7 +18,7 @@ OUTDIR:=out
 ifeq ($(UNAMES),Darwin)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DLSB_FIRST=1
+  CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   LD:=gcc
@@ -70,7 +70,7 @@ else ifeq ($(UNAMES),Linux)
 else
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DHAVE_ASPRINTF=1 -DPSS_STYLE=1 -DLSB_FIRST=1
+  CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc

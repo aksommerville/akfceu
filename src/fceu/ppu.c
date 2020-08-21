@@ -27,7 +27,6 @@
 #include "x6502.h"
 #include "fceu.h"
 #include "ppu.h"
-#include "nsf.h"
 #include "sound.h"
 #include "general.h"
 #include "endian.h"
@@ -1259,13 +1258,7 @@ int FCEUPPU_Loop(int skip)
                                    of this delay.
                                 */
    X6502_Run(12);
-   if (FCEUGameInfo->type==GIT_NSF)
-    DoNSFFrame();
-   else
-   {
-    if (VBlankON)
-     TriggerNMI();
-   }
+   if (VBlankON) TriggerNMI();
    X6502_Run((scanlines_per_frame-242)*(256+85)-12); //-12);
    PPU_status&=0x1f;
    X6502_Run(256);
@@ -1296,8 +1289,6 @@ int FCEUPPU_Loop(int skip)
     X6502_Run(16-kook);
     kook ^= 1;
    }
-   if (FCEUGameInfo->type==GIT_NSF)
-    X6502_Run((256+85)*240);
    #ifdef FRAMESKIP
    else if (skip)
    {
@@ -1327,8 +1318,8 @@ int FCEUPPU_Loop(int skip)
     else
      X6502_Run((256+85)*240);
    }
-   #endif
    else
+   #endif
    {
     int x,max,maxref;
 

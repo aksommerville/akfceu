@@ -233,9 +233,7 @@ void FCEU_ResetPalette(void)
 
 static void ChoosePalette(void)
 {
-    if (FCEUGameInfo->type==GIT_NSF)
-     palo=0;
-    else if (ipalette)
+    if (ipalette)
      palo=palettei; 
     else if (ntsccol && !PAL && FCEUGameInfo->type!=GIT_VSUNI)
      {
@@ -252,17 +250,9 @@ void WritePalette(void)
    
     for (x=0;x<7;x++)
      FCEUD_SetPalette(x,unvpalette[x].r,unvpalette[x].g,unvpalette[x].b);
-    if (FCEUGameInfo->type==GIT_NSF)
-    {
-     //for(x=0;x<128;x++)
-     // FCEUD_SetPalette(x,x,0,x);
-    }
-    else
-    {  
-     for (x=0;x<64;x++)
+    for (x=0;x<64;x++)
       FCEUD_SetPalette(128+x,palo[x].r,palo[x].g,palo[x].b);
-     SetNESDeemph(lastd,1);
-    }
+    SetNESDeemph(lastd,1);
 }
 
 void FCEUI_GetNTSCTH(int *tint, int *hue)
@@ -276,7 +266,7 @@ static int controllength=0;
 
 void FCEUI_NTSCDEC(void)
 {
-  if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI &&!PAL && FCEUGameInfo->type!=GIT_NSF)
+  if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI &&!PAL)
         {
          int which;
          if (controlselect)
@@ -298,7 +288,7 @@ void FCEUI_NTSCDEC(void)
 
 void FCEUI_NTSCINC(void)
 {
-                   if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL && FCEUGameInfo->type!=GIT_NSF)
+                   if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL)
                      if (controlselect)
                      {
                       if (controllength)
@@ -321,11 +311,11 @@ void FCEUI_NTSCINC(void)
 
 void FCEUI_NTSCSELHUE(void)
 {
- if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL && FCEUGameInfo->type!=GIT_NSF){controlselect=1;controllength=360;}
+ if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL){controlselect=1;controllength=360;}
 }
 
 void FCEUI_NTSCSELTINT(void)
 {
- if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL && FCEUGameInfo->type!=GIT_NSF){controlselect=2;controllength=360;}
+ if (ntsccol && FCEUGameInfo->type!=GIT_VSUNI && !PAL){controlselect=2;controllength=360;}
 }
 

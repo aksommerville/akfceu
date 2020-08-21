@@ -60,7 +60,6 @@ void FCEUI_DisableFourScore(int s);
 #define SIS_DATACH  1
 #define SIS_NWC    2
 #define SIS_VSUNISYSTEM  3
-#define SIS_NSF    4
 
 /* New interface functions */
 
@@ -150,10 +149,6 @@ uint32_t FCEUI_CRC32(uint32_t crc, uint8_t *buf, uint32_t len);
 
 void FCEUI_ToggleTileView(void);
 void FCEUI_SetLowPass(int q);
-
-void FCEUI_NSFSetVis(int mode);
-int FCEUI_NSFChange(int amount);
-int FCEUI_NSFGetInfo(uint8_t *name, uint8_t *artist, uint8_t *copyright, int maxlen);
 
 void FCEUI_VSUniToggleDIPView(void);
 void FCEUI_VSUniToggleDIP(int w);

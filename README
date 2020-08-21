@@ -217,8 +217,14 @@ Picking up again, on Linux this time.
 [ ] Big cleanup inside fceu.
   With the main goal of better understanding how it all works.
   [ ] Remove compression
-  [ ] Limit access to files -- none would be ideal.
+    This will take a lot of untangling.
+    Locate places that read and write files, and rephrase them to operate on memory only.
+  [ ] Limit access to files -- none would be ideal. (see compression)
   [ ] Remove everything that prints to the framebuffer. All of our OOB UI will be thru config files, command line, or remote comm.
   [ ] Consistent formatting? Probly not worth a lot of effort
   [ ] Unit tests.
-  [ ] Why is the audio buffer out of FCEUI_Emulate() 32-bit? Can we drop it to 16?
+  xxx Why is the audio buffer out of FCEUI_Emulate() 32-bit? Can we drop it to 16? ...yes but no
+    SexyFilter (soundq<1) clamps to 16-bit anyway.
+    Trying 16-bit... beware that this might break NeoFilter.
+    See moocow() in mappers/emu2413.c -- Yeah, pretty sure we're breaking NeoFilter
+    ...tried it and it worked, for Ninja Gaiden at least, but this is too risky. backing it out.

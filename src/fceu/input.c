@@ -51,14 +51,6 @@ static uint8_t joy_readbit[2];
 static uint8_t joy[4]={0,0,0,0};
 static uint8_t LastStrobe;
 
-/* This function is a quick hack to get the NSF player to use emulated gamepad
-   input.
-*/
-uint8_t FCEU_GetJoyJoy(void)
-{
- return(joy[0]|joy[1]|joy[2]|joy[3]);
-}
-
 extern uint8_t coinon;
 
 static int FSDisable=0;  /* Set to 1 if NES-style four-player adapter is disabled. */
