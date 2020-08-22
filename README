@@ -183,7 +183,7 @@ Picking up again after about a year away.
   Everything in src/opt should move to RA libs. Easy.
   Most of src/main should go too. About 2k lines, will be hairy.
 
-[ ] Better test scaffold, like ffutil and romassist. Can we share some of this via Romassist?
+[x] Better test scaffold, like ffutil and romassist. Can we share some of this via Romassist?
 
 [x] Enable keyboard input
 

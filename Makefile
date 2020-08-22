@@ -117,14 +117,20 @@ $(MIDDIR)/%.o:$(MIDDIR)/%.c|$(GENHFILES);$(PRECMD) $(CC) -o $@ $<
 $(MIDDIR)/%.o:src/%.m|$(GENHFILES);$(PRECMD) $(OBJC) -o $@ $<
 $(MIDDIR)/%.o:$(MIDDIR)/%.m|$(GENHFILES);$(PRECMD) $(OBJC) -o $@ $<
 
-all:$(EXE) $(TEST)
+OFILES_ITEST:=$(filter $(MIDDIR)/test/int/%,$(TESTOFILES))
+OFILES_UTEST:=$(filter $(MIDDIR)/test/unit/%,$(TESTOFILES))
+EXES_UTEST:=$(patsubst $(MIDDIR)/test/unit/%.o,$(OUTDIR)/utest/%,$(OFILES_UTEST))
+$(OUTDIR)/utest/%:$(MIDDIR)/test/unit/%.o;$(PRECMD) $(LD) -o $@ $< $(LDPOST)
+
+all:$(EXE) $(TEST) $(EXES_UTEST)
 $(EXE):$(COREOFILES) $(MAINOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(LDPOST)
-$(TEST):$(COREOFILES) $(TESTOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(TESTOFILES) $(LDPOST)
+$(TEST):$(COREOFILES) $(OFILES_ITEST);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(OFILES_ITEST) $(LDPOST)
 
 #------------------------------------------------------------------------------
 
 run:$(EXE);$(RUNCMD)
-test:$(TEST);$(TEST)
+test:$(TEST) $(EXES_UTEST);etc/tool/testrunner.sh $^
+test-%:$(TEST) $(EXES_UTEST);AKFCEU_TEST_FILTER="$*" etc/tool/testrunner.sh $^
 
 clean:;rm -rf mid out
 
