@@ -135,3 +135,5 @@ test-%:$(TEST) $(EXES_UTEST);AKFCEU_TEST_FILTER="$*" etc/tool/testrunner.sh $^
 clean:;rm -rf mid out
 
 $(MIDDIR)/test/akfceu_test_contents.h:etc/make/gentest.sh $(TESTCFILES) $(GENTESTCFILES);$(PRECMD) $^ $@
+
+install:$(EXE);EXE="$(EXE)" UNAMES="$(UNAMES)" etc/tool/install.sh

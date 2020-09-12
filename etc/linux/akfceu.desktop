@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=akfceu
+GenericName=akfceu
+Comment=My build of FCEU, NES emulator
+Exec=/usr/local/bin/akfceu %f
+Icon=applications-games-symbolic
+Terminal=false
+Type=Application
+Categories=Game
+MimeType=application/x-nes-rom
