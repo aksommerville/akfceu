@@ -276,7 +276,7 @@ int main(int argc,char **argv) {
     .window_title="akfceu",
     .audiorate=22050,
     .audiochanc=1,
-    .romassist_port=0,//8111,
+    .romassist_port=8111,
     .appname="akfceu",
     .platform="nes",
   
