@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <signal.h>
 
 /* Globals.
  */
@@ -15,6 +17,54 @@ static char *current_rom_path=0;
 static uint32_t gamepad_state=0;
 static int16_t *samplev=0;
 static int samplea=0;
+static volatile int sigc=0;
+
+/* Signal.
+ */
+ 
+static void rcvsig(int sigid) {
+  switch (sigid) {
+    case SIGINT: if (++sigc>=3) {
+        fprintf(stderr,"Too many unprocessed signals.\n");
+        exit(1);
+      } break;
+  }
+}
+
+/* XXX TEMP dump all audio to a file.
+ * Set the path null to disable this.
+ */
+ 
+static const char *dump_audio_path=0;//"/home/andy/proj/akfceu/out/dump.s16le.22050";
+static int dump_audio_fd=-1;
+ 
+static void dump_audio(const int16_t *src,int srcc) { // srcc in samples
+
+  // Should we open the file? Don't begin recording until there's a signal.
+  if (dump_audio_fd<0) {
+    if (!dump_audio_path) return;
+    const int16_t *v=src;
+    int i=srcc,valid=0;
+    for (;i-->0;v++) if (*v) { valid=1; break; }
+    if (!valid) return;
+    // Fails to open, forget it.
+    if ((dump_audio_fd=open(dump_audio_path,O_WRONLY|O_CREAT|O_TRUNC,0666))<0) {
+      fprintf(stderr,"%s: %m\n",dump_audio_path);
+      dump_audio_path=0;
+      return;
+    }
+  }
+
+  srcc<<=1; // ...srcc in bytes
+  write(dump_audio_fd,src,srcc);
+}
+
+static void dump_audio_finish() {
+  if (dump_audio_fd>=0) {
+    close(dump_audio_fd);
+    dump_audio_fd=-1;
+  }
+}
 
 /* FCEU palette.
  * TODO do we really need to cache the palette here? Either eliminate it (if GetPalette unnecessary), or provide a getter from emuhost.
@@ -146,6 +196,11 @@ static int akfceu_main_event(int playerid,int btnid,int value,int state) {
  */
  
 static int akfceu_main_update() {
+
+  if (sigc) {
+    sigc=0;
+    return emuhost_ioc_terminate();
+  }
   
   uint8_t *vmfb=0;
   int32_t *vmab=0;
@@ -162,6 +217,7 @@ static int akfceu_main_update() {
     int16_t *dst=samplev;
     int i=vmabc; for (;i-->0;src++,dst++) *dst=*src;
     if (emuhost_app_provide_frame(vmfb,samplev,vmabc)<0) return -1;
+    dump_audio(samplev,vmabc);
   } else {
     // Not running or not producing audio. Send a little silence to keep things running steady.
     if (akfceu_samplev_require(1024)<0) return -1;
@@ -247,6 +303,7 @@ static int akfceu_main_init() {
  */
  
 static void akfceu_main_quit() {
+  dump_audio_finish();
   if (vmrunning) {
     FCEUI_Sound(0);
     FCEUI_CloseGame();
@@ -276,7 +333,7 @@ int main(int argc,char **argv) {
     .window_title="akfceu",
     .audiorate=22050,
     .audiochanc=1,
-    .romassist_port=8111,
+    .romassist_port=6502,
     .appname="akfceu",
     .platform="nes",
   
@@ -289,5 +346,6 @@ int main(int argc,char **argv) {
     .update=akfceu_main_update,
     
   };
+  signal(SIGINT,rcvsig);
   return emuhost_app_main(argc,argv,&appdelegate);
 }

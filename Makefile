@@ -45,19 +45,19 @@ ifeq ($(UNAMES),Darwin)
 
 else ifeq ($(UNAMES),Linux)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow
-  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
+  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src -I/usr/include/libdrm
   CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
-  LDPOST:=../romassist/out/libromassist.a -lz -lGL -lX11 -lasound -lpthread -lm
+  LDPOST:=../romassist/out/libromassist.a -lz -lGLESv2 -ldrm -lgbm -lEGL -lasound -lpthread -lm
   
   OPT:=linux romassist
 
   EXE:=$(OUTDIR)/akfceu
   TEST:=$(OUTDIR)/test
   
-  RUNCMD:=$(EXE) ~/rom/nes/n/ninja_gaiden.nes
+  RUNCMD:=trap '' INT ; $(EXE) ~/rom/nes/z/zelda.nes
   
   play-%:$(EXE); \
     ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \
