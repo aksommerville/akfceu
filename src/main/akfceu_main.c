@@ -6,30 +6,17 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <signal.h>
 
 /* Globals.
  */
  
 static uint8_t palette[768]={0};
+static int palette_dirty=0;
 static int vmrunning=0;
 static char *current_rom_path=0;
 static uint32_t gamepad_state=0;
 static int16_t *samplev=0;
 static int samplea=0;
-static volatile int sigc=0;
-
-/* Signal.
- */
- 
-static void rcvsig(int sigid) {
-  switch (sigid) {
-    case SIGINT: if (++sigc>=3) {
-        fprintf(stderr,"Too many unprocessed signals.\n");
-        exit(1);
-      } break;
-  }
-}
 
 /* XXX TEMP dump all audio to a file.
  * Set the path null to disable this.
@@ -67,7 +54,6 @@ static void dump_audio_finish() {
 }
 
 /* FCEU palette.
- * TODO do we really need to cache the palette here? Either eliminate it (if GetPalette unnecessary), or provide a getter from emuhost.
  */
 
 void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
@@ -75,8 +61,7 @@ void FCEUD_SetPalette(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
   palette[p++]=r;
   palette[p++]=g;
   palette[p]=b;
-  uint8_t tmp[3]={r,g,b};
-  emuhost_wm_set_palette(tmp,index,1);
+  palette_dirty=1;
 }
 
 void FCEUD_GetPalette(uint8_t i,uint8_t *r, uint8_t *g, uint8_t *b) {
@@ -132,10 +117,8 @@ static int load_rom_file(const char *path) {
   }
 
   vmrunning=1;
-  fprintf(stderr,"Loaded.\n");
 
   FCEUI_PowerNES();
-  fprintf(stderr,"Power on.\n");
   
   FCEUI_DisableFourScore(0);
   FCEUI_SetInput(0,SI_GAMEPAD,&gamepad_state,0);
@@ -158,9 +141,7 @@ static void akfceu_main_log(int level,const char *msg,int msgc) {
 /* Load rom.
  */
  
-static int akfceu_main_load_rom(const char *path,const void *src,int srcc) {
-  fprintf(stderr,"%s '%s', %d bytes\n",__func__,path,srcc);
-  //TODO Can we provide the serial to FCEU? As is we are reading the file twice.
+static int akfceu_main_load_rom(void *userdata,const char *path) {
   if (load_rom_file(path)<0) return -1;
   return 0;
 }
@@ -170,23 +151,27 @@ static int akfceu_main_load_rom(const char *path,const void *src,int srcc) {
  
 static uint8_t akfceu_fceu_input_state_from_emuhost(uint16_t in) {
   return (
-    ((in&EMUHOST_BTNID_UP)?JOY_UP:0)|
-    ((in&EMUHOST_BTNID_DOWN)?JOY_DOWN:0)|
-    ((in&EMUHOST_BTNID_LEFT)?JOY_LEFT:0)|
-    ((in&EMUHOST_BTNID_RIGHT)?JOY_RIGHT:0)|
-    ((in&EMUHOST_BTNID_PRIMARY)?JOY_A:0)|
-    ((in&EMUHOST_BTNID_SECONDARY)?JOY_B:0)|
-    ((in&EMUHOST_BTNID_AUX2)?JOY_SELECT:0)|
-    ((in&EMUHOST_BTNID_AUX1)?JOY_START:0)|
+    ((in&EH_BUTTON_UP)?JOY_UP:0)|
+    ((in&EH_BUTTON_DOWN)?JOY_DOWN:0)|
+    ((in&EH_BUTTON_LEFT)?JOY_LEFT:0)|
+    ((in&EH_BUTTON_RIGHT)?JOY_RIGHT:0)|
+    ((in&EH_BUTTON_A)?JOY_A:0)|
+    ((in&EH_BUTTON_B)?JOY_B:0)|
+    ((in&EH_BUTTON_AUX2)?JOY_SELECT:0)|
+    ((in&EH_BUTTON_AUX1)?JOY_START:0)|
   0);
 }
+
+static uint16_t inputstate[4]={0};
  
-static int akfceu_main_event(int playerid,int btnid,int value,int state) {
+static int akfceu_main_event(void *userdata,int playerid,int btnid,int value,int state) {
   //fprintf(stderr,"%s %d.%d=%d [0x%04x]\n",__func__,playerid,btnid,value,state);
   if ((playerid>=1)&&(playerid<=4)) {
+    if (value) inputstate[playerid-1]|=btnid;
+    else inputstate[playerid-1]&=~btnid;
     int shift=(playerid-1)<<3;
     uint32_t mask=~(0xff<<shift);
-    uint8_t fceustate=akfceu_fceu_input_state_from_emuhost(state);
+    uint8_t fceustate=akfceu_fceu_input_state_from_emuhost(inputstate[playerid-1]);
     gamepad_state=(gamepad_state&mask)|(fceustate<<shift);
   }
   return 0;
@@ -196,33 +181,29 @@ static int akfceu_main_event(int playerid,int btnid,int value,int state) {
  */
  
 static int akfceu_main_update() {
-
-  if (sigc) {
-    sigc=0;
-    return emuhost_ioc_terminate();
-  }
   
   uint8_t *vmfb=0;
   int32_t *vmab=0;
   int32_t vmabc=0;
   if (vmrunning) {
     FCEUI_Emulate(&vmfb,&vmab,&vmabc,0);
+  } else {
+    fprintf(stderr,"akfceu: no rom was loaded\n");
+    return -1;
   }
   
-  if (akfceu_samplev_require(vmabc)<0) return -1;
-  
   if (vmabc>0) {
-    // VM is running and we got audio from it -- update emuhost normally.
-    const int32_t *src=vmab; // Seriously, fceu, why 32-bit? TODO Can we change that?
-    int16_t *dst=samplev;
-    int i=vmabc; for (;i-->0;src++,dst++) *dst=*src;
-    if (emuhost_app_provide_frame(vmfb,samplev,vmabc)<0) return -1;
-    dump_audio(samplev,vmabc);
+    if (palette_dirty) {
+      eh_hi_color_table(palette);
+      palette_dirty=0;
+    }
+    if (eh_hi_frame(vmfb,vmab,vmabc)<0) return -1;
   } else {
     // Not running or not producing audio. Send a little silence to keep things running steady.
-    if (akfceu_samplev_require(1024)<0) return -1;
-    memset(samplev,0,1024<<1);
-    if (emuhost_app_provide_frame(vmfb,samplev,1024)<0) return -1;
+    //if (akfceu_samplev_require(1024)<0) return -1;
+    //memset(samplev,0,1024<<1);
+    //if (emuhost_app_provide_frame(vmfb,samplev,1024)<0) return -1;
+    //TODO confirm this isn't needed in emuhost v2
   }
   
   return 0;
@@ -279,13 +260,6 @@ static int akfceu_main_init() {
 
   if (determine_and_register_home_directory()<0) return -1;
   
-  if (1) { //XXX initialize color table
-    int i=0; for (;i<256;i++) {
-      uint8_t rgb[3]={i,i,i};
-      emuhost_wm_set_palette(rgb,i,1);
-    }
-  }
-  
   if (!FCEUI_Initialize()) {
     fprintf(stderr,"FCEUI_Initialize failed\n");
     return -1;
@@ -295,6 +269,9 @@ static int akfceu_main_init() {
   FCEUI_SetSoundQuality(0);
   FCEUI_Sound(22050);
   FCEUI_DisableSpriteLimitation(1);
+  
+  //XXX emuhost should call this for us
+  //if (akfceu_main_load_rom(0,"/home/andy/rom/nes/z/zelda.nes")<0) return -1;
   
   return 0;
 }
@@ -312,40 +289,25 @@ static void akfceu_main_quit() {
   }
 }
 
-/* Receive command-line option.
- */
- 
-static int akfceu_main_option(const char *k,int kc,const char *v,int vc) {
-  fprintf(stderr,"%s: '%.*s' = '%.*s'\n",__func__,kc,k,vc,v);
-  return 0;
-}
-
 /* Main entry point.
  */
 
 int main(int argc,char **argv) {
-  struct emuhost_app_delegate appdelegate={
-  
-    .fbw=256,
-    .fbh=240,
-    .fbformat=EMUHOST_TEXFMT_I8,
-    .fullscreen=1,
-    .window_title="akfceu",
-    .audiorate=22050,
-    .audiochanc=1,
-    .romassist_port=6502,
+  struct eh_hi_delegate delegate={
+    .video_rate=60,
+    .video_width=256,
+    .video_height=240,
+    .video_format=EH_VIDEO_FORMAT_I8,
+    .audio_rate=22050,
+    .audio_chanc=1,
+    .audio_format=EH_AUDIO_FORMAT_S32_LO16,
     .appname="akfceu",
-    .platform="nes",
-  
-    .option=akfceu_main_option,
-    .log=akfceu_main_log,
-    .load_rom=akfceu_main_load_rom,
-    .event=akfceu_main_event,
+    .userdata=0,
     .init=akfceu_main_init,
     .quit=akfceu_main_quit,
     .update=akfceu_main_update,
-    
+    .player_input=akfceu_main_event,
+    .reset=akfceu_main_load_rom,
   };
-  signal(SIGINT,rcvsig);
-  return emuhost_app_main(argc,argv,&appdelegate);
+  return eh_hi_main(&delegate,argc,argv);
 }

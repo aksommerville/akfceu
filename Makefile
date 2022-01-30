@@ -45,12 +45,14 @@ ifeq ($(UNAMES),Darwin)
 
 else ifeq ($(UNAMES),Linux)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow
-  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src -I/usr/include/libdrm
+  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../ra2/src -I/usr/include/libdrm
   CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
-  LDPOST:=../romassist/out/libromassist.a -lz -lGLESv2 -ldrm -lgbm -lEGL -lasound -lpthread -lm
+#  LDPOST:=../romassist/out/libromassist.a -lz -lGLESv2 -ldrm -lgbm -lEGL -lasound -lpthread -lm
+#  LDPOST:=../romassist/out/libromassist.a -lz -lX11 -lGL -lasound -lpthread -lm
+  LDPOST:=../ra2/out/linux-default/libemuhost.a -lz -lX11 -lGLX -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
   
   OPT:=linux romassist
 
