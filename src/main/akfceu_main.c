@@ -192,19 +192,11 @@ static int akfceu_main_update() {
     return -1;
   }
   
-  if (vmabc>0) {
-    if (palette_dirty) {
-      eh_hi_color_table(palette);
-      palette_dirty=0;
-    }
-    if (eh_hi_frame(vmfb,vmab,vmabc)<0) return -1;
-  } else {
-    // Not running or not producing audio. Send a little silence to keep things running steady.
-    //if (akfceu_samplev_require(1024)<0) return -1;
-    //memset(samplev,0,1024<<1);
-    //if (emuhost_app_provide_frame(vmfb,samplev,1024)<0) return -1;
-    //TODO confirm this isn't needed in emuhost v2
+  if (palette_dirty) {
+    eh_hi_color_table(palette);
+    palette_dirty=0;
   }
+  if (eh_hi_frame(vmfb,vmab,vmabc)<0) return -1;
   
   return 0;
 }
@@ -214,42 +206,13 @@ static int akfceu_main_update() {
 
 static int determine_and_register_home_directory() {
 
-  /* 1: Allow the user to set it explicitly via FCEU_HOME.
-   */
-  const char *FCEU_HOME=getenv("FCEU_HOME");
-  if (FCEU_HOME&&FCEU_HOME[0]) {
-    FCEUI_SetBaseDirectory((char*)FCEU_HOME);
-    return 0;
-  }
-
-  /* 2: If there is a HOME in the environment, append "/.fceultra" to it.
-   */
-  const char *HOME=getenv("HOME");
-  if (HOME&&HOME[0]) {
-    char path[1024];
-    int pathc=snprintf(path,sizeof(path),"%s/.fceultra",HOME);
-    if ((pathc>0)&&(pathc<sizeof(path))) {
-      FCEUI_SetBaseDirectory(path);
-      return 0;
-    }
-  }
-
-  /* 3: If there is a USER in the environment, use "/home/$USER/.fceultra".
-   */
-  const char *USER=getenv("USER");
-  if (USER&&USER[0]) {
-    char path[1024];
-    int pathc=snprintf(path,sizeof(path),"/home/%s/.fceultra",USER);
-    if ((pathc>0)&&(pathc<sizeof(path))) {
-      FCEUI_SetBaseDirectory(path);
-      return 0;
-    }
-  }
-
-  /* 4: Oh whatever, use the working directory.
-   * This is almost certainly not what anyone wants.
-   */
-  FCEUI_SetBaseDirectory(".");
+  const char *scratch=0;
+  int scratchc=eh_hi_get_scratch_directory(&scratch);
+  
+  // Empty is an explicit request for no saving. TODO confirm FCEU is ok with not setting base directory
+  if (scratchc<1) return 0;
+  
+  FCEUI_SetBaseDirectory((char*)scratch);
   return 0;
 }
 
@@ -269,9 +232,6 @@ static int akfceu_main_init() {
   FCEUI_SetSoundQuality(0);
   FCEUI_Sound(22050);
   FCEUI_DisableSpriteLimitation(1);
-  
-  //XXX emuhost should call this for us
-  //if (akfceu_main_load_rom(0,"/home/andy/rom/nes/z/zelda.nes")<0) return -1;
   
   return 0;
 }
@@ -301,6 +261,7 @@ int main(int argc,char **argv) {
     .audio_rate=22050,
     .audio_chanc=1,
     .audio_format=EH_AUDIO_FORMAT_S32_LO16,
+    .playerc=4,
     .appname="akfceu",
     .userdata=0,
     .init=akfceu_main_init,
