@@ -44,7 +44,7 @@ ifeq ($(UNAMES),Darwin)
   RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
 
 else ifeq ($(UNAMES),Linux)
-  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow
+  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow -Wno-unused-result
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../ra2/src -I/usr/include/libdrm
   CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
