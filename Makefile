@@ -59,7 +59,7 @@ else ifeq ($(UNAMES),Linux)
   EXE:=$(OUTDIR)/akfceu
   TEST:=$(OUTDIR)/test
   
-  RUNCMD:=trap '' INT ; $(EXE) ~/rom/nes/z/zelda.nes
+  RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/t/tetris.nes
   
   play-%:$(EXE); \
     ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \

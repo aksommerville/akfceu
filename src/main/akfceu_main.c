@@ -1,5 +1,6 @@
 #include "fceu/driver.h"
 #include "fceu/fceu.h"
+#include "nes_autoscore.h"
 #include <emuhost/emuhost.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,8 +8,14 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
+void aks_hack_update();
+
+extern uint8_t RAM[0x800];
+
 /* Globals.
  */
+ 
+#define AUTOSCORE_DELAY_TIME 300 /* frames */
  
 static uint8_t palette[768]={0};
 static int palette_dirty=0;
@@ -17,6 +24,8 @@ static char *current_rom_path=0;
 static uint32_t gamepad_state=0;
 static int16_t *samplev=0;
 static int samplea=0;
+static struct nes_autoscore_context autoscore={0};
+static int autoscore_delay=0;
 
 /* XXX TEMP dump all audio to a file.
  * Set the path null to disable this.
@@ -101,7 +110,7 @@ static int akfceu_samplev_require(int c) {
 
 /* Load a fresh ROM file and reset the emulator.
  */
-
+ 
 static int load_rom_file(const char *path) {
   fprintf(stderr,"Load ROM: %s\n",path);
 
@@ -126,6 +135,18 @@ static int load_rom_file(const char *path) {
 
   if (current_rom_path) free(current_rom_path);
   if (!(current_rom_path=strdup(path))) return -1;
+  
+  nes_autoscore_context_init(&autoscore,fceugi->MD5);
+  
+  /* XXX A convenience as I gather autoscore schemas.
+  const uint8_t *_=fceugi->MD5;
+  fprintf(stderr,
+    "    .cart_md5={0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,"
+    "0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x},\n",
+    _[0],_[1],_[2],_[3],_[4],_[5],_[6],_[7],_[8],_[9],
+    _[10],_[11],_[12],_[13],_[14],_[15]
+  );
+  /**/
 
   fprintf(stderr,"Launch complete.\n");
   return 0;
@@ -181,6 +202,8 @@ static int akfceu_main_event(void *userdata,int playerid,int btnid,int value,int
  */
  
 static int akfceu_main_update() {
+
+  aks_hack_update();
   
   uint8_t *vmfb=0;
   int32_t *vmab=0;
@@ -190,6 +213,12 @@ static int akfceu_main_update() {
   } else {
     fprintf(stderr,"akfceu: no rom was loaded\n");
     return -1;
+  }
+  
+  nes_autoscore_context_update(&autoscore,RAM);
+  if (!autoscore_delay--) {
+    autoscore_delay=AUTOSCORE_DELAY_TIME;
+    nes_autoscore_db_save(0);
   }
   
   if (palette_dirty) {
@@ -233,6 +262,8 @@ static int akfceu_main_init() {
   FCEUI_Sound(22050);
   FCEUI_DisableSpriteLimitation(1);
   
+  nes_autoscore_db_load();
+  
   return 0;
 }
 
@@ -246,6 +277,9 @@ static void akfceu_main_quit() {
     FCEUI_CloseGame();
     FCEUI_Kill();
     vmrunning=0;
+  }
+  if (nes_autoscore_db_get_dirty()) {
+    nes_autoscore_db_save(1);
   }
 }
 

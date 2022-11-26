@@ -1,0 +1,107 @@
+2022-11-25T08:50
+Persist high score automatically.
+For games like Balloon Fight and Paperboy, which record a high score but don't have battery backup.
+
+[x] Observe live RAM.
+  src/fceu/fceu.c:124:uint8_t RAM[0x800];
+  
+Balloon Fight initial high score is 10000 (0x2710).
+- Not found as i16le or i16be.
+- Displayed as 6 digits. Is it BCD?
+
+These were all present after exceeding the high score, so these are NOT it:
+Found 10000 bcdbe at 0x0006
+Found 10000 bcdle at 0x0039
+Found 10000 bcdle at 0x0047
+Found 10000 bcdbe at 0x0049
+Found 10000 bcdle at 0x004a
+Found 10000 bcdbe at 0x004c
+Found 10000 bcdle at 0x00a1
+Found 10000 bcdbe at 0x00a3
+Found 10000 bcdle at 0x00ce
+Found 10000 bcdle at 0x00f5
+Found 10000 bcdle at 0x0448
+Found 10000 bcdbe at 0x044e
+Found 10000 bcdbe at 0x0461
+Found 10000 bcdbe at 0x048f
+Found 10000 bcdbe at 0x062c
+Found 10000 bcdle at 0x062f
+Found 10000 bcdbe at 0x0631
+Found 10000 bcdle at 0x0728
+Found 10000 bcdbe at 0x073a
+Found 10000 bcdbe at 0x073f
+Found 10000 bcdbe at 0x0744
+Found 10000 bcdbe at 0x0749
+Found 10000 bcdbe at 0x074e
+Found 10000 bcdbe at 0x0753
+Found 10000 bcdbe at 0x0758
+Found 10000 bcdbe at 0x075d
+Found 10000 bcdbe at 0x0762
+Found 10000 bcdbe at 0x0767
+Found 10000 bcdbe at 0x076c
+Found 10000 bcdbe at 0x0771
+Found 10000 bcdbe at 0x0776
+Found 10000 bcdbe at 0x077b
+Found 10000 bcdbe at 0x0780
+Found 10000 bcdbe at 0x0785
+Found 10000 bcdbe at 0x078a
+Found 10000 bcdle at 0x078c
+Found 10000 bcdbe at 0x078f
+Found 10000 bcdbe at 0x0794
+Found 10000 bcdle at 0x0797
+Found 10000 bcdbe at 0x0799
+Found 10000 bcdbe at 0x07ed
+Found 10000 bcdle at 0x07f0
+Found 10000 bcdbe at 0x07f2
+
+Candidates:
+bcdle 000e
+bcdle 002f
+bcdle 003a
+bcdbe 0043
+bcdbe 00ef
+bcdbe 0621
+bcdle 062a
+
+I see the score, it's BCD but bytewise (not nybblewise), little-endian, at both 0x000e and 0x062a.
+>>> 6 bytes at 0x000b, each byte is a digit 0..9, little-endian.
+>>> CORRECTION:
+  RAM[0x000d]=3;
+  RAM[0x000e]=4;
+  RAM[0x000f]=5;
+  RAM[0x0010]=6;
+  RAM[0x0011]=7; // MSD
+  The LSD I think is fixed at zero.
+>>> It's 5 bytes at 0x000d and 0x0629. I believe 0x000d is for display, and 0x0629 the authority.
+
+[x] Write into that at launch, does it take? CLOSE.
+  It gets overwritten between the first and second dumps.
+  If I delay, then write again, it does take during the preview but gets overwritten at startup.
+  [x] What about the other one at 0x062a?
+  It initially shows the value at the lower address 0x000c, at game start it replaces with content at 0x0629.
+  So set both.
+  [x] If we set the higher one initially, does it stick?
+    No of course not, the game has to initialize it too.
+Initialized content appears at both 0x000d and 0x0629 after 12 frames.
+[x] Have the hack wait for initial content to appear, then write out its custom content.
+OK this seems to work for Ballon Fight.
+
+[x] Generalize the API: nes_autoscore.h
+  mwa ha ha ha ha! it totally works
+
+Balloon Fight: 3e b2 a5 6c 3c 76 56 b2 1f 29 94 2d 24 f4 2c 95
+
+[ ] Identify other NES games that need this.
+X  /home/andy/rom/nes/j/joust.nes (balloonlike, exposed at intro) <------------------------------------- priority
+X  /home/andy/rom/nes/g/gun_nac.nes (balloonlike, exposed at intro, not too hard, and fuck this game is awesome) <------------ priority
+X  /home/andy/rom/nes/g/goonies.nes (balloonlike, exposed at intro, takes a little doing) <------------------------ priority
+X  /home/andy/rom/nes/k/kung_fu.nes (balloonlike)
+X  /home/andy/rom/nes/y/yoshis_cookie.nes (balloonlike)
+X  /home/andy/rom/nes/j/jaws.nes (balloonlike, takes some time to break the default record)
+X  /home/andy/rom/nes/w/wrecking_crew.nes (balloonlike, takes some time)
+X  /home/andy/rom/nes/g/galaxian.nes (balloonlike, exposed at intro, hard to beat)
+    It takes 3 or 4 waves to beat the default 5000, and I've still never done it. (the federation is doomed)
+X /home/andy/rom/nes/q/qix.nes (full list; must play thru and die to see)
+  /home/andy/rom/nes/k/krazy_kreatures.nes (full list; must play thru and die to see)
+  /home/andy/rom/nes/n/ninja_kid.nes
+  ...thru page 13 of a search for "platform=nes"

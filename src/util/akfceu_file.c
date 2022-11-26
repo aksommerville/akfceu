@@ -37,6 +37,27 @@ int akfceu_file_read(void *dstpp,const char *path) {
   return dstc;
 }
 
+/* Write entire file.
+ */
+ 
+int akfceu_file_write(const char *path,const void *src,int srcc) {
+  if (!path||(srcc<0)||(srcc&&!src)) return -1;
+  int fd=open(path,O_WRONLY|O_CREAT|O_TRUNC,0666);
+  if (fd<0) return -1;
+  int srcp=0;
+  while (srcp<srcc) {
+    int err=write(fd,(char*)src+srcp,srcc-srcp);
+    if (err<=0) {
+      close(fd);
+      unlink(path);
+      return -1;
+    }
+    srcp+=err;
+  }
+  close(fd);
+  return 0;
+}
+
 /* Advance line reader.
  */
 

@@ -5,6 +5,7 @@
 #define AKFCEU_FILE_H
 
 int akfceu_file_read(void *dstpp,const char *path);
+int akfceu_file_write(const char *path,const void *src,int srcc);
 
 struct akfceu_line_reader {
   const char *src;
