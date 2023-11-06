@@ -606,7 +606,7 @@ void X6502_Run(int32_t cycles)
     _tcount=0;
     if (MapIRQHook) MapIRQHook(temp);
     FCEU_SoundCPUHook(temp);
-
+    
     X.PC=pbackus;
     _PC++;
     switch (b1) {

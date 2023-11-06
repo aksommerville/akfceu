@@ -1,7 +1,7 @@
 #include "fceu/driver.h"
 #include "fceu/fceu.h"
 #include "nes_autoscore.h"
-#include <emuhost/emuhost.h>
+#include <emuhost.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -29,6 +29,7 @@ static int autoscore_delay=0;
 
 /* XXX TEMP dump all audio to a file.
  * Set the path null to disable this.
+ * TODO: Effect this from emuhost, and make it enablable at runtime.
  */
  
 static const char *dump_audio_path=0;//"/home/andy/proj/akfceu/out/dump.s16le.22050";
@@ -152,58 +153,35 @@ static int load_rom_file(const char *path) {
   return 0;
 }
 
-/* Logging, accessible to emuhost.
- */
- 
-static void akfceu_main_log(int level,const char *msg,int msgc) {
-  printf("%s: %.*s\n",__func__,msgc,msg);
-}
-
-/* Load rom.
- */
- 
-static int akfceu_main_load_rom(void *userdata,const char *path) {
-  if (load_rom_file(path)<0) return -1;
-  return 0;
-}
-
-/* Input event.
+/* Input state.
  */
  
 static uint8_t akfceu_fceu_input_state_from_emuhost(uint16_t in) {
   return (
-    ((in&EH_BUTTON_UP)?JOY_UP:0)|
-    ((in&EH_BUTTON_DOWN)?JOY_DOWN:0)|
-    ((in&EH_BUTTON_LEFT)?JOY_LEFT:0)|
-    ((in&EH_BUTTON_RIGHT)?JOY_RIGHT:0)|
-    ((in&EH_BUTTON_A)?JOY_A:0)|
-    ((in&EH_BUTTON_B)?JOY_B:0)|
-    ((in&EH_BUTTON_AUX2)?JOY_SELECT:0)|
-    ((in&EH_BUTTON_AUX1)?JOY_START:0)|
+    ((in&EH_BTN_UP)?JOY_UP:0)|
+    ((in&EH_BTN_DOWN)?JOY_DOWN:0)|
+    ((in&EH_BTN_LEFT)?JOY_LEFT:0)|
+    ((in&EH_BTN_RIGHT)?JOY_RIGHT:0)|
+    ((in&EH_BTN_SOUTH)?JOY_A:0)|
+    ((in&EH_BTN_WEST)?JOY_B:0)|
+    ((in&EH_BTN_AUX2)?JOY_SELECT:0)|
+    ((in&EH_BTN_AUX1)?JOY_START:0)|
   0);
-}
-
-static uint16_t inputstate[4]={0};
- 
-static int akfceu_main_event(void *userdata,int playerid,int btnid,int value,int state) {
-  //fprintf(stderr,"%s %d.%d=%d [0x%04x]\n",__func__,playerid,btnid,value,state);
-  if ((playerid>=1)&&(playerid<=4)) {
-    if (value) inputstate[playerid-1]|=btnid;
-    else inputstate[playerid-1]&=~btnid;
-    int shift=(playerid-1)<<3;
-    uint32_t mask=~(0xff<<shift);
-    uint8_t fceustate=akfceu_fceu_input_state_from_emuhost(inputstate[playerid-1]);
-    gamepad_state=(gamepad_state&mask)|(fceustate<<shift);
-  }
-  return 0;
 }
 
 /* Update.
  */
  
-static int akfceu_main_update() {
+static int akfceu_main_update(int partial) {
 
   aks_hack_update();
+  
+  gamepad_state=(
+    (akfceu_fceu_input_state_from_emuhost(eh_input_get(1)))|
+    (akfceu_fceu_input_state_from_emuhost(eh_input_get(2))<<8)|
+    (akfceu_fceu_input_state_from_emuhost(eh_input_get(3))<<16)|
+    (akfceu_fceu_input_state_from_emuhost(eh_input_get(4))<<24)
+  );
   
   uint8_t *vmfb=0;
   int32_t *vmab=0;
@@ -222,10 +200,15 @@ static int akfceu_main_update() {
   }
   
   if (palette_dirty) {
-    eh_hi_color_table(palette);
+    eh_ctab_write(0,256,palette);
     palette_dirty=0;
   }
-  if (eh_hi_frame(vmfb,vmab,vmabc)<0) return -1;
+  if (vmfb) {
+    eh_video_write(vmfb);
+  }
+  if (vmabc>0) {
+    eh_audio_write(vmab,vmabc);
+  }
   
   return 0;
 }
@@ -234,12 +217,11 @@ static int akfceu_main_update() {
  */
 
 static int determine_and_register_home_directory() {
-
-  const char *scratch=0;
-  int scratchc=eh_hi_get_scratch_directory(&scratch);
+  char *scratch=0;
+  int scratchc=eh_get_scratch_directory(&scratch);
   
-  // Empty is an explicit request for no saving. TODO confirm FCEU is ok with not setting base directory
-  if (scratchc<1) return 0;
+  // This is required! If we don't SetBaseDirectory, fceu tries to use "/" as the scratch root.
+  if (scratchc<1) return -1;
   
   FCEUI_SetBaseDirectory((char*)scratch);
   return 0;
@@ -248,7 +230,7 @@ static int determine_and_register_home_directory() {
 /* Initialize.
  */
  
-static int akfceu_main_init() {
+static int akfceu_main_load_file(const char *path) {
 
   if (determine_and_register_home_directory()<0) return -1;
   
@@ -264,6 +246,14 @@ static int akfceu_main_init() {
   
   nes_autoscore_db_load();
   
+  return load_rom_file(path);
+}
+
+/* Hard reset.
+ */
+
+static int akfceu_main_reset() {
+  FCEUI_ResetNES();
   return 0;
 }
 
@@ -283,26 +273,80 @@ static void akfceu_main_quit() {
   }
 }
 
+/* Extra config. Not using.
+ */
+ 
+static int akfceu_main_configure(const char *k,int kc,const char *v,int vc,int vn) {
+  return -1;
+}
+
+/* Window icon.
+ */
+ 
+#define akfceu_window_icon_w 16
+#define akfceu_window_icon_h 16
+
+static const uint8_t akfceu_window_icon[]={
+#define _ 0,0,0,0,
+#define W 255,255,255,255,
+#define K 0,0,0,255,
+#define Y 128,128,128,255,
+#define R 255,0,0,255,
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  K K K K K K K K K K K K K K K K
+  K W W W W W W W W Y W W W W W K
+  K W W W W W W W W Y W W W W W K
+  K W W W W W W W W Y W W W W W K
+  K W W W W W W W W Y W W W W W K
+  K Y Y Y Y Y Y Y Y Y Y Y Y Y Y K
+  K Y R R Y Y Y Y Y Y Y Y Y Y Y K
+  K Y R R Y Y Y Y Y Y Y Y Y Y Y K
+  K Y Y Y Y Y Y Y Y Y Y Y Y Y Y K
+  _ K K K K K K K K K K K K K K _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+#undef _
+#undef W
+#undef K
+#undef Y
+#undef R
+};
+
 /* Main entry point.
  */
 
 int main(int argc,char **argv) {
-  struct eh_hi_delegate delegate={
-    .video_rate=60,
+  struct eh_delegate delegate={
+  
+    .name="akfceu",
+    .iconrgba=akfceu_window_icon,
+    .iconw=akfceu_window_icon_w,
+    .iconh=akfceu_window_icon_h,
+  
     .video_width=256,
     .video_height=240,
     .video_format=EH_VIDEO_FORMAT_I8,
+    // rmask,gmask,bmask: Irrelevant for I8.
+    .video_rate=60,
+    
     .audio_rate=22050,
     .audio_chanc=1,
-    .audio_format=EH_AUDIO_FORMAT_S32_LO16,
+    .audio_format=EH_AUDIO_FORMAT_S32N_LO16,
+    
     .playerc=4,
-    .appname="akfceu",
-    .userdata=0,
-    .init=akfceu_main_init,
-    .quit=akfceu_main_quit,
+    
+    .configure=akfceu_main_configure,
+    .load_file=akfceu_main_load_file,
+    // load_serial: Not necessary; only one "load" is needed.
     .update=akfceu_main_update,
-    .player_input=akfceu_main_event,
-    .reset=akfceu_main_load_rom,
+    // generate_pcm: Not using; will deliver audio manually.
+    .reset=akfceu_main_reset,
+  
   };
-  return eh_hi_main(&delegate,argc,argv);
+  int status=eh_main(argc,argv,&delegate);
+  akfceu_main_quit();
+  return status;
 }

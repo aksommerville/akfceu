@@ -45,21 +45,19 @@ ifeq ($(UNAMES),Darwin)
 
 else ifeq ($(UNAMES),Linux)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow -Wno-unused-result
-  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../ra2/src -I/usr/include/libdrm
+  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../ra3/out/include -I/usr/include/libdrm
   CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
-#  LDPOST:=../romassist/out/libromassist.a -lz -lGLESv2 -ldrm -lgbm -lEGL -lasound -lpthread -lm
-#  LDPOST:=../romassist/out/libromassist.a -lz -lX11 -lGL -lasound -lpthread -lm
-  LDPOST:=../ra2/out/linux-default/libemuhost.a -lz -lX11 -lGLX -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
+  LDPOST:=../ra3/out/libemuhost.a -lz -lX11 -lGLX -lGL -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
   
   OPT:=linux romassist
 
   EXE:=$(OUTDIR)/akfceu
   TEST:=$(OUTDIR)/test
   
-  RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/t/tetris.nes
+  RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/c/castlevania_2.nes #/home/andy/rom/nes/z/zelda.nes
   
   play-%:$(EXE); \
     ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \
