@@ -55,7 +55,7 @@ uint8_t iNESIRQa;
 uint32_t ROM_size;
 uint32_t VROM_size;
 
-static void iNESPower(void);
+void iNESPower(void);
 static int NewiNES_Init(int num);
 
 void (*MapClose)(void);
@@ -364,7 +364,7 @@ static void CheckHInfo(void) {
   }
 
   /* Four-screen mirroring implicitly set. */
-  if (MapperNo==99) Mirroring=2;  
+  if (MapperNo==99) Mirroring=2;
  
   if (tofix) {
     char gigastr[768];
@@ -695,7 +695,8 @@ void iNESStateRestore(int version) {
   if (MapStateRestore) MapStateRestore(version);
 }
 
-static void iNESPower(void) {
+void iNESPower(void) {
+
   int x;
   int type=MapperNo;
 
@@ -794,6 +795,7 @@ static BMAPPING bmap[] = {
   {206, Mapper206_Init},
   {208, Mapper208_Init},
   {210, Mapper210_Init},
+  {243, Mapper243_Init},
   {245, Mapper245_Init},
   {249, Mapper249_Init},
   {250, Mapper250_Init},

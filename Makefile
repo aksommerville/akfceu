@@ -50,14 +50,14 @@ else ifeq ($(UNAMES),Linux)
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
-  LDPOST:=../ra3/out/libemuhost.a -lz -lX11 -lGLX -lGL -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
+  LDPOST:=../ra3/out/libemuhost.a -lz -lXinerama -lX11 -lGLX -lGL -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
   
   OPT:=linux romassist
 
   EXE:=$(OUTDIR)/akfceu
   TEST:=$(OUTDIR)/test
   
-  RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/c/castlevania_2.nes #/home/andy/rom/nes/z/zelda.nes
+  RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/z/zelda.nes
   
   play-%:$(EXE); \
     ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \
@@ -137,3 +137,5 @@ clean:;rm -rf mid out
 $(MIDDIR)/test/akfceu_test_contents.h:etc/make/gentest.sh $(TESTCFILES) $(GENTESTCFILES);$(PRECMD) $^ $@
 
 install:$(EXE);EXE="$(EXE)" UNAMES="$(UNAMES)" etc/tool/install.sh
+
+emuhost:;make -C../ra3 ; rm -f $(EXE)

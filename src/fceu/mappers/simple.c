@@ -64,12 +64,6 @@ void Mapper7_init(void)
   AddExState(&latche, 1, 0, "LATC");
 }
 
-void Mapper243_init(void)
-{
-
-
-}
-
 static DECLFW(Mapper11_write)
 {
         ROM_BANK32(V&0xF);
