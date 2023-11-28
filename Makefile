@@ -15,6 +15,8 @@ UNAMES:=$(shell uname -s)
 MIDDIR:=mid
 OUTDIR:=out
 
+LIBEMUHOST:=../ra3/out/libemuhost.a
+
 ifeq ($(UNAMES),Darwin)
   CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
   CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
@@ -50,7 +52,7 @@ else ifeq ($(UNAMES),Linux)
   CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
   OBJC:=
   LD:=gcc
-  LDPOST:=../ra3/out/libemuhost.a -lz -lXinerama -lX11 -lGLX -lGL -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
+  LDPOST:=$(LIBEMUHOST) -lz -lXinerama -lX11 -lGLX -lGL -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
   
   OPT:=linux romassist
 
@@ -123,7 +125,7 @@ EXES_UTEST:=$(patsubst $(MIDDIR)/test/unit/%.o,$(OUTDIR)/utest/%,$(OFILES_UTEST)
 $(OUTDIR)/utest/%:$(MIDDIR)/test/unit/%.o;$(PRECMD) $(LD) -o $@ $< $(LDPOST)
 
 all:$(EXE) $(TEST) $(EXES_UTEST)
-$(EXE):$(COREOFILES) $(MAINOFILES);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(LDPOST)
+$(EXE):$(COREOFILES) $(MAINOFILES) $(LIBEMUHOST);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(LDPOST)
 $(TEST):$(COREOFILES) $(OFILES_ITEST);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(OFILES_ITEST) $(LDPOST)
 
 #------------------------------------------------------------------------------
