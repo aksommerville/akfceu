@@ -4,87 +4,35 @@ PRECMD=echo "  $(@F)" ; mkdir -p $(@D) ;
 
 #------------------------------------------------------------------------------
 # Compilers, configuration, etc.
-# This Makefile supports only a single target architecture.
-# You can configure for different targets by modifying this section.
 # Nothing outside this section should need to be changed.
-# We try to assume as little as possible: No autoconf, no incoming environment variables, etc.
-
-UNAMES:=$(shell uname -s)
+# We try to assume as little as possible, emuhost-config should iron out all the differences.
 
 # Output directories. Must begin with 'mid' and 'out'.
 MIDDIR:=mid
 OUTDIR:=out
 
-LIBEMUHOST:=../ra3/out/libemuhost.a
+EHCFG:=../ra3/out/emuhost-config
 
-ifeq ($(UNAMES),Darwin)
-  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
-  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
-  CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
-  OBJC:=gcc -xobjective-c -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
-  LD:=gcc
-  LDPOST:=../romassist/out/libromassist.a -lz -framework AudioUnit -framework IOKit -framework Cocoa -framework OpenGL
-
-  OPT:=macos romassist
+CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow -Wno-unused-result
+CCINCLUDE:=-Isrc -I$(MIDDIR) -I/usr/include/libdrm
+CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
+CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL) $(shell $(EHCFG) --cflags)
+OBJC:=
+LD:=gcc $(shell $(EHCFG) --ldflags)
+LDPOST:=$(shell $(EHCFG) --libs)
   
-  # Macs are kind of a pain in the ass... This bit is Mac-only
-  BUNDLE_MAIN:=$(OUTDIR)/akfceu.app
-  EXE:=$(BUNDLE_MAIN)/Contents/MacOS/akfceu
-  PLIST_MAIN:=$(BUNDLE_MAIN)/Contents/Info.plist
-  NIB_MAIN:=$(BUNDLE_MAIN)/Contents/Resources/Main.nib
-  ICON_MAIN:=$(BUNDLE_MAIN)/Contents/Resources/appicon.icns
-
-  TEST:=$(OUTDIR)/test
-  $(EXE):$(PLIST_MAIN) $(NIB_MAIN)
-  $(PLIST_MAIN):etc/macos/Info.plist;$(PRECMD) cp $< $@
-  $(NIB_MAIN):etc/macos/Main.xib;$(PRECMD) ibtool --compile $@ $<
-
-  INPUT_ICONS:=$(wildcard etc/macos/appicon.iconset/*)
-  $(ICON_MAIN):$(INPUT_ICONS);$(PRECMD) iconutil -c icns -o $@ etc/macos/appicon.iconset
-
-  RUNCMD:=open -W $(BUNDLE_MAIN) --args --reopen-tty=$$(tty) --chdir=$$(pwd) ~/rom/nes/z/zelda.nes
-
-else ifeq ($(UNAMES),Linux)
-  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations -Wno-overflow -Wno-unused-result
-  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../ra3/out/include -I/usr/include/libdrm
-  CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
-  CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
-  OBJC:=
-  LD:=gcc
-  LDPOST:=$(LIBEMUHOST) -lz -lXinerama -lX11 -lGLX -lGL -lGLESv2 -lasound -lpthread -lm -lpulse -lpulse-simple -ldrm -lgbm -lEGL
+EXE:=$(OUTDIR)/akfceu
+TEST:=$(OUTDIR)/test
   
-  OPT:=linux romassist
-
-  EXE:=$(OUTDIR)/akfceu
-  TEST:=$(OUTDIR)/test
+RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/z/zelda.nes
   
-  RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/z/zelda.nes
-  
-  play-%:$(EXE); \
-    ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \
-    if [ -n "$$ROMPATH" ] ; then \
-      $(EXE) "$$ROMPATH" ; \
-    else \
-      echo "'$*' not found" ; \
-    fi
-  
-else
-  CCWARN:=-Werror -Wimplicit -Wno-pointer-sign -Wno-parentheses-equality -Wno-parentheses -Wno-deprecated-declarations
-  CCINCLUDE:=-Isrc -I$(MIDDIR) -I../romassist/src
-  CCDECL:=-DPSS_STYLE=1 -DLSB_FIRST=1
-  CC:=gcc -c -MMD -O2 $(CCINCLUDE) $(CCWARN) $(CCDECL)
-  OBJC:=
-  LD:=gcc
-  LDPOST:=../romassist/out/libromassist.a -lz
-  
-  OPT:=romassist
-
-  EXE:=$(OUTDIR)/akfceu
-  TEST:=$(OUTDIR)/test
-  
-  RUNCMD:=$(EXE) ~/rom/nes/z/zelda.nes
-endif
+play-%:$(EXE); \
+  ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \
+  if [ -n "$$ROMPATH" ] ; then \
+    $(EXE) "$$ROMPATH" ; \
+  else \
+    echo "'$*' not found" ; \
+  fi
 
 #------------------------------------------------------------------------------
 # Generated source files.
@@ -125,7 +73,7 @@ EXES_UTEST:=$(patsubst $(MIDDIR)/test/unit/%.o,$(OUTDIR)/utest/%,$(OFILES_UTEST)
 $(OUTDIR)/utest/%:$(MIDDIR)/test/unit/%.o;$(PRECMD) $(LD) -o $@ $< $(LDPOST)
 
 all:$(EXE) $(TEST) $(EXES_UTEST)
-$(EXE):$(COREOFILES) $(MAINOFILES) $(LIBEMUHOST);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(LDPOST)
+$(EXE):$(COREOFILES) $(MAINOFILES) $(LIBEMUHOST) $(shell $(EHCFG) --deps);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(MAINOFILES) $(LDPOST)
 $(TEST):$(COREOFILES) $(OFILES_ITEST);$(PRECMD) $(LD) -o $@ $(COREOFILES) $(OFILES_ITEST) $(LDPOST)
 
 #------------------------------------------------------------------------------
