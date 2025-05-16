@@ -630,7 +630,7 @@ void (*MapInitTab[256])(void)={
   Mapper17_init,Mapper18_init,0,0,
   Mapper21_init,Mapper22_init,Mapper23_init,Mapper24_init,
   Mapper25_init,Mapper26_init,0,0,
-  0,0,0,Mapper32_init,
+  0,Mapper30_init,0,Mapper32_init,
   Mapper33_init,Mapper34_init,0,0,
   0,0,0,Mapper40_init,
   Mapper41_init,Mapper42_init,Mapper43_init,0,

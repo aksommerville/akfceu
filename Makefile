@@ -24,7 +24,7 @@ LDPOST:=$(shell $(EHCFG) --libs)
 EXE:=$(OUTDIR)/akfceu
 TEST:=$(OUTDIR)/test
   
-RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/z/zelda.nes
+RUNCMD:=trap '' INT ; $(EXE) /home/andy/rom/nes/b/black_box_challenge.nes
   
 play-%:$(EXE); \
   ROMPATH="$$(find ~/rom/nes -type f -name '*$**' | sed -n 1p)" ; \

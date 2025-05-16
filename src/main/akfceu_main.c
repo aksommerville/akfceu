@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-void aks_hack_update();
+void aks_hack_update(int in1);
+void aks_hack_framebuffer(uint8_t *fb,int in1);
 
 extern uint8_t RAM[0x800];
 
@@ -173,11 +174,12 @@ static uint8_t akfceu_fceu_input_state_from_emuhost(uint16_t in) {
  */
  
 static int akfceu_main_update(int partial) {
+  int in1=eh_input_get(1);
 
-  aks_hack_update();
+  aks_hack_update(in1);
   
   gamepad_state=(
-    (akfceu_fceu_input_state_from_emuhost(eh_input_get(1)))|
+    (akfceu_fceu_input_state_from_emuhost(in1))|
     (akfceu_fceu_input_state_from_emuhost(eh_input_get(2))<<8)|
     (akfceu_fceu_input_state_from_emuhost(eh_input_get(3))<<16)|
     (akfceu_fceu_input_state_from_emuhost(eh_input_get(4))<<24)
@@ -204,6 +206,7 @@ static int akfceu_main_update(int partial) {
     palette_dirty=0;
   }
   if (vmfb) {
+    aks_hack_framebuffer(vmfb,in1);
     eh_video_write(vmfb);
   }
   if (vmabc>0) {
